@@ -1,18 +1,18 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useAuth = () => {
-  const history = useNavigate();
+	const history = useNavigate();
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      // Redirect to login if user not found in localStorage
-      history('/landingpage');
-    }
-  }, [history]);
+	useEffect(() => {
+		const user = localStorage.getItem("user");
+		if (!user) {
+			// Redirect to login if user not found in localStorage
+			history("/");
+		}
+	}, [history]);
 
-  return;
+	return;
 };
 
 export default useAuth;

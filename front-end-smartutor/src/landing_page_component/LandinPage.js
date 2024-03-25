@@ -71,28 +71,6 @@ function App() {
 					</Grid>
 				</Grid>
 			</Container>
-			{/* <Container id="intro" className="text-center bg-light" style={{ marginTop: '100px' ,height:'200px'}} >
-        <div >
-        <h1 className="mb-3 h2" >SmartTutor AI</h1>
-    
-        <p className="mb-3">AI based Tutoring App to cater all your needs</p>
-        <Button 
-          href="https://www.youtube.com/watch?v=c9B4TPnak1A"
-          role="button"
-          target="_blank"
-          rel="nofollow"
-          variant="primary"
-          className="m-2"
-        >
-          Create a plan
-        </Button>
-        <Link to="/dashboard" >
-        <Button  className="m-2">
-          Go to Dashboard
-        </Button>
-      </Link>
-      </div>
-      </Container> */}
 			<Container
 				fluid
 				style={{

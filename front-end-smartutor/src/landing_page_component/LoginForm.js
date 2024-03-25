@@ -21,7 +21,7 @@ const LoginForm = ({ show, setShow }) => {
 		setPassword("");
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
 
 		if (!emailAddress || !password) {

@@ -114,7 +114,7 @@ const StudyPlanSettings = () => {
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
 
-			navigate("/landingpage");
+			navigate("/");
 		} else {
 		}
 	}, []);
