@@ -150,6 +150,32 @@ const Sidebar = () => {
 	// console.log(response)
 	const [bookData, setbookData] = useState([]);
 	const [bookChapters, setBookChapters] = useState([]);
+	var [weeklyGoals, setWeeklyGoals] = useState([]);
+	const fetchWeeklyGoals = async () => {
+		if (!userData) {
+		  console.log('User data is not available');
+		  return;
+		}
+	  
+		try {
+		  const response = await userService.get('api/getweeklygoals/', {
+			params: {
+			  studyplan_id: books.id,
+			  user_id: userData.pk,
+			}
+		  });
+		  console.log(response.data.response);
+		  setWeeklyGoals(response.data.response);
+		  weeklyGoals=response.data.response
+		  console.log(weeklyGoals)
+		} catch (error) {
+		  console.error('Error:', error);
+		}
+	  };
+	  
+	  useEffect(() => {
+		fetchWeeklyGoals();
+	  }, [userData]);
 	const fetchBook = async () => {
 		try {
 			const response = await userService.get(`/api/books/${books.books}/`);
@@ -201,7 +227,7 @@ const Sidebar = () => {
 		const postData = new FormData();
 		const WeeklyTopics = [];
 		const topicsPerWeek = Math.ceil(all_topics.length / books.duration);
-
+        console.log("topics per week : ",topicsPerWeek)
 		setstep1(false);
 		// console.log()
 		setstep2(true);
@@ -229,8 +255,9 @@ const Sidebar = () => {
 			const response = await userService.post("/api/weeklygoals/", postData);
 			// console.log(response.data);
 			// setbookData(response.data);
-
-			navigate("/finalstep", { state: { books: books } });
+           fetchWeeklyGoals();
+		   console.log(weeklyGoals)
+			navigate("/finalstep", { state: { books: books, weeklygoals:weeklyGoals } });
 		}
 
 		setWeeklyTopic(WeeklyTopics);

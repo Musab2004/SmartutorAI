@@ -70,8 +70,8 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 									<Card.Img
 										variant="top"
 										style={{
-											minWidth: "250px",
-											height: "auto",
+											Width: "250px",
+											height: "250px",
 											marginTop: "0px",
 										}}
 										src={studyPlan.image}
@@ -82,13 +82,13 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 											{studyPlan.schedule}
 										</Card.Subtitle>
 										<Card.Text style={{ color: "black" }}>{studyPlan.subject}</Card.Text>
-										<Button
+										{/* <Button
 											variant="primary"
 											style={{ backgroundColor: "#1f5692", borderColor: "#1f5692" }}
 											onClick={() => handleGoToStudyPlan(studyPlan)}
 										>
 											Continue
-										</Button>
+										</Button> */}
 									</Card.Body>
 								</Card>
 							</Grid>

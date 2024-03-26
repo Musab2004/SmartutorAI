@@ -51,11 +51,13 @@ const Sidebar = ({ studyPlan_id }) => {
     fetchWeeklyGoals();
     handleTopicClick(response.data,weekly_goal_id);
     }
-useEffect(() => {
-    if (is_covered) {
-        setShowModal(true);
-    }
-}, [is_covered]);
+// useEffect(() => {
+//   console.log(is_covered);
+//     if (is_covered) {
+//         setShowModal(true);
+//     }
+// }, [is_covered]);
+
   const fetchWeeklyGoals = async () => {
     try {
       const response = await userService.get('api/getweeklygoals/', {
@@ -72,10 +74,10 @@ useEffect(() => {
       console.error('Error:', error);
     }
   };
-
+// fetchWeeklyGoals();
   useEffect(() => {
     fetchWeeklyGoals();
-  }, [studyPlan_id,userData,markAsCompleted]);
+  }, [studyPlan_id,userData]);
 
   const handleTopicClick = (topic,weekly_goal_id) => {
     setSelectedTopic(topic);
@@ -88,10 +90,7 @@ useEffect(() => {
     setOpenDropdown(openDropdown === index ? null : index);
   };
   const handleCloseCourse = () => {
-    // Your code to close the course goes here...
     console.log('Course closed');
-
-    // Close the modal after closing the course
     setShowModal(false);
     navigate('/my-courses')
 };

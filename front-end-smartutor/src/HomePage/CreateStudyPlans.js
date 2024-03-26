@@ -74,7 +74,7 @@ const StudyPlanForm = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setIsLoading(true);
+		
 		const postData = new FormData();
 		postData.append("name", formData.name);
 		postData.append("duration", formData.duration);
@@ -96,7 +96,9 @@ const StudyPlanForm = () => {
 				setNextStep(true);
 				navigate("/maketimetable", { state: { books: study_plan.data } });
 			} else {
+				setIsLoading(false);
 				navigate("/createstudyplan");
+
 				// setShowAlert(true);
 				alert("PDF not structured, can't process it");
 			}
