@@ -15,12 +15,6 @@ import {
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { UserContext } from "../landing_page_component/UserContext";
-import { Bar, Cate } from "react-chartjs-2";
-import InfiniteCalendar from "react-infinite-calendar";
-import "react-infinite-calendar/styles.css";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-import { Chart as ChartJS } from "chart.js/auto";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";

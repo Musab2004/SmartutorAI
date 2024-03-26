@@ -29,7 +29,6 @@ import Quiz from "./Quiz";
 import DatePicker from "react-datepicker";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
-import { TimePicker } from "react-ios-time-picker";
 
 const StylishTabs = () => {
 	const navigate = useNavigate();

@@ -16,8 +16,6 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import { UserContext } from "../landing_page_component/UserContext";
 import Select from "react-select";
 import { Bar, Cate } from "react-chartjs-2";
-import InfiniteCalendar from "react-infinite-calendar";
-import "react-infinite-calendar/styles.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Chart as ChartJS } from "chart.js/auto";
