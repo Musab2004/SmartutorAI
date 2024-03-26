@@ -1,155 +1,50 @@
-import React, { useState } from 'react';
-import { Form, Button, Tab, Tabs, Col, Row, Container } from 'react-bootstrap';
+import React from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from "./Navbar";
-
-function YourComponent() {
-  const [documentFile, setDocumentFile] = useState(null);
-  const [difficultyLevel, setDifficultyLevel] = useState('easy');
-  const [numberOfQuestions, setNumberOfQuestions] = useState(5);
-
-  const handleFileChange = (e) => {
-    // Handle file change here
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here
-  };
-  const quizzes = [
-    {
-      statement: "What is the capital of France?",
-      options: ["London", "Berlin", "Madrid", "Paris"],
-    },
-    {
-      statement: "Which planet is known as the Red Planet?",
-      options: ["Earth", "Mars", "Venus", "Jupiter"],
-    },
-    {
-        statement: "What is the capital of France?",
-        options: ["London", "Berlin", "Madrid", "Paris"],
-      },
-      {
-        statement: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Venus", "Jupiter"],
-      },
-      {
-        statement: "What is the capital of France?",
-        options: ["London", "Berlin", "Madrid", "Paris"],
-      },
-      {
-        statement: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Venus", "Jupiter"],
-      },
-      {
-        statement: "What is the capital of France?",
-        options: ["London", "Berlin", "Madrid", "Paris"],
-      },
-      {
-        statement: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Venus", "Jupiter"],
-      },
-      {
-        statement: "What is the capital of France?",
-        options: ["London", "Berlin", "Madrid", "Paris"],
-      },
-      {
-        statement: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Venus", "Jupiter"],
-      },
-    // Add more quiz statements as needed
-  ];
-
-  return (
-    <>
-      <Navbar />
-      <div style={{ marginTop: '80px' }}>
-        <Container>
-          <Row>
-            <Col md={6}>
-              <Tabs defaultActiveKey="upload" id="tabs">
-                <Tab eventKey="upload" title="Upload Document">
-                  <Form onSubmit={handleFormSubmit}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Choose PDF File</Form.Label>
-                      <Form.Control type="file" id="documentFile" accept=".pdf" onChange={handleFileChange} />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Difficulty Level</Form.Label>
-                      <Form.Control as="select" id="difficultyLevel" value={difficultyLevel} onChange={(e) => setDifficultyLevel(e.target.value)}>
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                      </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Number of Questions</Form.Label>
-                      <Form.Control as="select" id="numberOfQuestions" value={numberOfQuestions} onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}>
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                        <option value={20}>20</option>
-                      </Form.Control>
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit">
-                      Generate Quiz
-                    </Button>
-                  </Form>
-                </Tab>
-
-                <Tab eventKey="other" title="Other Tab">
-                  {/* Your content for the other tab goes here */}
-                  <Form>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Textarea</Form.Label>
-                      <Form.Control as="textarea" placeholder="Enter text here" />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Difficulty Level</Form.Label>
-                      <Form.Control as="select">
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                      </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Number of Questions</Form.Label>
-                      <Form.Control as="select">
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                        <option value={20}>20</option>
-                      </Form.Control>
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                      Generate Quiz
-                    </Button>
-                  </Form>
-                </Tab>
-              </Tabs>
-            </Col>
-            <Col md={6} style={{ border: '1px solid #ccc',borderRadius:'2%', padding: '10px', maxHeight: '400px', overflowY: 'auto' }}>
-              <b>Quiz generated</b>
-              {quizzes.map((quiz, index) => (
-                <div key={index}>
-                  <p>{quiz.statement}</p>
-                  <ul>
-                    {quiz.options.map((option, optionIndex) => (
-                      <li key={optionIndex}>{option}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </Col>
-          </Row>
+const AboutUs = () => {
+    return (
+      <>
+      <style>
+      {`
+    body {
+      background-color: #e1efff; /* Set the background color to blue */
+      margin: 0; /* Reset margin for the body */
+      padding: 0; /* Reset padding for the body */
+    }
+  `}
+    </style>
+    <Navbar/>
+        <Container style={{marginTop:'100px'}}>
+            <Row className="my-5">
+                <Col>
+                    <h1>About Us</h1>
+                    <p>
+                        We are a dedicated team of developers passionate about creating 
+                        engaging and effective learning experiences. Our mission is to 
+                        make learning accessible and enjoyable for everyone.
+                    </p>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={6}>
+                    <h2>Our Story</h2>
+                    <p>
+                        We started as a small team in 2020, and have since grown into a 
+                        diverse group of developers and educators committed to transforming 
+                        the way people learn.
+                    </p>
+                </Col>
+                <Col md={6}>
+                    <h2>Our Vision</h2>
+                    <p>
+                        Our vision is to empower individuals to reach their full potential 
+                        through innovative and engaging learning experiences.
+                    </p>
+                </Col>
+            </Row>
         </Container>
-      </div>
-    </>
-  );
-}
+        </>
+    );
+};
 
-export default YourComponent;
+export default AboutUs;

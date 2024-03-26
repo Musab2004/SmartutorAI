@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { Container, Form, Button, Alert, resetForm } from "react-bootstrap";
@@ -29,6 +29,9 @@ const SignupForm = ({ show, setShow }) => {
 		setVerificationToken("");
 		setuserVerificationToken("");
 		setReportAlert({ show: false, variant: "", message: "" });
+		setTimer(60);
+		setResendValid(false);
+		setTokenValid(false);
 	};
 
 	const [lastname, setLastName] = useState("");
@@ -43,13 +46,51 @@ const SignupForm = ({ show, setShow }) => {
 	const [errors, setErrors] = useState({});
 	const [formValid, setFormValid] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [verificationToken, setVerificationToken] = useState("");
+	const [verificationToken, setVerificationToken] = useState(null);
 	const [userverificationToken, setuserVerificationToken] = useState("");
 	const [citiesOptions, setCitiesOptions] = useState([]);
 	const [reportalert, setReportAlert] = useState({ show: false, variant: "", message: "" });
+    const [tokenValid, setTokenValid] = useState(false);
+	const [resendToken, setResendValid] = useState(false);
+	const [timer, setTimer] = useState(60); // 60 seconds
+
+	// useEffect(() => {
+	// 	console.log("verification token : ", verificationToken);
+	// 	if (verificationToken && timer === null) {
+	// 		setTimer(60);
+	// 		setResendValid(false) // Start the timer when a token is generated
+	// 	} else if (timer > 0) {
+	// 		const timerId = setTimeout(() => setTimer(timer - 1), 1000);
+	// 		return () => clearTimeout(timerId); // Clear the timeout if the component is unmounted
+	// 	} else if (timer === 0) {
+	// 		// Regenerate token here
+	// 		// setTokenValid(false);
+	// 		setResendValid(true)
+			
+			
+	// 	}
+	// }, [timer, verificationToken]);
+	const startTimer = () => {
+		setTimer(60);
+		const timerId = setInterval(() => {
+			setTimer((prevTimer) => {
+				if (prevTimer <= 1) {
+					clearInterval(timerId);
+					setResendValid(true);
+					// Regenerate token here
+					// setTokenValid(false);
+					return null;
+				} else {
+
+					return prevTimer - 1;
+				}
+			});
+		}, 1000);
+	};
 
 	const UserSignup = async () => {
-		if (verificationToken == userverificationToken) {
+		
+		if (timer>0 && verificationToken == userverificationToken) {
 			let name = firstname + " " + lastname;
 			try {
 				const formData = {
@@ -73,25 +114,31 @@ const SignupForm = ({ show, setShow }) => {
 				handleClose(); // Re-enable form fields
 			}
 		} else {
-			alert("Invalid Token");
+			setTokenValid(true)
+			console.log("Invalid Token");
+			// alert("Invalid Token");
 		}
 	};
+	const GenerateVerifictaionToken = async () => {
+		console.log("from valid done");
+		setIsSubmitting(true);
+		const generatedToken = Math.floor(1000 + Math.random() * 9000);
+		setVerificationToken(generatedToken);
+		console.log("verification token generated", verificationToken);
+		setResendValid(false);
+        startTimer()
+		setTokenValid(false);
+		console.log(generatedToken);
+
+
+
+	}
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const isValid = await validateForm();
 		console.log("enetred handel submit", isValid);
 		if (isValid) {
-			console.log("from valid done");
-			setIsSubmitting(true); // Disable form fields upon submission
-
-			// Assuming you have a logic to send a verification token to the user's email
-			// For demonstration purposes, generating a random 4-digit token
-			const generatedToken = Math.floor(1000 + Math.random() * 9000);
-
-			// Display the token input field for verification
-			setVerificationToken(generatedToken);
-			console.log("verification token generated", verificationToken);
-			console.log(generatedToken);
+			GenerateVerifictaionToken()
 		}
 		// Handle success, redirect user, or perform other actions upon successful form submission
 	};
@@ -251,6 +298,7 @@ const SignupForm = ({ show, setShow }) => {
 								/>
 								{errors.confirmPassword && <p style={{ color: "red" }}>{errors.confirmPassword}</p>}
 							</Form.Group>
+							
 							<Form>
 								{/* ... (existing form fields) */}
 
@@ -266,6 +314,18 @@ const SignupForm = ({ show, setShow }) => {
 												onChange={(e) => setuserVerificationToken(e.target.value)}
 											/>
 										</Form.Group>
+										{tokenValid && <h style={{ color: 'red' }}>
+			Token is invalid.
+		</h>}
+										{timer > 0&& verificationToken && (
+    <Alert variant="info">
+        You have {timer} seconds to enter your token.
+    </Alert>
+)}
+						{resendToken && (
+    <a href="#" onClick={GenerateVerifictaionToken}>Resend token</a>
+)}
+		
 										<div style={{ textAlign: "left" }}>
 											<Button
 												variant="primary"
@@ -298,6 +358,11 @@ const SignupForm = ({ show, setShow }) => {
 										</Button>
 									</div>
 								)}
+
+
+
+
+
 							</Form>
 						</Form>
 					</Container>

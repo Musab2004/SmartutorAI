@@ -11,6 +11,7 @@ import userService from "../landing_page_component/UserSerive";
 import LoadingScreen from "../HomePage/LoaderScreen";
 import Footer from "../landing_page_component/footer";
 import DashboardTabs from "./Dashbaord_tabs";
+import AllPosts from "./AllPosts";
 // import { Link,useNavigate } from 'react-router-dom';
 import { Editor } from "@tinymce/tinymce-react";
 const StylishTabs = () => {
@@ -48,7 +49,7 @@ const StylishTabs = () => {
 	}, []);
 
 	const fetchPosts = async () => {
-		setIsLoading(true);
+		// setIsLoading(true);
 		try {
 			const response = await userService.get(`/api/queryposts/?study_plan_id=${studyPlan.id}`);
 			// console.log(response.data);
@@ -57,7 +58,7 @@ const StylishTabs = () => {
 			console.error("Failed to fetch posts", error);
 			// navigate('/homepage');
 		}
-		setIsLoading(false);
+		// setIsLoading(false);
 	};
 
 	useEffect(() => {
@@ -213,26 +214,12 @@ const StylishTabs = () => {
 						</Modal.Footer>
 					</Modal>
 				</Container>
-				{isLoading ? (
-					<LoadingScreen />
-				) : (
-					<>
-						{posts.slice(0, visiblePosts).map((post) => (
-							<DisscusionForum
-								key={post.id}
-								post={post}
-								studyPlan={studyPlan}
-								fetchPostfunc={fetchPosts}
-							/>
-						))}
-
-						{visiblePosts < posts.length && (
-							<Button onClick={handleLoadMore} style={{ marginTop: "5px", marginLeft: "50%" }}>
-								Load More
-							</Button>
-						)}
-					</>
-				)}
+			
+					<AllPosts  posts={posts} studyPlan={studyPlan} fetchPosts={fetchPosts} />
+					{/* studyPlan={props.studyPlan}
+								fetchPostfunc={props.fetchPosts} */}
+					
+				
 			</div>
 			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
 				<Footer />
