@@ -61,7 +61,7 @@ function App() {
 						<Route exact path="/explore-courses" element={<SearchStudyPlans />} />
 						<Route exact path="/maketimetable" element={<TimetableMaker />} />
 						<Route exact path="/finalstep" element={<TimeTableFinal />} />
-						<Route exact path="/dashboard/post" element={<Post />} />
+						{/* <Route exact path="/dashboard/post" element={<Post />} /> */}
 					</Routes>
 				</BrowserRouter>
 			</div>

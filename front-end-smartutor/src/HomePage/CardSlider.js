@@ -6,6 +6,10 @@ import degre from "./degre.svg";
 import book from "./book.svg";
 import userService from "../landing_page_component/UserSerive";
 import { UserContext } from "../landing_page_component/UserContext";
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIosNew from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 const CardSlider = ({ cards }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const { userData } = useContext(UserContext);
