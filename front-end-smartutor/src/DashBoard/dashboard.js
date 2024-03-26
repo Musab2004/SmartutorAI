@@ -128,30 +128,7 @@ const StylishTabs = () => {
 	const [messages, setMessages] = useState([]);
 
 	const sendMessage = async (text) => {
-		// Placeholder for sending message
-		// const userInput = { id: messages.length + 1, text, sender: 'user' };
-		// // const botResponse = { id: messages.length + 2, text: 'This is where you’d integrate the GPT response.', sender: 'bot' };
-		// setMessages(msgs => [...msgs, userInput]);
-		// try {
-		//   const response = await axios.post(
-		//     'https://api.openai.com/v4/completions',
-		//     {
-		//       model: 'gpt-3.5-turbo', // or your specific model
-		//       prompt: text,
-		//       max_tokens: 50,
-		//     },
-		//     {
-		//       headers: {
-		//       }
-		//     }
-		//   );
-		//   const botResponse = { id: messages.length + 2, text: response.data.choices[0].text.trim(), sender: 'bot' };
-		//   setMessages(msgs => [...msgs, botResponse]);
-		// } catch (error) {
-		//   console.error('Error calling the GPT API:', error);
-		//   const errorMessage = { id: messages.length + 2, text: 'Failed to get response from GPT.', sender: 'bot' };
-		//   setMessages(msgs => [...msgs, errorMessage]);
-		// }
+
 	};
 	return (
 		<>

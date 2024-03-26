@@ -11,18 +11,22 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import MoreVert from '@mui/icons-material/MoreVert';
 
 const ITEM_HEIGHT = 48;
 
 const RedditPost = (props) => {
-	console.log(props);
-	const posts = props.post;
+	// console.log(props);
+	
+	var posts = props.post;
+	
+	console.log(posts.is_upvoted.length);
 	const { userData } = useContext(UserContext);
 	const [editalert, setEditAlert] = useState({ show: false, variant: "", message: "" });
 	const [reportalert, setReportAlert] = useState({ show: false, variant: "", message: "" });
 	const [deletealert, setDeleteAlert] = useState({ show: false, variant: "", message: "" });
 	const location = useLocation();
-	const [post, setposts] = useState([]);
+	var [post, setposts] = useState([]);
 
 	const [author, setauthor] = useState([]);
 	const [comments, setComments] = useState([]);
@@ -31,7 +35,7 @@ const RedditPost = (props) => {
 	var [upvoted, setUpvoted] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
-
+	post=posts
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -212,16 +216,16 @@ const RedditPost = (props) => {
 	const handleUpvotePost = (postId) => {
 		if (upvoted) {
 			userService.post(`api/downvotepost/`, { user: userData.pk, post: postId });
-			props.fetchPostfunc();
-			props.fetchPostfunc();
-			props.fetchPostfunc();
+			props.fetchPostfunc(props.studyPlan.id);
+			props.fetchPostfunc(props.studyPlan.id);
+			props.fetchPostfunc(props.studyPlan.id);
 			setUpvoted(false);
 		} else {
 			userService.post(`api/upvotepost/`, { user: userData.pk, post: postId });
 			setUpvoted(true);
-			props.fetchPostfunc();
-			props.fetchPostfunc();
-			props.fetchPostfunc();
+			props.fetchPostfunc(props.studyPlan.id);
+			props.fetchPostfunc(props.studyPlan.id);
+			props.fetchPostfunc(props.studyPlan.id);
 		}
 	};
 

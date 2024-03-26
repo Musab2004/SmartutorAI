@@ -44,7 +44,7 @@ function App() {
 			navigate("/");
 		} else {
 			setTokenExists(true);
-			useAuth();
+			// useAuth();
 			fetchUsers();
 		}
 	}, []);

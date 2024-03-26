@@ -111,7 +111,7 @@ const LoginForm = ({ show, setShow }) => {
 								</p>
 							</div>
 							<div style={{ textAlign: "center", marginTop: "3%" }}>
-								<p>or login with:</p>
+								{/* <p>or login with:</p> */}
 								{/* Social login buttons */}
 							</div>
 						</Form>

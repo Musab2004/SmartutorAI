@@ -82,7 +82,7 @@ function App() {
 				// navigate('/landingpage');
 			}
 		};
-		useAuth();
+		// useAuth();
 		fetchUsers();
 		Recommendations();
 	}, []);

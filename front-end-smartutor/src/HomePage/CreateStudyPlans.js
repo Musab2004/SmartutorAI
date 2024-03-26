@@ -10,7 +10,7 @@ import LoadingScreen from "./LoaderScreen";
 import { Link, useNavigate } from "react-router-dom";
 import ResourcePreview from "../DashBoard/ResourcePreview";
 import Footer from "../landing_page_component/footer";
-
+import Grid from '@mui/material/Grid';
 const StyledForm = styled(Form)`
 	margin-top: 50px;
 	margin-bottom: 50px;

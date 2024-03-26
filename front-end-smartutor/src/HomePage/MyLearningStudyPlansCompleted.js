@@ -3,7 +3,7 @@ import { Card, Row, Col, Button, Pagination } from "react-bootstrap";
 import { UserContext } from "../landing_page_component/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import userService from "../landing_page_component/UserSerive";
-
+import Grid from '@mui/material/Grid';
 const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 	const { userData } = useContext(UserContext);
 	const [studyPlans, setCompletedStudyPlans] = useState([]);

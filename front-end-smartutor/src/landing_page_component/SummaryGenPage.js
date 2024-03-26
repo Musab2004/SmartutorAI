@@ -1,84 +1,56 @@
-import React, { useState } from 'react';
-import { Form, Button, Tab, Tabs, Col, Row, Container } from 'react-bootstrap';
+import React from 'react';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Navbar from "./Navbar";
+const ContactUs = () => {
+    return (
+      <>
+      <style>
+      {`
+    body {
+      background-color: #e1efff; /* Set the background color to blue */
+      margin: 0; /* Reset margin for the body */
+      padding: 0; /* Reset padding for the body */
+    }
+  `}
+    </style>
+    <Navbar/>
+        <Container style={{marginTop:'100px'}}>
+            <Row className="my-5">
+                <Col>
+                    <h1>Contact Us</h1>
+                    <p>
+                        We'd love to hear from you! Please fill out the form below and 
+                        we'll get back to you as soon as possible.
+                    </p>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={6}>
+                    <Form>
+                        <Form.Group controlId="formBasicEmail">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control type="email" placeholder="Enter email" />
+                        </Form.Group>
 
-function YourComponent() {
-  const [documentFile, setDocumentFile] = useState(null);
-  const [difficultyLevel, setDifficultyLevel] = useState('easy');
-  const [numberOfQuestions, setNumberOfQuestions] = useState(5);
+                        <Form.Group controlId="formBasicSubject">
+                            <Form.Label>Subject</Form.Label>
+                            <Form.Control type="text" placeholder="Subject" />
+                        </Form.Group>
 
-  const handleFileChange = (e) => {
-    // Handle file change here
-  };
+                        <Form.Group controlId="formBasicMessage">
+                            <Form.Label>Message</Form.Label>
+                            <Form.Control as="textarea" rows={3} />
+                        </Form.Group>
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here
-  };
-
-
-  return (
-    <>
-      <Navbar />
-      <div style={{ marginTop: '80px' }}>
-        <Container>
-          <Row>
-            <Col md={6}>
-              <Tabs defaultActiveKey="upload" id="tabs">
-                <Tab eventKey="upload" title="Upload Document">
-                  <Form onSubmit={handleFormSubmit}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Choose PDF File</Form.Label>
-                      <Form.Control type="file" id="documentFile" accept=".pdf" onChange={handleFileChange} />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Type of Summary</Form.Label>
-                      <Form.Control as="select">
-                        <option value="Extractive">Extractive</option>
-                        <option value="Abstractive">Abstractive</option>
-                      </Form.Control>
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                    Generate Summary
-                    </Button>
-                  </Form>
-                </Tab>
-
-                <Tab eventKey="other" title="Other Tab">
-                  {/* Your content for the other tab goes here */}
-                  <Form>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Textarea</Form.Label>
-                      <Form.Control as="textarea" placeholder="Enter text here" />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Type of Summary</Form.Label>
-                      <Form.Control as="select">
-                        <option value="Extractive">Extractive</option>
-                        <option value="Abstractive">Abstractive</option>
-                      </Form.Control>
-                    </Form.Group>
-
-
-                    <Button variant="primary" type="submit">
-                      Generate Summary
-                    </Button>
-                  </Form>
-                </Tab>
-              </Tabs>
-            </Col>
-            <Col md={6} style={{ border: '1px solid #ccc',borderRadius:'2%', padding: '10px', maxHeight: '400px', overflowY: 'auto' }}>
-              <b>Summary generated</b>
-          <p>ksandjbsakjdbsahvahdvashdv</p>
-            
-            </Col>
-          </Row>
+                        <Button variant="primary" type="submit">
+                            Submit
+                        </Button>
+                    </Form>
+                </Col>
+            </Row>
         </Container>
-      </div>
-    </>
-  );
-}
+        </>
+    );
+};
 
-export default YourComponent;
+export default ContactUs;

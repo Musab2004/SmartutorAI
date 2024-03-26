@@ -111,7 +111,7 @@ const HomePageNavbar = ({ activeTab }) => {
 							Profile Visit
 						</Link>
 						<div className="dropdown-divider"></div>
-						<Link to="/landingpage" onClick={handleLogout} className="dropdown-item">
+						<Link to="/" onClick={handleLogout} className="dropdown-item">
 							Logout
 						</Link>
 					</Dropdown.Menu>
