@@ -1,14 +1,12 @@
 // RedditPost.js
 import React, { useState, useEffect, useContext } from "react";
+import { Menu, MenuItem, IconButton } from "@mui/material";
 import { Card, Button, Collapse, Form, FormControl, Modal } from "react-bootstrap";
 import { UserContext } from "../landing_page_component/UserContext";
 import userService from "../landing_page_component/UserSerive";
 import { useLocation } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import MoreVert from "@mui/icons-material/MoreVert";
 import DefaulUser from "./default_user.png";
 // import { UserContext } from '../landing_page_component/UserContext';
 
@@ -168,7 +166,7 @@ const Comments = (props) => {
 								aria-haspopup="true"
 								onClick={handleClick}
 							>
-								<MoreVertIcon />
+								<MoreVert />
 							</IconButton>
 							<Menu
 								id="long-menu"

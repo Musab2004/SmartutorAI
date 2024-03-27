@@ -88,9 +88,9 @@ WSGI_APPLICATION = "QuesGenerator.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'new_fyp_database',
+        'NAME': 'fyp_backend',
         'USER': 'root',
-        'PASSWORD': 'Ironman2004@',
+        'PASSWORD': 'Faizan.toper1',
         'HOST': 'localhost',    # Usually 'localhost' for local development
         'PORT': '3306',
         'OPTIONS': {

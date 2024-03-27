@@ -24,6 +24,7 @@ import logo from "../landing_page_component/logo_smarttutor.svg";
 import Navbar from "./HomePageNavbar";
 import Footer from "../landing_page_component/footer";
 import userService from "../landing_page_component/UserSerive";
+import { Grid } from "@mui/material";
 const countries = [
 	{ label: "USA", value: "USA", cities: ["New York", "Los Angeles", "Chicago"] },
 	{ label: "Canada", value: "Canada", cities: ["Toronto", "Montreal", "Vancouver"] },
@@ -170,10 +171,8 @@ const UserProfile = () => {
 			setIsVerified(true);
 		} else {
 			alert("Incorrect password");
+			setIsVerified(true);
 		}
-	};
-	const handleInputChange = (event) => {
-		// setUserData({ ...userData, [event.target.name]: event.target.value });
 	};
 
 	var markedDates1 = [new Date(2024, 0, 25).getTime()];
@@ -182,6 +181,7 @@ const UserProfile = () => {
 	const chartRef = useRef(null);
 
 	useEffect(() => {
+		fetchUserActivity();
 		if (userData) {
 			setName(userData.name);
 		}
@@ -242,7 +242,6 @@ const UserProfile = () => {
 		}
 	};
 
-	fetchUserActivity();
 	var markedDates = [];
 	var Dates = [];
 
@@ -283,28 +282,180 @@ const UserProfile = () => {
 			</style>
 			<Navbar activeTab={"none"} />
 			<div className="container" style={{ marginTop: "100px", display: "flex" }}>
-				{userData && (
-					<Card style={{ width: "18rem", height: "50%" }}>
-						<Card.Body className="text-center">
-							<div className="m-b-25">
-								{userData && <img src={baseURL} className="img-radius" alt="User-Profile-Image" />}
+				<Grid container spacing={4}>
+					<Grid item xs={12} md={3}>
+						{userData && (
+							<Card style={{ width: "100%", height: "auto" }}>
+								<Card.Body className="text-center">
+									<div className="m-b-25">
+										{userData && (
+											<img src={baseURL} className="img-radius" alt="User-Profile-Image" />
+										)}
+									</div>
+									<h6 className="f-w-600">{userData.name} </h6>
+									<p>{userData.email_address}</p>
+									<p>
+										{userData.City}, {userData.Country}
+									</p>
+									<i className="mdi mdi-square-edit-outline feather icon-edit m-t-10 f-16"></i>
+									<Button
+										className="m-2"
+										onClick={handleShow}
+										style={{ backgroundColor: "#f66b1d", borderColor: "#f66b1d" }}
+									>
+										Edit Profile
+									</Button>
+								</Card.Body>
+							</Card>
+						)}
+					</Grid>
+					<Grid item xs={12} md={9} sx={{ display: "flex", justifyContent: "center" }}>
+						{userData && (
+							<>
+								<div>
+									<Card className="user-card-full" style={{ width: "100%" }}>
+										<Card.Body>
+											<h1 style={{ color: "#1f5692", fontStyle: "italic", fontSize: "24px" }}>
+												Recent Activity
+											</h1>
+											<Container>
+												<Row>
+													<Col>
+														<div style={{ marginLeft: "10%", marginTop: "5%" }}>
+															<Calendar
+																style={{
+																	borderColor: "white",
+																	backgroundColor: "white",
+																}}
+																tileContent={({ date, view }) => {
+																	if (
+																		view === "month" &&
+																		markedDates.includes(date.toISOString().split("T")[0])
+																	) {
+																		return <Badge variant="danger">User Activity</Badge>;
+																	}
+																}}
+															/>
+														</div>
+													</Col>
+													<Col>
+														<div style={{ textAlign: "center", marginTop: "15%" }}>
+															<h2 style={{ color: "#f66b1d" }}>Current Streak</h2>
+															<h>no progress yet</h>
+														</div>
+													</Col>
+												</Row>
+											</Container>
+										</Card.Body>
+									</Card>
+								</div>
+							</>
+						)}
+					</Grid>
+					<Grid md={3} xs={0}></Grid>
+					<Grid item xs={12} md={9}>
+						{userData && (
+							<div>
+								<Card className="user-card-full" style={{ width: "100%" }}>
+									<Card.Body>
+										<h1 style={{ color: "#1f5692", fontSize: "24px", fontStyle: "italic" }}>
+											Account Managment
+										</h1>
+										{/* <Card.Title>Connect Your Accounts</Card.Title> */}
+										<div
+											style={{
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												flexDirection: "column",
+											}}
+										>
+											<div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+												<Button
+													variant="primary"
+													style={{
+														backgroundColor: "white",
+														borderColor: "#1f5692",
+														width: "70%",
+														height: "60px",
+														marginTop: "30px",
+														color: "grey",
+													}}
+												>
+													<i
+														className="fab fa-facebook-f"
+														style={{ color: "#3b5998", fontSize: "1.2em", marginRight: "5%" }}
+													></i>{" "}
+													Connect to Facebook
+												</Button>
+											</div>
+											<div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+												<Button
+													variant="primary"
+													style={{
+														backgroundColor: "white",
+														borderColor: "#1f5692",
+														width: "70%",
+														height: "60px",
+														marginTop: "10px",
+														color: "grey",
+													}}
+												>
+													<i
+														className="fab fa-twitter"
+														style={{ color: "#1da1f2", fontSize: "1.2em", marginRight: "5%" }}
+													></i>{" "}
+													Connect to Twitter
+												</Button>
+											</div>
+											<div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+												<Button
+													variant="primary"
+													style={{
+														backgroundColor: "white",
+														borderColor: "#1f5692",
+														width: "70%",
+														height: "60px",
+														marginTop: "10px",
+														color: "grey",
+													}}
+												>
+													<i
+														className="fab fa-google"
+														style={{ color: "#dd4b39", fontSize: "1.2em", marginRight: "5%" }}
+													></i>{" "}
+													Connect to Google
+												</Button>
+											</div>
+											<div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+												<Button
+													variant="primary"
+													style={{
+														backgroundColor: "white",
+														borderColor: "#1f5692",
+														color: "grey",
+														width: "70%",
+														height: "60px",
+														marginTop: "10px",
+													}}
+												>
+													<i
+														className="fab fa-instagram"
+														style={{ color: "#bc2a8d", fontSize: "1.2em", marginRight: "5%" }}
+													></i>{" "}
+													Connect to Instagram
+												</Button>
+											</div>
+										</div>
+										<div>{/* <Bar data={data} style={{height:'300px',color:'#f66b1d'}} /> */}</div>
+
+										{/* Rest of your content */}
+									</Card.Body>
+								</Card>
 							</div>
-							<h6 className="f-w-600">{userData.name} </h6>
-							<p>{userData.email_address}</p>
-							<p>
-								{userData.City}, {userData.Country}
-							</p>
-							<i className="mdi mdi-square-edit-outline feather icon-edit m-t-10 f-16"></i>
-							<Button
-								className="m-2"
-								onClick={handleShow}
-								style={{ backgroundColor: "#f66b1d", borderColor: "#f66b1d" }}
-							>
-								Edit Profile
-							</Button>
-						</Card.Body>
-					</Card>
-				)}
+						)}
+					</Grid>
+				</Grid>
 
 				{userData && (
 					<Modal show={show} onHide={handleClose}>
@@ -321,9 +472,6 @@ const UserProfile = () => {
 										name="oldPassword"
 										onChange={handleOldPasswordChange}
 									/>
-									<Button variant="primary" onClick={verifyOldPassword}>
-										Verify
-									</Button>
 								</Form.Group>
 							)}
 							{isVerified && (
@@ -388,6 +536,11 @@ const UserProfile = () => {
 							<Button variant="secondary" onClick={handleClose}>
 								Close
 							</Button>
+							{!isVerified && (
+								<Button variant="primary" onClick={verifyOldPassword}>
+									Verify
+								</Button>
+							)}
 							{isVerified && (
 								<Button variant="primary" onClick={UserUpdate}>
 									Save Changes
@@ -396,145 +549,6 @@ const UserProfile = () => {
 						</Modal.Footer>
 					</Modal>
 				)}
-
-				<div>
-					{userData && (
-						<>
-							{" "}
-							<div style={{ marginLeft: "15%" }}>
-								{" "}
-								<h1 style={{ color: "#1f5692", fontStyle: "italic", fontSize: "24px" }}>
-									Recent Activity
-								</h1>
-								<Card className="user-card-full" style={{ width: "900px" }}>
-									<Card.Body>
-										<Container>
-											<Row>
-												<Col>
-													<div style={{ marginLeft: "10%", marginTop: "5%" }}>
-														<Calendar
-															style={{
-																borderColor: "white",
-																backgroundColor: "white",
-															}}
-															tileContent={({ date, view }) => {
-																if (
-																	view === "month" &&
-																	markedDates.includes(date.toISOString().split("T")[0])
-																) {
-																	return <Badge variant="danger">User Activity</Badge>;
-																}
-															}}
-														/>
-													</div>
-												</Col>
-												<Col>
-													<div style={{ textAlign: "center", marginTop: "15%" }}>
-														<h2 style={{ color: "#f66b1d" }}>Current Streak</h2>
-														<h>no progress yet</h>
-													</div>
-												</Col>
-											</Row>
-										</Container>
-									</Card.Body>
-								</Card>
-							</div>
-						</>
-					)}
-					{userData && (
-						<div style={{ marginLeft: "15%", marginTop: "10%" }}>
-							<h1 style={{ color: "#1f5692", fontSize: "24px", fontStyle: "italic" }}>
-								Account Managment
-							</h1>
-							<Card className="user-card-full" style={{ width: "900px", marginBottom: "5%" }}>
-								<Card.Body>
-									{/* <Card.Title>Connect Your Accounts</Card.Title> */}
-									<div style={{ marginLeft: "20%" }}>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													width: "70%",
-													height: "60px",
-													marginTop: "30px",
-													color: "grey",
-												}}
-											>
-												<i
-													className="fab fa-facebook-f"
-													style={{ color: "#3b5998", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Facebook
-											</Button>
-										</div>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													width: "70%",
-													height: "60px",
-													marginTop: "10px",
-													color: "grey",
-												}}
-											>
-												<i
-													className="fab fa-twitter"
-													style={{ color: "#1da1f2", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Twitter
-											</Button>
-										</div>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													width: "70%",
-													height: "60px",
-													marginTop: "10px",
-													color: "grey",
-												}}
-											>
-												<i
-													className="fab fa-google"
-													style={{ color: "#dd4b39", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Google
-											</Button>
-										</div>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													color: "grey",
-													width: "70%",
-													height: "60px",
-													marginTop: "10px",
-												}}
-											>
-												<i
-													className="fab fa-instagram"
-													style={{ color: "#bc2a8d", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Instagram
-											</Button>
-										</div>
-									</div>
-									<div>{/* <Bar data={data} style={{height:'300px',color:'#f66b1d'}} /> */}</div>
-
-									{/* Rest of your content */}
-								</Card.Body>
-							</Card>
-						</div>
-					)}
-				</div>
 			</div>
 			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
 				<Footer />

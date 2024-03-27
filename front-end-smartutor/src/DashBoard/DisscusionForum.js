@@ -7,19 +7,16 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
 import DefaulUser from "./default_user.png";
 import Comments from "./Comments";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import MoreVert from '@mui/icons-material/MoreVert';
+import { IconButton, Menu, MenuItem } from "@mui/material";
+import MoreVert from "@mui/icons-material/MoreVert";
 
 const ITEM_HEIGHT = 48;
 
 const RedditPost = (props) => {
 	// console.log(props);
-	
+
 	var posts = props.post;
-	
+
 	console.log(posts.is_upvoted.length);
 	const { userData } = useContext(UserContext);
 	const [editalert, setEditAlert] = useState({ show: false, variant: "", message: "" });
@@ -35,7 +32,7 @@ const RedditPost = (props) => {
 	var [upvoted, setUpvoted] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
-	post=posts
+	post = posts;
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
 	};

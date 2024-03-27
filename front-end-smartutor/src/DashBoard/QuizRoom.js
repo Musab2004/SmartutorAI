@@ -248,9 +248,7 @@ const StylishTabs = () => {
 									<label htmlFor="time-picker" className="form-label">
 										Select Time
 									</label>
-									<div>
-										<TimePicker onChange={onChange} value={time} />
-									</div>
+									<div>{/* <TimePicker onChange={onChange} value={time} /> */}</div>
 								</div>
 							</Row>
 						</Form.Group>
