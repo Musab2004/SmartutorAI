@@ -59,8 +59,8 @@ const StudyPlans = ({ itemsPerPage }) => {
 									<Card.Img
 										variant="top"
 										style={{
-											minWidth: "250px",
-											height: "auto",
+											Width: "250px",
+											height: "250px",
 											marginTop: "0px",
 										}}
 										src={studyPlan.image}

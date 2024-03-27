@@ -17,6 +17,8 @@ import Dashboard from "../DashBoard";
 import Weekicon from "./week-icon.png";
 import axios from "axios";
 const StylishTabs = () => {
+
+
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
 	const [activeButton, setActiveButton] = useState("tab1");
@@ -30,6 +32,9 @@ const StylishTabs = () => {
 	const [postInput, setPostInput] = useState("");
 	const [textAreaValue, setTextAreaValue] = useState("");
 	const studyPlan = location.state?.studyPlan;
+
+
+
 	if (!studyPlan) {
 		navigate("/homepage");
 	}
@@ -42,19 +47,7 @@ const StylishTabs = () => {
 		}
 	}, []);
 
-	useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				const response = await userService.get(`/api/queryposts/?study_plan_id=${studyPlan.id}`);
-				setPosts(response.data);
-			} catch (error) {
-				console.error("Failed to fetch posts", error);
-			}
-		};
 
-		const interval = setInterval(fetchPosts, 3000);
-		return () => clearInterval(interval);
-	}, []);
 
 	const fetchBook = async () => {
 		try {

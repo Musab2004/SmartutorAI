@@ -15,7 +15,7 @@ const StudyPlans = ({ studyPlans, itemsPerPage }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState('');
   const handleMouseEnter = (index) => {
     setHoveredCard(index);
   };
@@ -65,8 +65,8 @@ const StudyPlans = ({ studyPlans, itemsPerPage }) => {
   const filteredStudyPlans = studyPlans.filter((studyPlan) => {
     const locationMatch = !locationFilter || studyPlan.academic_level.toLowerCase() === locationFilter.toLowerCase();
     const subjectMatch = !subjectFilter || studyPlan.subject.toLowerCase().includes(subjectFilter.toLowerCase());
-
-    return locationMatch && subjectMatch;
+    const titleMatch = !searchTerm || studyPlan.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return locationMatch && subjectMatch && titleMatch;
   });
 
   const indexOfLastItem = activePage * itemsPerPage;
@@ -84,12 +84,22 @@ const StudyPlans = ({ studyPlans, itemsPerPage }) => {
         <div style={{width:'80%',marginLeft:'8%',marginTop:'5%'}}>
     
 
-<div class="input-group mb-3"style={{width:'40%',marginLeft:'25%'}}>
-  <input type="text" class="form-control" placeholder="Search Study Plans faster" aria-label="Recipient's username" aria-describedby="basic-addon2"/>
-  <div class="input-group-append">
-    <button class="btn btn-outline-secondary" type="button" style={{backgroundColor:'#f66b1d',color:'white'}}>  <i class="fas fa-search"></i> Button</button>
-  </div>
-</div>
+        <div className="input-group mb-3" style={{width:'40%',marginLeft:'25%'}}>
+        <input 
+          type="text" 
+          className="form-control" 
+          placeholder="Search Study Plans faster" 
+          aria-label="Recipient's username" 
+          aria-describedby="basic-addon2"
+          value={searchTerm}
+          onChange={event => setSearchTerm(event.target.value)}
+        />
+        {/* <div className="input-group-append">
+          <button className="btn btn-outline-secondary" type="button" style={{backgroundColor:'#f66b1d',color:'white'}}>
+            <i className="fas fa-search"></i> Button
+          </button>
+        </div> */}
+      </div>
       <Row style={{marginTop:'5%'}}>
     
       {/* <SearchBar handleSearch={handleSearch} handleFilterChange={handleFilterChange} /> */}
@@ -123,14 +133,9 @@ const StudyPlans = ({ studyPlans, itemsPerPage }) => {
         </Form.Group>
 
       </Form>
-     
-{/*       
-      <Filters handleFilterChange={handleFilterChange} /> */}
         </Col>
         <Col  md={10}>
-     
-        {/* <CardList filteredCards={filteredCards} />
-        <AllStudyPlans studyPlans={posts} itemsPerPage={12} />  */}
+
      
       <div className="d-flex flex-wrap" style={{marginLeft:'10%'}}>
         {currentStudyPlans.map((studyPlan, index) => (

@@ -14,12 +14,14 @@ function App() {
   let location = useLocation();
   let studyPlan_id = location.state.books.id;
   let studyPlan = location.state.books;
+  console.log(location.state)
   const { userData } = useContext(UserContext);
   console.log(userData);
   const [activeTab, setActiveTab] = useState("createstudyplan");
   console.log(studyPlan);
   const [data, setData] = useState([]);
-
+  // data=location.state.weeklygoals
+  // console.log("weekly gols : ",data);
   const fetchWeeklyGoals = async () => {
     if (!userData) {
       console.log('User data is not available');
@@ -39,7 +41,8 @@ function App() {
       console.error('Error:', error);
     }
   };
-  
+  fetchWeeklyGoals();
+  fetchWeeklyGoals();
   useEffect(() => {
     fetchWeeklyGoals();
   }, [userData]);

@@ -52,7 +52,7 @@ const StylishTabs = () => {
 		// setIsLoading(true);
 		try {
 			const response = await userService.get(`/api/queryposts/?study_plan_id=${studyPlan.id}`);
-			// console.log(response.data);
+			console.log(response.data);
 			setPosts(response.data);
 		} catch (error) {
 			console.error("Failed to fetch posts", error);

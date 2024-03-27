@@ -285,7 +285,7 @@ class WeeklyGoals_all_StudyPlan(generics.ListCreateAPIView):
         studyplan = StudyPlan.objects.get(pk=studyplan_id)
         user_id = request.GET.get('user_id')  # Assuming the ID is sent via query parameters
         user = User.objects.get(pk=user_id)        
-        print("Study Plans : ", studyplan)
+        # print("Study Plans : ", studyplan)
         result = []
         if studyplan:
             weeklygoals = WeeklyGoals.objects.all().filter(study_plan=studyplan,user=user)
@@ -298,7 +298,7 @@ class WeeklyGoals_all_StudyPlan(generics.ListCreateAPIView):
                 all_weekly_goals['weekly_goals'] = WeeklyGoalsSerializer(weeklygoal).data
                 all_weekly_goals['chapters'] = []
                 for chapter in weeklygoal.all_topics.all():
-                    print(chapter)
+                    # print(chapter)
                     my_dict={'topics':TopicSerializer(chapter).data}
                     if chapter in weeklygoal.topics_to_be_covered.all():
                         my_dict['is_covered'] = False
@@ -504,7 +504,7 @@ class BookDetailsUpdate(generics.RetrieveUpdateAPIView):
             # Retrieve the specific book object based on the provided ID in the URL
             print("this function is called.......................")
             book = self.get_object()
-            print(book)
+            # print(book)
             # Retrieve related chapters for the book
             chapters = Chapter.objects.filter(book=book)
             
@@ -515,11 +515,7 @@ class BookDetailsUpdate(generics.RetrieveUpdateAPIView):
             for chapter in chapters:
                 # Retrieve related topics for the current chapter
                 topics = Topic.objects.filter(chapter=chapter)
-                
-                # # Serialize topics for the current chapter
                 serialized_topics = [{'topic_id':topic.id,'title': topic.title, 'order':topic.order} for topic in topics]
-                
-                # Append chapter data along with topics to the list
                 chapters_with_topics.append({
                     'chapter_id':chapter.id,
                     'chapter_name': chapter.title,
@@ -623,17 +619,6 @@ class RecommendedStudyPlan(generics.ListAPIView):
         user = User.objects.get(pk=user_id)  # Replace 1 with the ID of the user you want recommendations for
         all_study_plans = StudyPlan.objects.all()
 
-        # recommendation_system = StudyPlanRecommendation(all_study_plans)
-        # recommendations = recommendation_system.hybrid_recommendation(user)
-
-        # print("Hybrid Recommendations:")
-        # for plan in recommendations:
-        #     print(plan.name)
-
-        # for rec in recommendations:
-        #     print(f"Collaborative: {rec[0].name} (Similarity: {rec[0].similarity_score}), Content-Based: {rec[1].name} (Similarity: {rec[1].similarity_score}), Hybrid Score: {rec[2]}")
-        # # serializer = RecommendationSerializer(recommendations, many=True)
-
         return Response(None)
   
         # return Response(study_plan_serializer.data)
@@ -722,6 +707,7 @@ class StudyPlanListCreate(generics.ListCreateAPIView):
             is_public=False    
         book_title=str(file)
         pdf_data = file.read()
+        print(book_title)
         book = Book.objects.create(title=book_title)
         user=User.objects.get(id=owner)
         pdf_bytes = BytesIO(pdf_data)
@@ -730,7 +716,11 @@ class StudyPlanListCreate(generics.ListCreateAPIView):
         pix = page.get_pixmap()
         image_bytes = pix.tobytes()
         image_content = ContentFile(image_bytes)
-        book_outline=extract_outline_and_text_to_json(doc,book)
+        try :
+            book_outline=extract_outline_and_text_to_json(doc,book)
+        except:
+            book.delete()
+            return Response(None)    
         if book_outline=="Not a structure PDF":
             return Response(None)
         doc.close()
@@ -760,11 +750,13 @@ def extract_outline_and_text_to_json(doc,book):
     chapter_order=1
     topic_order=1
     outline = doc.get_toc(simple=False)
+    # print(outline)
     if not outline:
 #         print("NOt a structure pdf")
         return "Not a structure PDF"
     max_level = max(entry[0] for entry in outline)
-    if max_level >2:
+    print("max levels : ",max_level)
+    if max_level >3:
         base_level=2
     else:
         base_level=1
@@ -779,7 +771,8 @@ def extract_outline_and_text_to_json(doc,book):
         topic_id = i  # Using the enumeration index as a simple topic ID
         my_dict={}
         if level == base_level:
-            if "Chapter" in title or re.search(r'\d', title):
+            # print(title)
+            if "Chapter" in title and re.search(r'\d', title):
                 chapter_title=title
                 chapter=Chapter.objects.create(book=book, title=chapter_title, order=chapter_order)
                 chapter_order=chapter_order+1
@@ -796,9 +789,9 @@ def extract_outline_and_text_to_json(doc,book):
             for page_num in range(start_page, end_page + 1):
                 page = doc.load_page(page_num)
                 text += page.get_text()
-            pattern = r'^\d+\.\d+ '
-            if re.match(pattern, title):
-                Topic.objects.create(chapter=chapter,book=book, title=title, content=text,order=topic_order)
+            # pattern = r'^\d+\.\d+ '
+            # if re.match(pattern, title):
+            Topic.objects.create(chapter=chapter,book=book, title=title, content=text,order=topic_order)
 
     return topics        
    

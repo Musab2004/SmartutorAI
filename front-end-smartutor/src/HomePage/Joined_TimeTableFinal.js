@@ -40,7 +40,8 @@ function App() {
       console.error('Error:', error);
     }
   };
-  
+  fetchWeeklyGoals();
+  fetchWeeklyGoals();
   useEffect(() => {
     fetchWeeklyGoals();
   }, [studyPlan,userData]);

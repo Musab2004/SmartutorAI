@@ -24,6 +24,7 @@ import SettingsDashBoard from "./DashBoard/StudyPlanSettings";
 import DashBoardQuizRoom from "./DashBoard/QuizRoom";
 import UserProvider from "./landing_page_component/UserContext";
 
+
 function App() {
 	return (
 		<UserProvider>
@@ -46,6 +47,8 @@ function App() {
 							path="/dashboard-summary-generation"
 							element={<SummaryGenerationDashBoard />}
 						/>
+						<Route exact path="/joinedmaketimetable" element={<Joined_TimeTableMaker />} />
+<Route exact path="/finalstep" element={<TimeTableFinal />} />
 						<Route exact path="/dashboard-quiz-generation" element={<QuizGenerationDashBoard />} />
 						<Route exact path="/dashboard-quiz-room" element={<DashBoardQuizRoom />} />
 						<Route

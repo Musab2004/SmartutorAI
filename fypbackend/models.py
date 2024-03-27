@@ -80,7 +80,7 @@ class StudyPlan(models.Model):
         return self.name
 
 class Book(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=500)
     # author = models.CharField(max_length=100)
     # publication_date = models.DateField()
 

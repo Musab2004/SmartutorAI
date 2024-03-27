@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import ArrowBackIosNew from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 const CardSlider = ({ cards }) => {
+	
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const { userData } = useContext(UserContext);
 	const [showModal, setShowModal] = useState(false);
@@ -89,7 +90,7 @@ const CardSlider = ({ cards }) => {
 						>
 							<Card.Img
 								variant="top"
-								src={studyPlan.image}
+								src={baseURL +studyPlan.image}
 								style={{ width: "100%", height: "130px" }}
 							/>
 							<Card.Body style={{ alignItems: "center" }}>

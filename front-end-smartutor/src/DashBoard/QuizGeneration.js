@@ -43,23 +43,7 @@ const StylishTabs = () => {
 
 	const [visiblePosts, setVisiblePosts] = useState(4); // Number of posts to display initially
 	// console.log(userData)
-	useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				const response = await userService.get(`/api/queryposts/?study_plan_id=${studyPlan.id}`);
-				// console.log(response.data);
-				setPosts(response.data);
-			} catch (error) {
-				console.error("Failed to fetch posts", error);
-				navigate("/homepage");
-			}
-		};
 
-		const interval = setInterval(fetchPosts, 3000); // Fetch data every 5 seconds (adjust as needed)
-
-		// Cleanup function to clear the interval when component unmounts or when you don't need it anymore
-		return () => clearInterval(interval);
-	}, []);
 	const location = useLocation();
 
 	const studyPlan = location.state?.studyPlan;

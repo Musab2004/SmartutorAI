@@ -158,6 +158,7 @@ const StudyPlanSettings = () => {
 				},
 			});
 			console.log(response.data);
+			navigate("/my-courses");
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -172,6 +173,7 @@ const StudyPlanSettings = () => {
 				},
 			});
 			console.log(response.data);
+			navigate("/my-courses");
 		} catch (error) {
 			console.error("Error:", error);
 		}
