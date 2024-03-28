@@ -9,6 +9,14 @@ body{
   position: relative
 }
 
+.datePicker {
+  width: 100%;
+}
+
+.list-item-hover:hover {
+  background-color: rgb(220,220,220);
+}
+
 .list-timeline:before {
   width: 1px;
   background: #ccc;

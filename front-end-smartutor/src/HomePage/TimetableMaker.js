@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./TimeTable.css";
 
 import { Form, Tabs, Tab, Button, Card, Row, Col, Modal, Container } from "react-bootstrap";
+import { TextField } from "@mui/material";
 // Bootstrap Icons
 
 function ChapterList({ chapters, fetchBook }) {
@@ -70,44 +71,58 @@ function ChapterList({ chapters, fetchBook }) {
 						<p key={chapter.chapter_id}>
 							<Card style={{ width: "100%" }}>
 								<Card.Body>
-									<div style={{ display: "flex" }}>
+									<div
+										style={{
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "space-between",
+										}}
+									>
 										<Card.Title style={{ color: "#1f5692" }}>{chapter.chapter_name}</Card.Title>
-										<Button
-											variant="contained"
-											onClick={() => toggleTopics(chapter.chapter_id)}
-											style={{
-												fontWeight: "bold",
-												backgroundColor: "None",
-												borderColor: "white",
-												marginLeft: "10px",
-												height: "40px",
-												width: "40px",
-											}}
-										>
-											<i class="fa-solid fa-caret-down" style={{ color: "#1f5692" }}></i>
-										</Button>
-										<Button
-											variant="contained"
-											onClick={() => deleteChapter(chapter.chapter_id)}
-											style={{
-												fontWeight: "bold",
-												marginLeft: "10px",
-												backgroundColor: "None",
-												height: "40px",
-												width: "40px",
-											}}
-										>
-											<i class="fa fa-trash" style={{ color: "red" }} aria-hidden="true"></i>
-										</Button>
+										<div>
+											<Button
+												variant="contained"
+												onClick={() => toggleTopics(chapter.chapter_id)}
+												style={{
+													fontWeight: "bold",
+													backgroundColor: "None",
+													borderColor: "white",
+													marginLeft: "10px",
+													height: "40px",
+													width: "40px",
+												}}
+											>
+												<i class="fa-solid fa-caret-down" style={{ color: "#1f5692" }}></i>
+											</Button>
+											<Button
+												variant="contained"
+												onClick={() => deleteChapter(chapter.chapter_id)}
+												style={{
+													fontWeight: "bold",
+													marginLeft: "10px",
+													backgroundColor: "None",
+													height: "40px",
+													width: "40px",
+												}}
+											>
+												<i class="fa fa-trash" style={{ color: "red" }} aria-hidden="true"></i>
+											</Button>
+										</div>
 									</div>
 								</Card.Body>
 							</Card>
-
 							{expandedChapters[chapter.chapter_id] && (
-								<ul>
+								<div style={{ marginLeft: "2rem" }}>
 									{chapter.topics.map((topic) => (
 										<>
-											<div style={{ display: "flex" }}>
+											<div
+												className="list-item-hover"
+												style={{
+													display: "flex",
+													margin: "0.5rem 1rem 0.5rem 0 ",
+													justifyContent: "space-between",
+												}}
+											>
 												<h>{topic.title}</h>
 
 												<Button
@@ -126,7 +141,7 @@ function ChapterList({ chapters, fetchBook }) {
 											</div>
 										</>
 									))}
-								</ul>
+								</div>
 							)}
 						</p>
 					))}
@@ -153,29 +168,29 @@ const Sidebar = () => {
 	var [weeklyGoals, setWeeklyGoals] = useState([]);
 	const fetchWeeklyGoals = async () => {
 		if (!userData) {
-		  console.log('User data is not available');
-		  return;
+			console.log("User data is not available");
+			return;
 		}
-	  
+
 		try {
-		  const response = await userService.get('api/getweeklygoals/', {
-			params: {
-			  studyplan_id: books.id,
-			  user_id: userData.pk,
-			}
-		  });
-		  console.log(response.data.response);
-		  setWeeklyGoals(response.data.response);
-		  weeklyGoals=response.data.response
-		  console.log(weeklyGoals)
+			const response = await userService.get("api/getweeklygoals/", {
+				params: {
+					studyplan_id: books.id,
+					user_id: userData.pk,
+				},
+			});
+			console.log(response.data.response);
+			setWeeklyGoals(response.data.response);
+			weeklyGoals = response.data.response;
+			console.log(weeklyGoals);
 		} catch (error) {
-		  console.error('Error:', error);
+			console.error("Error:", error);
 		}
-	  };
-	  
-	  useEffect(() => {
+	};
+
+	useEffect(() => {
 		fetchWeeklyGoals();
-	  }, [userData]);
+	}, [userData]);
 	const fetchBook = async () => {
 		try {
 			const response = await userService.get(`/api/books/${books.books}/`);
@@ -227,7 +242,7 @@ const Sidebar = () => {
 		const postData = new FormData();
 		const WeeklyTopics = [];
 		const topicsPerWeek = Math.ceil(all_topics.length / books.duration);
-        console.log("topics per week : ",topicsPerWeek)
+		console.log("topics per week : ", topicsPerWeek);
 		setstep1(false);
 		// console.log()
 		setstep2(true);
@@ -242,6 +257,16 @@ const Sidebar = () => {
 				topics.push(all_topics[j]);
 				topics_id.push(all_topics[j].topic_id);
 			}
+			// const formattedDate = new Intl.DateTimeFormat('en-US', {
+			// 	weekday: 'short',
+			// 	month: 'short',
+			// 	day: '2-digit',
+			// 	year: 'numeric',
+			// 	hour: '2-digit',
+			// 	minute: '2-digit',
+			// 	second: '2-digit',
+			// 	timeZoneName: 'short'
+			// }).format(new Date(startDate));
 			// console.log(topics_id)
 			WeeklyTopics.push({ week: weekNo, topics });
 			postData.append("order", weekNo);
@@ -255,9 +280,9 @@ const Sidebar = () => {
 			const response = await userService.post("/api/weeklygoals/", postData);
 			// console.log(response.data);
 			// setbookData(response.data);
-           fetchWeeklyGoals();
-		   console.log(weeklyGoals)
-			navigate("/finalstep", { state: { books: books, weeklygoals:weeklyGoals } });
+			fetchWeeklyGoals();
+			console.log(weeklyGoals);
+			navigate("/finalstep", { state: { books: books, weeklygoals: weeklyGoals } });
 		}
 
 		setWeeklyTopic(WeeklyTopics);
@@ -293,21 +318,28 @@ const Sidebar = () => {
 					>
 						{chapters_data && <ChapterList chapters={chapters_data} fetchBook={fetchBook} />}
 
-						<section style={{ marginLeft: "40%" }}>
-							<br />
-							<br />
+						<section style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
 							<h style={{ color: "#f66b1d", fontSize: "24px", fontWeight: "bold" }}>
 								Select Start Date
 							</h>
-							<br />
-							<br />
-							<DatePicker
+							<div style={{ marginTop: "2rem" }}>
+								<DatePicker
+									id="startDate"
+									wrapperClassName="datePicker"
+									selected={startDate}
+									onChange={(date) => setStartDate(date)}
+									minDate={new Date()}
+								/>
+							</div>
+							{/* <TextField
 								id="startDate"
-								selected={startDate}
-								onChange={(date) => setStartDate(date)}
-								minDate={new Date()}
-							/>
-
+								value={startDate}
+								type="date"
+								sx={{ width: "350px", mt: 3 }}
+								onChange={(e) => {
+									setStartDate(e.target.value);
+								}}
+							/> */}
 							<div>
 								<Button
 									onClick={() => NextStep()}
