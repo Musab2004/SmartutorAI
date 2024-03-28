@@ -8,7 +8,7 @@ import { Button, Container } from 'react-bootstrap';
 import Navbar from "./HomePageNavbar"
 import background_image from './background_image.jpg';
 import StudyPlans from './StudyPlansStillGoingOn';
-
+import LoaderScreen from './LoaderScreen';
 function App() {
   const navigate = useNavigate();
   let location = useLocation();
@@ -35,7 +35,7 @@ function App() {
           user_id: userData.pk,
         }
       });
-      console.log(response.data.response);
+      // console.log(response.data.response);
       setData(response.data.response);
     } catch (error) {
       console.error('Error:', error);
@@ -49,7 +49,9 @@ function App() {
 
   const GottoDashBoard = () => {
     navigate('/dashboard',{state:{
-      studyPlan
+      studyPlan,
+      data
+
         },})
   };
   return (
@@ -65,7 +67,7 @@ function App() {
     `}
   </style>
    <Navbar activeTab={activeTab} />
-{data &&<> 
+   {data ? (<> 
   <Container style={{marginTop:'5%', backgroundColor:'white', borderRadius: '10px'}} >
 <div style={{display:'flex'}}>
  
@@ -120,7 +122,10 @@ function App() {
 </div>
 </Container>
 </>
- }
+  )
+ : (
+      <LoaderScreen />
+    )}
 </>
   );
 }

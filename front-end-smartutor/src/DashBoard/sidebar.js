@@ -4,6 +4,9 @@ import { Modal, Button, Container, Collapse } from "react-bootstrap";
 import userService from "../landing_page_component/UserSerive";
 import { UserContext } from "../landing_page_component/UserContext";
 import { useLocation, useNavigate } from "react-router-dom";
+// import Loader
+import LoaderScreen from "../HomePage/LoaderScreen";
+// import CircularProgress from '@mui/material/CircularProgress';
 // const TopicContent = ({ topic,weekly_goal_id,fetchWeeklyGoals }) => {
 //   const [isCovered, setIsCovered] = useState(false);
 //   const markAsCompleted = async () => {
@@ -24,9 +27,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 //   );
 // };
 
-const Sidebar = ({ studyPlan_id }) => {
+const Sidebar = ({ studyPlan_id, data }) => {
 	const navigate = useNavigate();
-	const [data, setData] = useState([]);
+	var [data, setData] = useState(null);
 	const { userData } = useContext(UserContext);
 	const [selectedTopic, setSelectedTopic] = useState(null);
 	const [openDropdown, setOpenDropdown] = useState(null);
@@ -34,6 +37,8 @@ const Sidebar = ({ studyPlan_id }) => {
 	const [is_covered, setIs_covered] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [isCovered, setIsCovered] = useState(false);
+	// data=data
+	console.log(data);
 	const markAsCompleted = async (topic_id, weekly_goal_id) => {
 		const response = await userService.get("api/weeklygoaltopiccovered/", {
 			params: {
@@ -46,11 +51,7 @@ const Sidebar = ({ studyPlan_id }) => {
 		fetchWeeklyGoals();
 		handleTopicClick(response.data, weekly_goal_id);
 	};
-	useEffect(() => {
-		if (is_covered) {
-			setShowModal(true);
-		}
-	}, [is_covered]);
+
 	const fetchWeeklyGoals = async () => {
 		try {
 			const response = await userService.get("api/getweeklygoals/", {
@@ -59,7 +60,6 @@ const Sidebar = ({ studyPlan_id }) => {
 					user_id: userData.pk,
 				},
 			});
-
 			setData(response.data.response);
 			setIs_covered(response.data.all_complete);
 			console.log(response.data.response);
@@ -70,7 +70,7 @@ const Sidebar = ({ studyPlan_id }) => {
 
 	useEffect(() => {
 		fetchWeeklyGoals();
-	}, [studyPlan_id, userData, markAsCompleted]);
+	}, [studyPlan_id, userData]);
 
 	const handleTopicClick = (topic, weekly_goal_id) => {
 		setSelectedTopic(topic);
@@ -111,75 +111,100 @@ const Sidebar = ({ studyPlan_id }) => {
 					</Button>
 				</Modal.Footer>
 			</Modal>
-			<div className="container-fluid">
-				<div className="row">
-					<nav className="col-md-2 d-none d-md-block bg-light sidebar">
-						<div className="sidebar-sticky">
-							{data ? (
-								data.map((week, index) => (
-									<div key={week.id} className="nav-item">
-										<h6
-											className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
-											style={{ cursor: "pointer" }}
-										>
-											<span>
-												<i className={`fas fa-calendar-week me-2`} />
-												Week {week.weekly_goals.order}
-											</span>
-											<span
-												className="fas fa-chevron-down"
-												onClick={() => handleDropdownToggle(index)}
-											/>
-										</h6>
 
-										<Collapse in={openDropdown === index}>
-											<ul>
-												{week.chapters.map((topic) => (
-													<div
-														className="nav-link"
-														onClick={() => handleTopicClick(topic, week.weekly_goals.id)}
-														style={{ cursor: "pointer" }}
-													>
-														{topic.is_covered && (
-															<i
-																class="fa fa-check"
-																style={{ color: "blue" }}
-																aria-hidden="true"
-															></i>
-														)}
-														{topic.topics.title}
-													</div>
-												))}
-											</ul>
-										</Collapse>
-									</div>
-								))
-							) : (
-								<p>No data available.</p>
-							)}
+			{data ? (
+				<div className="container" style={{ marginLeft: "20%", width: "70%" }}>
+					<div className="row no-gutters">
+						<nav className="col-md-5 bg-light sidebar" style={{ width: "250px" }}>
+							<div className="sidebar-sticky">
+								{data ? (
+									data.map((week, index) => (
+										<div key={week.id} className="nav-item">
+											<h6
+												className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
+												style={{ cursor: "pointer" }}
+											>
+												<span>
+													<i className={`fas fa-calendar-week me-2`} />
+													Week {week.weekly_goals.order}
+												</span>
+												<span
+													className="fas fa-chevron-down"
+													onClick={() => handleDropdownToggle(index)}
+												/>
+											</h6>
+
+											<Collapse in={openDropdown === index}>
+												<ul
+													style={{
+														maxHeight: "500px",
+														backgroundColor: "white",
+														overflowY: "auto",
+													}}
+												>
+													{week.chapters.map((topic) => (
+														<div
+															className="nav-link"
+															onClick={() => handleTopicClick(topic, week.weekly_goals.id)}
+															style={{ cursor: "pointer" }}
+														>
+															{topic.is_covered && (
+																<i
+																	class="fa fa-check"
+																	style={{ color: "blue" }}
+																	aria-hidden="true"
+																></i>
+															)}
+															{topic.topics.title}
+														</div>
+													))}
+												</ul>
+											</Collapse>
+										</div>
+									))
+								) : (
+									<p>No data available.</p>
+								)}
+							</div>
+						</nav>
+						<div role="main" className="col-md-1">
+							{
+								selectedTopic && (
+									<>
+										<Container style={{ width: "600px", backgroundColor: "white" }}>
+											<div
+												style={{
+													maxHeight: "500px",
+													backgroundColor: "white",
+													overflowY: "auto",
+													padding: "40px",
+												}}
+											>
+												<h style={{ fontSize: "2em", fontWeight: "bold" }}>
+													{selectedTopic.topics.title}
+												</h>
+												<p style={{}}>{selectedTopic.topics.content}</p>
+											</div>
+											<Button
+												style={{ marginLeft: "200px", marginTop: "20px" }}
+												disabled={selectedTopic.is_covered}
+												onClick={() =>
+													markAsCompleted(selectedTopic.topics.id, selectedWeeklyGoalId)
+												}
+											>
+												{selectedTopic.is_covered ? "Already Completed" : "Mark as Completed"}
+											</Button>
+										</Container>
+									</>
+								)
+								// <TopicContent topic={selectedTopic} weekly_goal_id={selectedWeeklyGoalId} fetchWeeklyGoals={fetchWeeklyGoals}/>}
+							}
 						</div>
-					</nav>
-					<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-						{
-							selectedTopic && (
-								<>
-									<Container style={{ width: "70%" }}>
-										<p>{selectedTopic.topics.content}</p>
-
-										<Button
-											disabled={selectedTopic.is_covered}
-											onClick={() => markAsCompleted(selectedTopic.topics.id, selectedWeeklyGoalId)}
-										>
-											{selectedTopic.is_covered ? "Already Completed" : "Mark as Completed"}
-										</Button>
-									</Container>
-								</>
-							)
-							// <TopicContent topic={selectedTopic} weekly_goal_id={selectedWeeklyGoalId} fetchWeeklyGoals={fetchWeeklyGoals}/>}
-						}
-					</main>
+					</div>
 				</div>
-			</div>
+			) : (
+				<LoaderScreen />
+			)}
 		</>
 	);
 };

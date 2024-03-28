@@ -296,7 +296,11 @@ const StylishTabs = () => {
 			<div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
 			</div>
-			<Container style={{ backgroundColor: "white" }}>
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+     <h1>Not Implemented Yet</h1>
+       {/* <CircularProgress /> */}
+     </div>
+			{/* <Container style={{ backgroundColor: "white" }}>
 				<Form>
 					<label htmlFor="flavors">Select topics</label>
 					<Select
@@ -309,7 +313,7 @@ const StylishTabs = () => {
 						value={selectedOption}
 					/>
 
-					{/* Select Number of Questions */}
+					
 					<Form.Group controlId="formNumQuestions">
 						<Form.Label>Number of Questions</Form.Label>
 						<Form.Control as="select" onChange={(e) => setNumQuestions(e.target.value)}>
@@ -320,7 +324,7 @@ const StylishTabs = () => {
 						</Form.Control>
 					</Form.Group>
 
-					{/* Select Quiz Type */}
+					
 					<Form.Group controlId="formQuizType">
 						<Form.Label>Quiz Type</Form.Label>
 						<Form.Control as="select" onChange={(e) => setQuizType(e.target.value)}>
@@ -329,16 +333,16 @@ const StylishTabs = () => {
 						</Form.Control>
 					</Form.Group>
 
-					{/* Submit button */}
+					
 					<Button variant="primary" onClick={handleSubmit}>
 						Generate Quiz
 					</Button>
 				</Form>
-			</Container>
+			</Container> */}
 
-			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
-				<Footer />
-			</footer>
+			{/* <footer className="bg-light text-lg-start" style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+  <Footer />
+</footer> */}
 		</>
 	);
 };

@@ -149,6 +149,19 @@ const UserProfile = () => {
 	const handleSave = () => {
 		handleClose();
 	};
+	const navigate = useNavigate();
+	const [tokenExists, setTokenExists] = useState(false);
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			console.log("token does'nt exit : ", localStorage);
+			// Redirect to landing page if token doesn't exist
+			setTokenExists(false);
+			navigate("/");
+		} else {
+			setTokenExists(true);
+		}
+	}, []);
 
 	const [oldPassword, setOldPassword] = useState("");
 	const [isVerified, setIsVerified] = useState(false);
@@ -456,15 +469,153 @@ const UserProfile = () => {
 						)}
 					</Grid>
 				</Grid>
+				<div>
+					{userData && (
+						<>
+							{" "}
+							<div style={{ marginLeft: "15%" }}>
+								{" "}
+								<h1 style={{ color: "#1f5692", fontStyle: "italic", fontSize: "24px" }}>
+									Recent Activity
+								</h1>
+								<Card className="user-card-full" style={{ width: "900px" }}>
+									<Card.Body>
+										<Container>
+											<Row>
+												<Col>
+													<div style={{ marginLeft: "10%", marginTop: "5%" }}>
+														<Calendar
+															style={{
+																borderColor: "white",
+																backgroundColor: "white",
+															}}
+															tileContent={({ date, view }) => {
+																if (
+																	view === "month" &&
+																	markedDates.includes(date.toISOString().split("T")[0])
+																) {
+																	return <Badge variant="danger">Activity</Badge>;
+																}
+															}}
+														/>
+													</div>
+												</Col>
+												<Col>
+													<div style={{ textAlign: "center", marginTop: "15%" }}>
+														<h2 style={{ color: "#f66b1d" }}>Current Streak</h2>
+														<h>no progress yet</h>
+													</div>
+												</Col>
+											</Row>
+										</Container>
+									</Card.Body>
+								</Card>
+							</div>
+						</>
+					)}
+					{userData && (
+						<div style={{ marginLeft: "15%", marginTop: "10%" }}>
+							<h1 style={{ color: "#1f5692", fontSize: "24px", fontStyle: "italic" }}>
+								Account Managment
+							</h1>
+							<Card className="user-card-full" style={{ width: "900px", marginBottom: "5%" }}>
+								<Card.Body>
+									{/* <Card.Title>Connect Your Accounts</Card.Title> */}
+									<div style={{ marginLeft: "20%" }}>
+										<div>
+											<Button
+												variant="primary"
+												style={{
+													backgroundColor: "white",
+													borderColor: "#1f5692",
+													width: "70%",
+													height: "60px",
+													marginTop: "30px",
+													color: "grey",
+												}}
+											>
+												<i
+													className="fab fa-facebook-f"
+													style={{ color: "#3b5998", fontSize: "1.2em", marginRight: "5%" }}
+												></i>{" "}
+												Connect to Facebook
+											</Button>
+										</div>
+										<div>
+											<Button
+												variant="primary"
+												style={{
+													backgroundColor: "white",
+													borderColor: "#1f5692",
+													width: "70%",
+													height: "60px",
+													marginTop: "10px",
+													color: "grey",
+												}}
+											>
+												<i
+													className="fab fa-twitter"
+													style={{ color: "#1da1f2", fontSize: "1.2em", marginRight: "5%" }}
+												></i>{" "}
+												Connect to Twitter
+											</Button>
+										</div>
+										<div>
+											<Button
+												variant="primary"
+												style={{
+													backgroundColor: "white",
+													borderColor: "#1f5692",
+													width: "70%",
+													height: "60px",
+													marginTop: "10px",
+													color: "grey",
+												}}
+											>
+												<i
+													className="fab fa-google"
+													style={{ color: "#dd4b39", fontSize: "1.2em", marginRight: "5%" }}
+												></i>{" "}
+												Connect to Google
+											</Button>
+										</div>
+										<div>
+											<Button
+												variant="primary"
+												style={{
+													backgroundColor: "white",
+													borderColor: "#1f5692",
+													color: "grey",
+													width: "70%",
+													height: "60px",
+													marginTop: "10px",
+												}}
+											>
+												<i
+													className="fab fa-instagram"
+													style={{ color: "#bc2a8d", fontSize: "1.2em", marginRight: "5%" }}
+												></i>{" "}
+												Connect to Instagram
+											</Button>
+										</div>
+									</div>
+									<div>{/* <Bar data={data} style={{height:'300px',color:'#f66b1d'}} /> */}</div>
 
-				{userData && (
-					<Modal show={show} onHide={handleClose}>
-						<Modal.Header closeButton>
-							<Modal.Title>Edit Profile</Modal.Title>
-						</Modal.Header>
-						<Modal.Body>
-							{/* <Form> */}
-							{!isVerified && (
+									{/* Rest of your content */}
+								</Card.Body>
+							</Card>
+						</div>
+					)}
+				</div>
+			</div>
+			{userData && (
+				<Modal show={show} onHide={handleClose}>
+					<Modal.Header closeButton>
+						<Modal.Title>Edit Profile</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						{/* <Form> */}
+						{/* {!isVerified && (
 								<Form.Group>
 									<Form.Label>Old Password</Form.Label>
 									<Form.Control
@@ -472,37 +623,41 @@ const UserProfile = () => {
 										name="oldPassword"
 										onChange={handleOldPasswordChange}
 									/>
+									<Button variant="primary" onClick={verifyOldPassword}>
+										Verify
+									</Button>
 								</Form.Group>
 							)}
-							{isVerified && (
-								<>
-									<Form.Group controlId="name" className="mb-3">
-										<Form.Label>Name</Form.Label>
-										<Form.Control
-											type="text"
-											placeholder="Enter your name"
-											value={name}
-											onChange={(e) => setName(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										/>
-									</Form.Group>
+							{isVerified && 
+							( */}
+						<>
+							<Form.Group controlId="name" className="mb-3">
+								<Form.Label>Name</Form.Label>
+								<Form.Control
+									type="text"
+									placeholder="Enter your name"
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									disabled={isSubmitting || !!verificationToken}
+								/>
+							</Form.Group>
 
-									<Form.Group controlId="current_academic_level" className="mb-3">
-										<Form.Label>Current Academic Level</Form.Label>
-										<Form.Control
-											as="select"
-											value={current_academic_level}
-											onChange={(e) => setCurrentAcademicLevel(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										>
-											<option value="highschool">High School</option>
-											<option value="middleschool">Middle School</option>
-										</Form.Control>
-										{errors.current_academic_level && (
-											<p style={{ color: "red" }}>{errors.current_academic_level}</p>
-										)}
-									</Form.Group>
-									<Form.Group controlId="password" className="mb-3">
+							<Form.Group controlId="current_academic_level" className="mb-3">
+								<Form.Label>Current Academic Level</Form.Label>
+								<Form.Control
+									as="select"
+									value={current_academic_level}
+									onChange={(e) => setCurrentAcademicLevel(e.target.value)}
+									disabled={isSubmitting || !!verificationToken}
+								>
+									<option value="highschool">High School</option>
+									<option value="middleschool">Middle School</option>
+								</Form.Control>
+								{errors.current_academic_level && (
+									<p style={{ color: "red" }}>{errors.current_academic_level}</p>
+								)}
+							</Form.Group>
+							{/* <Form.Group controlId="password" className="mb-3">
 										<Form.Label>Password</Form.Label>
 										<Form.Control
 											type="password"
@@ -526,30 +681,24 @@ const UserProfile = () => {
 										{errors.confirmPassword && (
 											<p style={{ color: "red" }}>{errors.confirmPassword}</p>
 										)}
-									</Form.Group>
-								</>
-							)}
+									</Form.Group> */}
+						</>
+						{/* )} */}
 
-							{/* </Form> */}
-						</Modal.Body>
-						<Modal.Footer>
-							<Button variant="secondary" onClick={handleClose}>
-								Close
-							</Button>
-							{!isVerified && (
-								<Button variant="primary" onClick={verifyOldPassword}>
-									Verify
-								</Button>
-							)}
-							{isVerified && (
-								<Button variant="primary" onClick={UserUpdate}>
-									Save Changes
-								</Button>
-							)}
-						</Modal.Footer>
-					</Modal>
-				)}
-			</div>
+						{/* </Form> */}
+					</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={handleClose}>
+							Close
+						</Button>
+						{/* {isVerified && ( */}
+						<Button variant="primary" onClick={UserUpdate}>
+							Save Changes
+						</Button>
+						{/* )} */}
+					</Modal.Footer>
+				</Modal>
+			)}
 			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
 				<Footer />
 			</footer>

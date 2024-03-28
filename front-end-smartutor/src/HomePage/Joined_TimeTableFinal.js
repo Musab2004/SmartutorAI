@@ -8,9 +8,9 @@ import { Button, Container } from 'react-bootstrap';
 import Navbar from "./HomePageNavbar"
 import background_image from './background_image.jpg';
 import StudyPlans from './StudyPlansStillGoingOn';
-
+import LoaderScreen from './LoaderScreen';
 function App() {
-  
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   let location = useLocation();
   let studyPlan_id = location.state.books.id;
@@ -22,11 +22,11 @@ function App() {
   const [data, setData] = useState([]);
 
   const fetchWeeklyGoals = async () => {
-    if (!userData) {
-      console.log('User data is not available');
-      return;
-    }
-  
+    // if (!userData) {
+    //   console.log('User data is not available');
+    //   return;
+    // }
+    setIsLoading(true);
     try {
       const response = await userService.get('api/getweeklygoals/', {
         params: {
@@ -36,6 +36,7 @@ function App() {
       });
       console.log(response.data);
       setData(response.data);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -50,7 +51,11 @@ function App() {
     navigate('/dashboard',{state:{
       studyPlan
         },})
+ 
   };
+  if (isLoading) {
+    return <div>Loading...</div>; // Replace this with your actual loading screen
+  }
   return (
   
    <>
@@ -64,7 +69,7 @@ function App() {
     `}
   </style>
    <Navbar activeTab={activeTab} />
-{data &&<> 
+   {data ? (<> 
   <Container style={{marginTop:'5%', backgroundColor:'white', borderRadius: '10px'}} >
 <div style={{display:'flex'}}>
  
@@ -85,15 +90,6 @@ function App() {
           </h4>
           <p style={{color:'grey'}}>{weekData.weekly_goals.start_date} - {weekData.weekly_goals.end_date  }</p>
           </div>
-          {/* <ul className="list-timeline list-timeline-primary" style={{textAlign:'left'}}>
-            {weekData.chapters.map((chapter, chapIndex) => (
-              <li className="list-timeline-item p-0 pb-3 pb-lg-4 d-flex flex-wrap flex-column" key={chapIndex} style={{color:'grey'}}>
-                <p className="my-0 text-dark flex-fw text-sm text-uppercase">
-                  {chapter.title}
-                </p>
-              </li>
-            ))}
-          </ul> */}
     <label htmlFor="topics">Topics</label>
 <select id="topics" className="form-select">
   {weekData.chapters.map((chapter, chapIndex) => (
@@ -119,7 +115,11 @@ function App() {
 </div>
 </Container>
 </>
- }
+  )
+  : (
+       <LoaderScreen />
+     )}
+
 </>
   );
 }

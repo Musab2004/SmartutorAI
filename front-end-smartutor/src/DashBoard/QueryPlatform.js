@@ -152,7 +152,9 @@ const StylishTabs = () => {
       }
     `}
 			</style>
-			<DashBoardNavbar />
+			{/* <DashBoardNavbar /> */}
+			
+			{/* <DashboardTabs studyPlan={studyPlan} activeButton={activeButton} /> */}
 			{alert.show && (
 				<Alert
 					variant={alert.variant}
@@ -170,12 +172,15 @@ const StylishTabs = () => {
 					{alert.message}
 				</Alert>
 			)}
-			<div style={{ marginTop: "100px" }}>
+			{/* <div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}> */}
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
+			{/* </div> */}
+			<div style={{ marginTop: "100px",minHeight:'400px',marginLeft:'100px' }}>
+				
 				<Container>
 					<Row>
 						<Col xs={8}>
-							<h1 style={{ fontSize: "30px", color: "#1f5692", fontStyle: "italic" }}>
+							<h1 style={{ fontSize: "30px", color: "#1f5692",marginLeft:'120px' }}>
 								Latest Question Asked
 							</h1>
 						</Col>
@@ -191,7 +196,7 @@ const StylishTabs = () => {
 						</Col>
 					</Row>
 
-					<Modal show={showModal} onHide={handleModalClose}>
+					<Modal show={showModal} onHide={handleModalClose} style={{marginTop:'100px'}}>
 						<Modal.Header closeButton>
 							<Modal.Title>Write your post</Modal.Title>
 						</Modal.Header>
@@ -215,15 +220,17 @@ const StylishTabs = () => {
 					</Modal>
 				</Container>
 			
+			{posts.length === 0 ? (	<div style={{ textAlign: "center", marginTop: "50px" }}>	<h3>No posts available</h3>	</div>	) : (	<>	
 					<AllPosts  posts={posts} studyPlan={studyPlan} fetchPosts={fetchPosts} />
+					</>)}
 					{/* studyPlan={props.studyPlan}
 								fetchPostfunc={props.fetchPosts} */}
 					
 				
 			</div>
-			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
-				<Footer />
-			</footer>
+			<footer className="bg-light text-lg-start" style={{marginTop:'10%', width: '100%' }}>
+  <Footer />
+</footer>
 		</>
 	);
 };
