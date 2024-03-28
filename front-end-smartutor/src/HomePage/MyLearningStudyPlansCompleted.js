@@ -16,7 +16,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 		const fetchUsers = async () => {
 			try {
 				const response = await userService.get(`/api/completedstudyplans/?user_id=${userData.pk}`);
-				setCompletedStudyPlans(response.data);
+				// setCompletedStudyPlans(response.data);
 				setLoading(false);
 			} catch (error) {
 				console.error("Failed to fetch study plans", error);
@@ -50,7 +50,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 	const totalPages = Math.ceil(studyPlans.length / itemsPerPage);
 
 	return (
-		<div className="container">
+		<div className="container" style={{minHeight:'350px'}}>
 			{studyPlans.length === 0 ? (
 				<div style={{ textAlign: "center", marginTop: "50px" }}>
 					<h3>No study plans available</h3>
@@ -58,7 +58,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 				</div>
 			) : (
 				<>
-					<Grid container spacing={4} sx={{ mb: 4 }}>
+					<Grid container spacing={4} sx={{ mb: 4 }} >
 						{currentStudyPlans.map((studyPlan, index) => (
 							<Grid item xs={12} md={4}>
 								<Card

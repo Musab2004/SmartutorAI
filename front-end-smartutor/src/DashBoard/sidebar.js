@@ -5,6 +5,9 @@ import userService from '../landing_page_component/UserSerive';
 import { UserContext } from '../landing_page_component/UserContext';
 import { useLocation,useNavigate } from 'react-router-dom';
 import { colors } from '@material-ui/core';
+// import Loader
+import LoaderScreen from '../HomePage/LoaderScreen';
+// import CircularProgress from '@mui/material/CircularProgress';
 // const TopicContent = ({ topic,weekly_goal_id,fetchWeeklyGoals }) => {
 //   const [isCovered, setIsCovered] = useState(false);
 //   const markAsCompleted = async () => {
@@ -27,9 +30,9 @@ import { colors } from '@material-ui/core';
 //   );
 // };
 
-const Sidebar = ({ studyPlan_id }) => {
+const Sidebar = ({ studyPlan_id,data }) => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
+  var [data, setData] = useState(null);
   const { userData } = useContext(UserContext);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -37,8 +40,10 @@ const Sidebar = ({ studyPlan_id }) => {
   const [is_covered, setIs_covered] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isCovered, setIsCovered] = useState(false);
+  // data=data
+  console.log(data)
   const markAsCompleted = async (topic_id,weekly_goal_id) => {
-    
+  
     const response = await userService.get('api/weeklygoaltopiccovered/',{
       params: {
         weeklygoal_id: weekly_goal_id,
@@ -78,6 +83,7 @@ const Sidebar = ({ studyPlan_id }) => {
   useEffect(() => {
     fetchWeeklyGoals();
   }, [studyPlan_id,userData]);
+  
 
   const handleTopicClick = (topic,weekly_goal_id) => {
     setSelectedTopic(topic);
@@ -117,10 +123,13 @@ const Sidebar = ({ studyPlan_id }) => {
                 </Button>
             </Modal.Footer>
         </Modal>
-    <div className="container-fluid">
-      <div className="row">
-        <nav className="col-md-2 d-none d-md-block bg-light sidebar">
-          <div className="sidebar-sticky">
+
+
+        
+        {data ? (<div className="container" style={{marginLeft:'20%',width:'70%'}}>
+      <div className="row no-gutters">
+        <nav className="col-md-5 bg-light sidebar"  style={{width:'250px'}}>
+          <div className="sidebar-sticky" >
             {data ? (
               data.map((week, index) => (
                 <div key={week.id} className="nav-item">
@@ -140,7 +149,7 @@ const Sidebar = ({ studyPlan_id }) => {
                   </h6>
 
                   <Collapse in={openDropdown === index}>
-                    <ul>
+                    <ul style={{maxHeight: '500px',backgroundColor:'white', overflowY: 'auto'}}>
                       {week.chapters.map((topic) => (
                    
                    <div
@@ -163,23 +172,27 @@ const Sidebar = ({ studyPlan_id }) => {
             )}
           </div>
         </nav>
-        <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+        <div role="main" className="col-md-1">
           {selectedTopic && 
           
           <>
-          <Container style={{ width: '70%' }}>
-            <p>{selectedTopic.topics.content}</p>
-     
-            <Button disabled={selectedTopic.is_covered} onClick={() => markAsCompleted(selectedTopic.topics.id, selectedWeeklyGoalId)}>
+          <Container style={{ width: '600px',backgroundColor:'white' }}>
+            <div style={{ maxHeight: '500px',backgroundColor:'white', overflowY: 'auto',padding:'40px' }}>
+            <h style={{ fontSize: '2em', fontWeight: 'bold' }}>{selectedTopic.topics.title}</h>
+          <p style={{}} >{selectedTopic.topics.content}</p>
+          </div>
+            <Button style={{marginLeft:'200px',marginTop:'20px'}} disabled={selectedTopic.is_covered} onClick={() => markAsCompleted(selectedTopic.topics.id, selectedWeeklyGoalId)}>
       {selectedTopic.is_covered ? 'Already Completed' : 'Mark as Completed'}
     </Button>
           </Container>
         </>
           // <TopicContent topic={selectedTopic} weekly_goal_id={selectedWeeklyGoalId} fetchWeeklyGoals={fetchWeeklyGoals}/>}
 }
-        </main>
+        </div>
       </div>
-    </div>
+    </div>) : (
+      <LoaderScreen />
+    )}
     </>
   );
 };

@@ -15,8 +15,8 @@ const TaskList = ({ tasks }) => {
                   <thead>
                     <tr>
                       <th scope="col">Week No.</th>
-                      <th scope="col">feedback</th>
-                      <th scope="col">Understanding</th>
+                      <th scope="col">Topics Completed </th>
+                      <th scope="col">Feedback</th>
                       <th scope="col">Status</th>
                     </tr>
                   </thead>
@@ -33,7 +33,7 @@ const TaskList = ({ tasks }) => {
                         </td>
                         <td className="align-middle">
                         <a href="#!" data-mdb-toggle="tooltip" title={task.is_completed ? "Done" : "Pending"}>
-  <i className={`fas fa-lg me-3 ${task.weekly_goals.is_completed ? "fa-check text-success" : "fa-times text-danger"}`}></i>
+  <i className={`fas fa-lg me-3 ${task.weekly_goals.is_completed ? "fa-check text-success" : "fas fa-clock text-primary"}`}></i>
 </a>
 
                         </td>

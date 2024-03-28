@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext,useEffect } from "react";
 import { Form, Alert, Button, Container } from "react-bootstrap";
 import Navbar from "./HomePageNavbar";
 import axios from "axios";
@@ -40,6 +40,7 @@ const StudyPlanForm = () => {
 	var [StudyPlans, setStudyPlans] = useState(false);
 	const { userData } = useContext(UserContext);
 	const [bookData, setbookData] = useState([]);
+	const [tokenExists, setTokenExists] = useState(false);
 	const [formData, setFormData] = useState({
 		name: "",
 		duration: "3",
@@ -51,7 +52,17 @@ const StudyPlanForm = () => {
 		image: null, // Assuming you'll store the file here
 	});
 	const [selectedFile, setSelectedFile] = useState(null);
-
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			console.log("token does'nt exit : ", localStorage);
+			// Redirect to landing page if token doesn't exist
+			setTokenExists(false);
+			navigate("/");
+		} else {
+			setTokenExists(true);
+		}
+	}, []);
 	const handleFileChange = (event) => {
 		const file = event.target.files[0];
 		setSelectedFile(file);
@@ -74,7 +85,7 @@ const StudyPlanForm = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		
+		setIsLoading(true);
 		const postData = new FormData();
 		postData.append("name", formData.name);
 		postData.append("duration", formData.duration);
@@ -142,8 +153,8 @@ const StudyPlanForm = () => {
 			</style>
 			{isLoading ? (
 				<>
-					{" "}
-					<Navbar activeTab={activeTab} /> <LoadingScreen />{" "}
+					
+					<Navbar activeTab={activeTab} /> <LoadingScreen />
 				</>
 			) : (
 				<>
@@ -296,6 +307,7 @@ const StudyPlanForm = () => {
 						</div>
 					</Container>
 				</>
+										
 			)}
 			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
 				<Footer />

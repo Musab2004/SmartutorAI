@@ -29,11 +29,11 @@ const HomePageNavbar = ({ activeTab }) => {
 	};
 	return (
 		<div className="App">
-			<Navbar style={{ backgroundColor: "#e1efff" }} fixed="top">
+			<Navbar style={{ backgroundColor: "#e1efff", width:'50%',marginLeft:'30%' }}  fixed="top">
 				<Container>
-					<Navbar.Brand href="#">
+					{/* <Navbar.Brand href="#">
 						<img src={logo} height="25" alt="" loading="lazy" style={{ marginTop: "-3px" }} />
-					</Navbar.Brand>
+					</Navbar.Brand> */}
 					<Navbar.Toggle aria-controls="navbarExample01" />
 					<Navbar.Collapse id="navbarExample01">
 						<Nav className="me-auto">

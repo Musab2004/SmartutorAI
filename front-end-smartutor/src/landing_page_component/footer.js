@@ -21,7 +21,7 @@ const Footer = () => {
 					}}
 				>
 					<div>
-						<span>Get connected with us on social networks:</span>
+						<span>Get    connected with us on social networks:</span>
 					</div>
 					<div>
 						<a href="" className="me-4 text-reset">

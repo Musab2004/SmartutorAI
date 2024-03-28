@@ -201,6 +201,7 @@ const RedditPost = (props) => {
 				setposts(response.data);
 
 				handleCloseModaleditpost();
+				props.fetchPostfunc(props.studyPlan.id);
 				setEditAlert({ show: true, variant: "success", message: "Post editted successfully!" });
 			})
 			.catch((error) => {
@@ -409,7 +410,7 @@ const RedditPost = (props) => {
     <i className="fas fa-flag"></i>
   </Button> */}
 
-						<Modal show={showModaleditpost} onHide={handleCloseModaleditpost}>
+						<Modal show={showModaleditpost} onHide={handleCloseModaleditpost} style={{marginTop:'100px'}}>
 							<Modal.Header closeButton>
 								<Modal.Title>Edit Post</Modal.Title>
 							</Modal.Header>

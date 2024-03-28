@@ -76,7 +76,7 @@ function App() {
 				style={{
 					backgroundColor: "#f66b1d",
 					width: "100%",
-					minHeight: "60vh",
+					minHeight: "auto",
 					paddingBottom: "2rem",
 				}}
 			>
@@ -99,7 +99,7 @@ function App() {
 									color: "#ffffff",
 									textAlign: "center",
 									alignItems: "Center",
-									height: "250px",
+									height: "auto",
 									borderRadius: "15px",
 								}}
 							>
@@ -133,7 +133,7 @@ function App() {
 									color: "#ffffff",
 									textAlign: "center",
 									alignItems: "Center",
-									height: "250px",
+									height: "auto",
 									borderRadius: "15px",
 								}}
 							>
@@ -167,7 +167,7 @@ function App() {
 									color: "#ffffff",
 									textAlign: "center",
 									alignItems: "Center",
-									height: "250px",
+									height: "auto",
 									borderRadius: "15px",
 								}}
 							>
@@ -228,8 +228,9 @@ function App() {
 						<Grid
 							container
 							sx={{
-								marginTop: "3%",
+								marginTop: "1%",
 								marginBottom: "3%",
+								marginLeft:'50px',
 								width: "80%",
 								display: "flex",
 								justifyContent: "center",

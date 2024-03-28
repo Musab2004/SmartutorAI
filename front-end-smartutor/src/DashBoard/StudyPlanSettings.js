@@ -243,11 +243,11 @@ const StudyPlanSettings = () => {
 			</div>
 
 			<div>
-				<div style={{ marginLeft: "15%" }}>
+				<div style={{ marginLeft: "18%" }}>
 					<h2 style={{ fontSize: "24px", fontStyle: "italic", color: "#1f5692" }}>
 						Current Progress
 					</h2>
-					<Card className="user-card-full" style={{ width: "90%" }}>
+					<Card className="user-card-full" style={{ width: "80%",marginLeft:'5%' }}>
 						<Card.Body>
 							<Card.Title>Your progress</Card.Title>
 							<MDBProgress height="20">
@@ -279,11 +279,11 @@ const StudyPlanSettings = () => {
 						</Card.Body>
 					</Card>
 				</div>
-				<div style={{ marginTop: "10%", marginLeft: "15%" }}>
+				<div style={{ marginTop: "10%", marginLeft: "18%" }}>
 					<h2 style={{ fontSize: "24px", fontStyle: "italic", color: "#1f5692" }}>
 						StudyPlan Details
 					</h2>
-					<Card className="user-card-full" style={{ width: "90%", marginBottom: "5%" }}>
+					<Card className="user-card-full" style={{ width: "80%", marginBottom: "5%",marginLeft:'5%' }}>
 						<Card.Body>
 							<Row>
 								<Col md={4}>

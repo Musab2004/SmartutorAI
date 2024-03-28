@@ -3,11 +3,8 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { Container, Form, Button, Alert, resetForm } from "react-bootstrap";
 import Select from "react-select";
-const countries = [
-	{ label: "USA", value: "USA", cities: ["New York", "Los Angeles", "Chicago"] },
-	{ label: "Canada", value: "Canada", cities: ["Toronto", "Montreal", "Vancouver"] },
-	// Add more countries and their cities here...
-];
+
+
 const SignupForm = ({ show, setShow }) => {
 	const handleClose = () => {
 		setShow(false);
@@ -54,22 +51,7 @@ const SignupForm = ({ show, setShow }) => {
 	const [resendToken, setResendValid] = useState(false);
 	const [timer, setTimer] = useState(60); // 60 seconds
 
-	// useEffect(() => {
-	// 	console.log("verification token : ", verificationToken);
-	// 	if (verificationToken && timer === null) {
-	// 		setTimer(60);
-	// 		setResendValid(false) // Start the timer when a token is generated
-	// 	} else if (timer > 0) {
-	// 		const timerId = setTimeout(() => setTimer(timer - 1), 1000);
-	// 		return () => clearTimeout(timerId); // Clear the timeout if the component is unmounted
-	// 	} else if (timer === 0) {
-	// 		// Regenerate token here
-	// 		// setTokenValid(false);
-	// 		setResendValid(true)
-			
-			
-	// 	}
-	// }, [timer, verificationToken]);
+
 	const startTimer = () => {
 		setTimer(60);
 		const timerId = setInterval(() => {
@@ -88,8 +70,8 @@ const SignupForm = ({ show, setShow }) => {
 		}, 1000);
 	};
 
-	const UserSignup = async () => {
-		
+	const UserSignup = async (e) => {
+		e.preventDefault();
 		if (timer>0 && verificationToken == userverificationToken) {
 			let name = firstname + " " + lastname;
 			try {
@@ -148,11 +130,11 @@ const SignupForm = ({ show, setShow }) => {
 		let isValid = true;
 
 		if (firstname.trim() === "") {
-			errors.name = "Name is required";
+			errors.firstname = "First Name is required";
 			isValid = false;
 		}
 		if (lastname.trim() === "") {
-			errors.name = "Name is required";
+			errors.lastname = "Last Name is required";
 			isValid = false;
 		}
 
@@ -229,6 +211,7 @@ const SignupForm = ({ show, setShow }) => {
 									disabled={isSubmitting || !!verificationToken}
 									maxLength={20}
 								/>
+								{errors.firstname && <p style={{ color: "red" }}>{errors.firstname}</p>}
 							</Form.Group>
 							<Form.Group controlId="name" className="mb-3">
 								<Form.Label>Last Name</Form.Label>
@@ -240,6 +223,7 @@ const SignupForm = ({ show, setShow }) => {
 									disabled={isSubmitting || !!verificationToken}
 									maxLength={20}
 								/>
+								{errors.lastname && <p style={{ color: "red" }}>{errors.lastname}</p>}
 							</Form.Group>
 
 							<Form.Group controlId="email_address" className="mb-3">

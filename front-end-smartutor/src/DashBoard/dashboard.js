@@ -26,18 +26,24 @@ const StylishTabs = () => {
 	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
 	const [posts, setPosts] = useState([]);
 	const [bookData, setbookData] = useState([]);
+	var [Data, setData] = useState([]);
 	const [visiblePosts, setVisiblePosts] = useState(4);
 	const location = useLocation();
 	const [showModal, setShowModal] = useState(false);
 	const [postInput, setPostInput] = useState("");
 	const [textAreaValue, setTextAreaValue] = useState("");
 	const studyPlan = location.state?.studyPlan;
+    Data = location.state?.data;
+    console.log(Data)
+ 
+	
 
-
-
-	if (!studyPlan) {
-		navigate("/homepage");
-	}
+	//   useEffect(() => {
+	// 	if (!studyPlan) {
+	// 		console.log("no studyplan here");
+	// 		navigate("/");
+	// 	}
+	// }, []);
 	const plan = studyPlan;
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -46,7 +52,26 @@ const StylishTabs = () => {
 			navigate("/");
 		}
 	}, []);
-
+	const fetchWeeklyGoals = async () => {
+		try {
+		  const response = await userService.get('api/getweeklygoals/', {
+			params: {
+			  studyplan_id: plan.id,
+			  user_id: userData.pk,
+			},
+		  });
+	
+		  setData(response.data.response);
+		//   setIs_covered(response.data.all_complete);
+		  console.log(response.data.response)
+		} catch (error) {
+		  console.error('Error:', error);
+		}
+	  };
+	// fetchWeeklyGoals();
+	  useEffect(() => {
+		fetchWeeklyGoals();
+	  }, [plan,userData]);
 
 
 	const fetchBook = async () => {
@@ -154,10 +179,10 @@ const StylishTabs = () => {
 			)}
 			<div style={{ marginTop: "100px" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
-				<Sidebar studyPlan_id={studyPlan.id} />
+				<Sidebar studyPlan_id={studyPlan.id} data={Data} />
 			</div>
 
-			<div className="App">
+			<div className="App" style={{minHeight:'400px'}}>
 				{showChat && (
 					<div
 						style={{
@@ -214,9 +239,10 @@ const StylishTabs = () => {
 					Chat with GPT
 				</Button>
 			)}
-			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
-				<Footer />
-			</footer>
+				<footer className="bg-light text-lg-start" style={{ marginLeft:'4%',width: 'auto' }}>
+  <Footer />
+</footer>
+
 		</>
 	);
 };

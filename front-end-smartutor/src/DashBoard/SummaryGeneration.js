@@ -158,6 +158,10 @@ const StylishTabs = () => {
 			<div style={{ marginTop: "100px" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
 			</div>
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+     <h1>Not Implemented Yet</h1>
+       {/* <CircularProgress /> */}
+     </div>
 			{/* Content for Tab 2 */}
 		</>
 	);

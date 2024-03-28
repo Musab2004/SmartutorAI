@@ -150,6 +150,19 @@ const UserProfile = () => {
 	const handleSave = () => {
 		handleClose();
 	};
+	const navigate = useNavigate();
+	const [tokenExists, setTokenExists] = useState(false);
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			console.log("token does'nt exit : ", localStorage);
+			// Redirect to landing page if token doesn't exist
+			setTokenExists(false);
+			navigate("/");
+		} else {
+			setTokenExists(true);
+		}
+	}, []);
 
 	const [oldPassword, setOldPassword] = useState("");
 	const [isVerified, setIsVerified] = useState(false);
@@ -308,96 +321,7 @@ const UserProfile = () => {
 					</Card>
 				)}
 
-				{userData && (
-					<Modal show={show} onHide={handleClose}>
-						<Modal.Header closeButton>
-							<Modal.Title>Edit Profile</Modal.Title>
-						</Modal.Header>
-						<Modal.Body>
-							{/* <Form> */}
-							{!isVerified && (
-								<Form.Group>
-									<Form.Label>Old Password</Form.Label>
-									<Form.Control
-										type="password"
-										name="oldPassword"
-										onChange={handleOldPasswordChange}
-									/>
-									<Button variant="primary" onClick={verifyOldPassword}>
-										Verify
-									</Button>
-								</Form.Group>
-							)}
-							{isVerified && (
-								<>
-									<Form.Group controlId="name" className="mb-3">
-										<Form.Label>Name</Form.Label>
-										<Form.Control
-											type="text"
-											placeholder="Enter your name"
-											value={name}
-											onChange={(e) => setName(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										/>
-									</Form.Group>
-
-									<Form.Group controlId="current_academic_level" className="mb-3">
-										<Form.Label>Current Academic Level</Form.Label>
-										<Form.Control
-											as="select"
-											value={current_academic_level}
-											onChange={(e) => setCurrentAcademicLevel(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										>
-											<option value="highschool">High School</option>
-											<option value="middleschool">Middle School</option>
-										</Form.Control>
-										{errors.current_academic_level && (
-											<p style={{ color: "red" }}>{errors.current_academic_level}</p>
-										)}
-									</Form.Group>
-									<Form.Group controlId="password" className="mb-3">
-										<Form.Label>Password</Form.Label>
-										<Form.Control
-											type="password"
-											placeholder="Password"
-											value={password}
-											onChange={(e) => setPassword(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										/>
-										{errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-									</Form.Group>
-
-									<Form.Group controlId="confirmPassword" className="mb-3">
-										<Form.Label>Confirm Password</Form.Label>
-										<Form.Control
-											type="password"
-											placeholder="Confirm password"
-											value={confirmPassword}
-											onChange={(e) => setConfirmPassword(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										/>
-										{errors.confirmPassword && (
-											<p style={{ color: "red" }}>{errors.confirmPassword}</p>
-										)}
-									</Form.Group>
-								</>
-							)}
-
-							{/* </Form> */}
-						</Modal.Body>
-						<Modal.Footer>
-							<Button variant="secondary" onClick={handleClose}>
-								Close
-							</Button>
-							{isVerified && (
-								<Button variant="primary" onClick={UserUpdate}>
-									Save Changes
-								</Button>
-							)}
-						</Modal.Footer>
-					</Modal>
-				)}
+			
 
 				<div>
 					{userData && (
@@ -424,7 +348,7 @@ const UserProfile = () => {
 																	view === "month" &&
 																	markedDates.includes(date.toISOString().split("T")[0])
 																) {
-																	return <Badge variant="danger">User Activity</Badge>;
+																	return <Badge variant="danger">Activity</Badge>;
 																}
 															}}
 														/>
@@ -538,6 +462,98 @@ const UserProfile = () => {
 					)}
 				</div>
 			</div>
+			{userData && 
+				(
+					<Modal show={show} onHide={handleClose}>
+						<Modal.Header closeButton>
+							<Modal.Title>Edit Profile</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							{/* <Form> */}
+							{/* {!isVerified && (
+								<Form.Group>
+									<Form.Label>Old Password</Form.Label>
+									<Form.Control
+										type="password"
+										name="oldPassword"
+										onChange={handleOldPasswordChange}
+									/>
+									<Button variant="primary" onClick={verifyOldPassword}>
+										Verify
+									</Button>
+								</Form.Group>
+							)}
+							{isVerified && 
+							( */}
+								<>
+									<Form.Group controlId="name" className="mb-3">
+										<Form.Label>Name</Form.Label>
+										<Form.Control
+											type="text"
+											placeholder="Enter your name"
+											value={name}
+											onChange={(e) => setName(e.target.value)}
+											disabled={isSubmitting || !!verificationToken}
+										/>
+									</Form.Group>
+
+									<Form.Group controlId="current_academic_level" className="mb-3">
+										<Form.Label>Current Academic Level</Form.Label>
+										<Form.Control
+											as="select"
+											value={current_academic_level}
+											onChange={(e) => setCurrentAcademicLevel(e.target.value)}
+											disabled={isSubmitting || !!verificationToken}
+										>
+											<option value="highschool">High School</option>
+											<option value="middleschool">Middle School</option>
+										</Form.Control>
+										{errors.current_academic_level && (
+											<p style={{ color: "red" }}>{errors.current_academic_level}</p>
+										)}
+									</Form.Group>
+									{/* <Form.Group controlId="password" className="mb-3">
+										<Form.Label>Password</Form.Label>
+										<Form.Control
+											type="password"
+											placeholder="Password"
+											value={password}
+											onChange={(e) => setPassword(e.target.value)}
+											disabled={isSubmitting || !!verificationToken}
+										/>
+										{errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
+									</Form.Group>
+
+									<Form.Group controlId="confirmPassword" className="mb-3">
+										<Form.Label>Confirm Password</Form.Label>
+										<Form.Control
+											type="password"
+											placeholder="Confirm password"
+											value={confirmPassword}
+											onChange={(e) => setConfirmPassword(e.target.value)}
+											disabled={isSubmitting || !!verificationToken}
+										/>
+										{errors.confirmPassword && (
+											<p style={{ color: "red" }}>{errors.confirmPassword}</p>
+										)}
+									</Form.Group> */}
+								</>
+							{/* )} */}
+
+							{/* </Form> */}
+						</Modal.Body>
+						<Modal.Footer>
+							<Button variant="secondary" onClick={handleClose}>
+								Close
+							</Button>
+							{/* {isVerified && ( */}
+								<Button variant="primary" onClick={UserUpdate}>
+									Save Changes
+								</Button>
+							{/* )} */}
+						</Modal.Footer>
+					</Modal>
+				)}
 			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
 				<Footer />
 			</footer>

@@ -34,6 +34,17 @@ function App() {
 		navigate(tab);
 		// setActiveTab(tab);
 	};
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			console.log("token does'nt exit : ", localStorage);
+			// Redirect to landing page if token doesn't exist
+			setTokenExists(false);
+			navigate("/");
+		} else {
+			setTokenExists(true);
+		}
+	}, []);
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
