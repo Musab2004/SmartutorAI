@@ -3,7 +3,7 @@ import { Card, Row, Col, Button, Pagination } from "react-bootstrap";
 import { UserContext } from "../landing_page_component/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import userService from "../landing_page_component/UserSerive";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 	const { userData } = useContext(UserContext);
 	const [studyPlans, setCompletedStudyPlans] = useState([]);
@@ -50,7 +50,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 	const totalPages = Math.ceil(studyPlans.length / itemsPerPage);
 
 	return (
-		<div className="container" style={{minHeight:'350px'}}>
+		<div className="container" style={{ minHeight: "350px" }}>
 			{studyPlans.length === 0 ? (
 				<div style={{ textAlign: "center", marginTop: "50px" }}>
 					<h3>No study plans available</h3>
@@ -58,13 +58,15 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 				</div>
 			) : (
 				<>
-					<Grid container spacing={4} sx={{ mb: 4 }} >
+					<Grid container spacing={4} sx={{ mb: 4 }}>
 						{currentStudyPlans.map((studyPlan, index) => (
 							<Grid item xs={12} md={4}>
 								<Card
 									key={index}
 									style={{
-										marginTop: "10px",
+										width: "100%",
+										height: "auto",
+										marginTop: "0px",
 									}}
 								>
 									<Card.Img

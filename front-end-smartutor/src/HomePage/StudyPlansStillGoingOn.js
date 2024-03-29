@@ -3,7 +3,7 @@ import { Card, Button, Row, Col, Pagination } from "react-bootstrap";
 import { UserContext } from "../landing_page_component/UserContext";
 import userService from "../landing_page_component/UserSerive";
 import { useNavigate } from "react-router-dom";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 const StudyPlans = ({ itemsPerPage }) => {
 	const { userData } = useContext(UserContext);
 	const [studyPlans, setStudyPlans] = useState([]);
@@ -59,8 +59,8 @@ const StudyPlans = ({ itemsPerPage }) => {
 									<Card.Img
 										variant="top"
 										style={{
-											Width: "250px",
-											height: "250px",
+											width: "100%",
+											height: "auto",
 											marginTop: "0px",
 										}}
 										src={studyPlan.image}

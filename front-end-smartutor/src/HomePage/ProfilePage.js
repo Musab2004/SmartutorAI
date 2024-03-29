@@ -469,7 +469,7 @@ const UserProfile = () => {
 						)}
 					</Grid>
 				</Grid>
-				<div>
+				{/* <div>
 					{userData && (
 						<>
 							{" "}
@@ -521,7 +521,7 @@ const UserProfile = () => {
 							<Card className="user-card-full" style={{ width: "900px", marginBottom: "5%" }}>
 								<Card.Body>
 									{/* <Card.Title>Connect Your Accounts</Card.Title> */}
-									<div style={{ marginLeft: "20%" }}>
+				{/* <div style={{ marginLeft: "20%" }}>
 										<div>
 											<Button
 												variant="primary"
@@ -599,14 +599,17 @@ const UserProfile = () => {
 											</Button>
 										</div>
 									</div>
-									<div>{/* <Bar data={data} style={{height:'300px',color:'#f66b1d'}} /> */}</div>
+									<div>{/* <Bar data={data} style={{height:'300px',color:'#f66b1d'}} /> */}
+				{/*
+									</div>
 
-									{/* Rest of your content */}
+								Rest of your content 
 								</Card.Body>
 							</Card>
 						</div>
 					)}
 				</div>
+								*/}
 			</div>
 			{userData && (
 				<Modal show={show} onHide={handleClose}>
