@@ -86,6 +86,7 @@ const SignupForm = ({ show, setShow }) => {
 				const response = await axios.post("http://127.0.0.1:8000/api/users/", formData);
 
 				console.log("Data posted:", response.data);
+				alert("Signup successful!")
 				setReportAlert({ show: true, variant: "success", message: "Signup successful!" });
 			} catch (error) {
 				console.error("Error posting data:", error);
