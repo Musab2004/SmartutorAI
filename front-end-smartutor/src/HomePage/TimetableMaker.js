@@ -161,7 +161,7 @@ const Sidebar = () => {
 		  const response = await userService.get('api/getweeklygoals/', {
 			params: {
 			  studyplan_id: books.id,
-			  user_id: userData.pk,
+			  user_id: userData.id,
 			}
 		  });
 		  console.log(response.data.response);
@@ -248,7 +248,7 @@ const Sidebar = () => {
 			postData.append("studyplan_id", books.id);
 			postData.append("chapters_id", topics_id);
 			postData.append("start_date", startDate);
-			postData.append("user", userData.pk);
+			postData.append("user", userData.id);
 			postData.append("owner", true);
 			weekNo++;
 

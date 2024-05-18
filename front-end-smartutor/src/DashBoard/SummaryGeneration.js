@@ -1,122 +1,58 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Tabs, Tab, Button, Row, Col, Modal, Container, Alert, ButtonGroup } from "react-bootstrap";
+import {
+	Tabs,
+	Tab,
+	Button,
+	Row,
+	Col,
+	Modal,
+	Container,
+	Alert,
+	ButtonGroup,
+	Form,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
 import DisscusionForum from "./DisscusionForum";
 import ResourcePreview from "./ResourcePreview";
+import QuizRoomList from "./QuizRoomList";
 import { UserContext } from "../landing_page_component/UserContext";
 import userService from "../landing_page_component/UserSerive";
 import StudyPlanSettings from "./StudyPlanSettings";
+// import { Link,useNavigate } from 'react-router-dom';
+import { Editor } from "@tinymce/tinymce-react";
+import Footer from "../landing_page_component/footer";
 import DashboardTabs from "./Dashbaord_tabs";
-
+import Quiz from "./Quiz";
+import DatePicker from "react-datepicker";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Select from "react-select";
+import { TimePicker } from "react-ios-time-picker";
 const StylishTabs = () => {
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
-	const [activeButton, setActiveButton] = useState("tab3");
-
-	const [key, setKey] = useState("tab1");
-	// const [alertPost, setAlertPost] = useState({show: false, variant: '', message: ''});
+	const [activeButton, setActiveButton] = useState("tab2");
 	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
-
-	const [posts, setPosts] = useState([]);
-	const [bookData, setbookData] = useState([]);
-
-	const [visiblePosts, setVisiblePosts] = useState(4); // Number of posts to display initially
-	// console.log(userData)
-
-
 	const location = useLocation();
-
 	const studyPlan = location.state?.studyPlan;
-	const plan = studyPlan;
+	const book_id = studyPlan.books[0];
 	console.log(studyPlan);
 
 	if (!studyPlan) {
-		navigate("/homepage"); // Replace '/homepage' with your homepage route
+		navigate("/homepage");
 	}
-
-	const fetchBook = async () => {
-		try {
-			const response = await userService.get(`/api/books/${studyPlan.books}/`);
-			// console.log(response.data);
-			setbookData(response.data);
-		} catch (error) {
-			console.error("Failed to fetch posts", error);
-			// navigate('/landingpage');
-		}
-	};
-
-	useEffect(() => {
-		fetchBook(); // This will run only once, when the component mounts
-	}, []);
-	// console.log(studyPlan);
-	// console.log(props)
-	const [showModal, setShowModal] = useState(false);
-	const [postInput, setPostInput] = useState("");
-	const [textAreaValue, setTextAreaValue] = useState("");
-
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-			// Redirect to landing page if token doesn't exist
 
 			navigate("/");
-		} else {
 		}
 	}, []);
 
-	const handleModalClose = () => {
-		setShowModal(false);
-	};
 
-	const handleModalShow = () => {
-		setShowModal(true);
-	};
-
-	const handlePostSubmit = async (e) => {
-		// Assuming postInput contains the data to be sent
-		const postData = {
-			title: textAreaValue,
-			content: textAreaValue,
-			author: userData.pk,
-			study_plan: studyPlan.id,
-		};
-
-		try {
-			const response = await userService.post("/api/queryposts/", postData);
-			// Handle success - maybe show a success message or redirect
-			console.log("Response:", response.data);
-			console.log("Response:", response.data);
-			handleModalClose();
-			setAlert({ show: true, variant: "success", message: "Post submitted successfully!" });
-		} catch (error) {
-			// Handle error - show error message or perform necessary actions
-			// console.error('Error:', error);
-			console.error("Error:", error);
-			handleModalClose();
-			setAlert({ show: true, variant: "danger", message: "Error submitting post!" });
-		}
-	};
-
-	const postsPerPage = 4; // Number of posts to load per click
-
-	const handleLoadMore = () => {
-		setVisiblePosts(visiblePosts + postsPerPage);
-	};
-
-	const [content, setContent] = useState("");
-
-	const handleEditorChange = (content) => {
-		setPostInput(content);
-	};
-
-	// Step 3: Event handler to capture changes in the text area
-	const handleTextAreaChange = (event) => {
-		setTextAreaValue(event.target.value);
-	};
 	const handleClick = (tab, path) => {
 		setActiveButton(tab);
 		navigate(path, {
@@ -125,18 +61,86 @@ const StylishTabs = () => {
 			},
 		});
 	};
+
+
+
+	
+	useEffect(() => {
+	
+		fetchTopics();
+	}, []);
+
+	const [topics, settopics] = useState();
+	const fetchTopic = async (pk) => {
+		try {
+		  const response = await userService.get(`api/topics/${pk}/`);
+		  return response.data;
+		} catch (error) {
+		  console.error("Error:", error);
+		  return error;
+		}
+	  };
+
+	const fetchTopics = async () => {
+		try {
+			const response = await userService.get("api/topics/", {
+				params: {
+					book_id: book_id,
+				},
+			});
+
+			settopics(response.data);
+			console.log(response.data);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+	const [selectedOption, setSelectedOption] = useState([]);
+	const [generatedSummary, setGeneratedSummary] = useState([]);
+	// Handler for when options are selected
+	const handleChange = (selectedOption) => {
+		setSelectedOption(selectedOption);
+		console.log(`Option selected:`, selectedOption);
+	};
+	var options = [];
+	console.log(typeof topics, Array.isArray(topics));
+
+	if (topics) {
+		let topicses = JSON.parse(topics);
+		console.log("topics are her : ", topicses);
+		options = Array.isArray(topicses)
+			? topicses.map((topic) => ({
+					value: topic.pk,
+					label: topic.fields.title,
+			  }))
+			: [];
+	}
+	const GenerateSummary = async () => {
+		console.log("Topics", selectedOption);
+	  
+		const summaries = await Promise.all(
+		  selectedOption.map(option =>
+			fetchTopic(option.value).then(response => ({
+			  title: option.label,
+			  summary: response.content,  // replace 'summary' with the actual key in the response
+			}))
+		  )
+		);
+		setGeneratedSummary(summaries);
+		// console.log(summaries);
+	  };
+
 	return (
 		<>
 			<style>
 				{`
-        body {
-          background-color: #e1efff; /* Set the background color to blue */
-          margin: 0; /* Reset margin for the body */
-          padding: 0; /* Reset padding for the body */
-        }
-      `}
+      body {
+        background-color: #e1efff; /* Set the background color to blue */
+        margin: 0; /* Reset margin for the body */
+        padding: 0; /* Reset padding for the body */
+      }
+    `}
 			</style>
-
 			<DashBoardNavbar />
 			{alert.show && (
 				<Alert
@@ -155,14 +159,49 @@ const StylishTabs = () => {
 					{alert.message}
 				</Alert>
 			)}
-			<div style={{ marginTop: "100px" }}>
+			<div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-     <h1>Not Implemented Yet</h1>
-       {/* <CircularProgress /> */}
-     </div>
-			{/* Content for Tab 2 */}
+    <div>
+			<Container style={{ backgroundColor: "white",height:'500px',width: '500px' }}>
+				<Form>
+				<div style={{ justifyContent: 'center', alignItems: 'center', }}>
+					<label htmlFor="flavors" style={{marginTop:'200px'}}>Select topics</label>
+					<Select
+						isMulti
+						name="flavors"
+						options={options}
+						className="basic-multi-select"
+						classNamePrefix="select"
+						onChange={handleChange}
+						value={selectedOption}
+					/>
+					<br/>					
+					<Button variant="primary" onClick={GenerateSummary} >
+						Generate Summary
+					</Button>
+					</div>
+				</Form>
+			</Container>
+			</div>
+			<div>
+			<Container style={{ backgroundColor: "white", height: '500px', width: '500px', border: '2px solid gray' }}>
+			<h2>Generated Summary</h2>
+			<div style={{ overflow: 'auto', height: '400px' }}>
+      {generatedSummary.map((summary, index) => (
+        <div key={index} >
+          <h2>{summary.title}</h2>
+          <p >{summary.summary}</p>
+        </div>
+      ))}
+    </div>
+			{/* <textarea class="form-control" id="exampleFormControlTextarea1" rows="20" readOnly style={{ width: '400px' }}></textarea> */}
+			</Container>
+
+			</div>
+			</div>
+		
 		</>
 	);
 };

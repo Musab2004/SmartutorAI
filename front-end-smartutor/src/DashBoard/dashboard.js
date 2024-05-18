@@ -32,6 +32,7 @@ const StylishTabs = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [postInput, setPostInput] = useState("");
 	const [textAreaValue, setTextAreaValue] = useState("");
+	console.log(location.state);
 	const studyPlan = location.state?.studyPlan;
     Data = location.state?.data;
     console.log(Data)
@@ -44,6 +45,7 @@ const StylishTabs = () => {
 	// 		navigate("/");
 	// 	}
 	// }, []);
+	console.log(studyPlan)
 	const plan = studyPlan;
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -57,7 +59,7 @@ const StylishTabs = () => {
 		  const response = await userService.get('api/getweeklygoals/', {
 			params: {
 			  studyplan_id: plan.id,
-			  user_id: userData.pk,
+			  user_id: userData.id,
 			},
 		  });
 	
@@ -102,7 +104,7 @@ const StylishTabs = () => {
 		const postData = {
 			title: textAreaValue,
 			content: textAreaValue,
-			author: userData.pk,
+			author: userData.id,
 			study_plan: studyPlan.id,
 		};
 
@@ -179,7 +181,7 @@ const StylishTabs = () => {
 			)}
 			<div style={{ marginTop: "100px" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
-				<Sidebar studyPlan_id={studyPlan.id} data={Data} />
+				<Sidebar studyPlan={studyPlan} data={Data} />
 			</div>
 
 			<div className="App" style={{minHeight:'400px'}}>

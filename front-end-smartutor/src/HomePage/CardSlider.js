@@ -51,7 +51,7 @@ const CardSlider = ({ cards }) => {
 	const handleSubmit = async (postDataid) => {
 		const formData = {
 			studyplan: postDataid,
-			user: userData.pk,
+			user: userData.id,
 		};
 		try {
 			const study_plan = await userService.post("/api/joinstudyplans/", formData);

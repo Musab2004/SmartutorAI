@@ -16,68 +16,49 @@ const App = () => {
   const [questions, setQuestions] = useState([]);
   var question1s=null;
   console.log(location.state)
-  const { quizId,quizes, numQuestions, quizType, weekid,studyPlan,is_mcq } = location.state;
-  console.log("Study plan is here in Quiz Now : ",studyPlan)
-  // console.log(quizes.results)
+  const { quizes, numQuestions, quizType,is_mcq ,studyPlan} = location.state;
+//   console.log(quizes)
   const handleOptionSelect = (questionId, option) => {
     if (!quizSubmitted) {
       setSelectedAnswers((prev) => ({ ...prev, [questionId]: option }));
     }
   };
-  
-  const fetchQuestions = async () => {  
 
-    userService.get(`api/quizzes/${quizId}/`).then((response) => { 
-      console.log(response.data)
-      setQuestions(response.data.questions);
-     
-
-      // setQuestions(response.data.questions)
-      return response.data.questions;
-      // console.log(questions)
-    })
-
-  };
-
-  useEffect(() => {
-fetchQuestions();
-  }, [quizes]);
 
   const handleFinishQuiz = () => {
     let correct=[]
     let wrong=[]
     setQuizSubmitted(true);
 
-    questions.forEach((question) => {
-    
-      if (selectedAnswers[question.id] === question.answer) {
-        correct.push(question['id'])
+    quizes.results.forEach((question) => {
+      console.log(question,question.correct_answer)
+      if (selectedAnswers[question.Id] === question.correct_answer) {
+        correct.push(question['Id'])
         setCorrectAnswers((prev) => prev + 1);
       }
       else{
-      wrong.push(question['id'])
+      wrong.push(question['Id'])
 
       }
     });
-
-    userService.post('api/quiz-submission/', { correct:correct,wrong:wrong , user_id:userData.id,weekly_goal_id: weekid ,quiz_id:quizId}).then(response => {
-     console.log(response.data)
-      
-      }).catch(error => { console.error('Error:', error);})
     console.log("correct ones : ",correct)
     console.log("wrong ones : ",wrong)  
   };
 
   const startTimer = () => {
     const interval = setInterval(() => {
-      if (timer > 0 && !quizSubmitted) {
+      if (timer > 1) {
+
         setTimer((prev) => prev - 1);
       } else {
         clearInterval(interval);
+        setTimer(0); // Ensure timer doesn't go below zero
         handleFinishQuiz();
       }
     }, 1000);
   };
+  const navigate = useNavigate();
+
 
 
   async function checkAnswer(correct_answer, selectedAnswer) {
@@ -89,8 +70,11 @@ fetchQuestions();
         return false
       }
     }
-    userService.post('api/check-answer/', { correct_answer:correct_answer,selected_answer:selectedAnswer }).then(response => {
-    console.log(response.data)
+ try {
+    const response = await userService.post('api/check-answer/', { correct_answer:correct_answer,selected_answer:selectedAnswer });
+    console.log(response.data);
+    console.log(response.data.similarity_score);
+    
     if(response.data.similarity_score>0.6){
       console.log("true here")
       return true;
@@ -99,12 +83,11 @@ fetchQuestions();
       console.log("false an heer")
       return false
     }
-        
-        }).catch(error => { console.error('Error:', error);})
-    // const data = await response.json();
+  } catch (error) {
+    console.error('Error:', error);
     return null
   }
-  const navigate = useNavigate();
+  }
   return (
     <div>
        	<style>
@@ -125,11 +108,11 @@ fetchQuestions();
 
 {quizSubmitted && (<div style={{marginLeft:'50%'}}>
 <p style={{ fontSize: '20px', color: 'orange', fontWeight: 'bold' }}>
-  You have <span style={{ color: correctAnswers > 0 ? 'green' : 'red' }}>{correctAnswers}</span> out of {questions.length} MCQs correct!
+  You have <span style={{ color: correctAnswers > 0 ? 'green' : 'red' }}>{correctAnswers}</span> out of {quizes.results.length} MCQs correct!
 </p>
 </div>)}
 
-          {questions && questions.map((question) => (
+          {quizes.results && quizes.results.map((question) => (
             <div key={question.id}>
               <Card.Text>{question.question}</Card.Text>
               <div>
@@ -142,9 +125,9 @@ fetchQuestions();
                               type="radio"
                               id={`option-${index}`}
                               label={option}
-                              name={`question-${question.id}`}
-                              checked={selectedAnswers[question.id] === option}
-                              onChange={() => handleOptionSelect(question.id, option)}
+                              name={`question-${question.Id}`}
+                              checked={selectedAnswers[question.Id] === option}
+                              onChange={() => handleOptionSelect(question.Id, option)}
                               disabled={quizSubmitted}
                             />
                           </div>
@@ -153,8 +136,8 @@ fetchQuestions();
                     ) : (
                       <Form.Control
                         type="text"
-                        value={selectedAnswers[question.id] || ''}
-                        onChange={(e) => handleOptionSelect(question.id, e.target.value)}
+                        value={selectedAnswers[question.Id] || ''}
+                        onChange={(e) => handleOptionSelect(question.Id, e.target.value)}
                         disabled={quizSubmitted}
                       />
                     )}
@@ -165,14 +148,14 @@ fetchQuestions();
           <p>
           {checkAnswer(selectedAnswers[question.Id], question.correct_answer)
   ? <span style={{ color: 'green' }}>Correct!</span>
-  : <span style={{ color: 'red' }}>Wrong! Correct Answer: {question.answer}</span>}
+  : <span style={{ color: 'red' }}>Wrong! Correct Answer: {question.correct_answer}</span>}
           </p>
           <p>
-            <Button onClick={() => setShowExplanation(prevState => ({ ...prevState, [question.id]: !prevState[question.id] }))}>
-              Click here {showExplanation[question.id] ? '▲' : '▼'}
+            <Button onClick={() => setShowExplanation(prevState => ({ ...prevState, [question.Id]: !prevState[question.id] }))}>
+              Click here {showExplanation[question.Id] ? '▲' : '▼'}
             </Button>
           </p>
-          {showExplanation[question.id] && (
+          {showExplanation[question.Id] && (
             <div>
               {/* Replace this with the actual explanation */}
               <p>Explanation goes here : {question.context}</p>

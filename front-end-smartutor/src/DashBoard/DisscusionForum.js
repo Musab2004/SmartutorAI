@@ -57,7 +57,7 @@ const RedditPost = (props) => {
 	}, []);
 	if (post.is_upvoted != undefined) {
 		for (let i = 0; i < post.is_upvoted.length; i++) {
-			if (userData.pk == post.is_upvoted[i]) {
+			if (userData.id == post.is_upvoted[i]) {
 				upvoted = true;
 				// console.log("yup is like")
 			}
@@ -129,7 +129,7 @@ const RedditPost = (props) => {
 		const reportData = {
 			post: post.id,
 			reason: reason,
-			reporter: userData.pk,
+			reporter: userData.id,
 		};
 
 		userService
@@ -150,7 +150,7 @@ const RedditPost = (props) => {
 		try {
 			const response = await userService.post("/api/answersposts/", {
 				text: commentText,
-				author: userData.pk,
+				author: userData.id,
 				post: post.id,
 			});
 
@@ -192,7 +192,7 @@ const RedditPost = (props) => {
 	const handleSubmitEditPost = (updatedPostData) => {
 		userService
 			.put(`/api/queryposts/${post.id}/`, {
-				author: userData.pk,
+				author: userData.id,
 				content: editingPost,
 				title: editingPost,
 			}) // Replace `/api/posts/${postId}` with your API endpoint
@@ -216,13 +216,13 @@ const RedditPost = (props) => {
 
 	const handleUpvotePost = (postId) => {
 		if (upvoted) {
-			userService.post(`api/downvotepost/`, { user: userData.pk, post: postId });
+			userService.post(`api/downvotepost/`, { user: userData.id, post: postId });
 			props.fetchPostfunc(props.studyPlan.id);
 			props.fetchPostfunc(props.studyPlan.id);
 			props.fetchPostfunc(props.studyPlan.id);
 			setUpvoted(false);
 		} else {
-			userService.post(`api/upvotepost/`, { user: userData.pk, post: postId });
+			userService.post(`api/upvotepost/`, { user: userData.id, post: postId });
 			setUpvoted(true);
 			props.fetchPostfunc(props.studyPlan.id);
 			props.fetchPostfunc(props.studyPlan.id);

@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,PermissionsMixin, Group, Permission
+from django.db.models import JSONField
 # from django.contrib.auth import get_user_model
 # User = get_user_model()
     
@@ -149,18 +150,33 @@ class WeeklyGoals(models.Model):
     topics_to_be_covered = models.ManyToManyField(Topic, related_name='planned_in_weekly_goals', blank=True)
     topics_covered = models.ManyToManyField(Topic, related_name='covered_in_weekly_goals', blank=True)
     all_topics = models.ManyToManyField(Topic, related_name='alltopics_in_weekly_goals', blank=True)
+    quizes = models.ManyToManyField('Quiz', blank=True, null=True)
     def __str__(self):
         return f"Weekly Goals for {self.study_plan.name}" 
 class Quiz(models.Model):
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    topics = models.ManyToManyField(Topic,null=True)
+    questions=models.ManyToManyField('Question', blank=True, null=True,related_name='questions')
+    correct_questions = models.ManyToManyField('Question', blank=True, null=True,related_name='correct_questions')
+    wrong_questions = models.ManyToManyField('Question', blank=True, null=True,related_name='wrong_questions')
+    topics_to_revisit=JSONField(null=True)
+    is_completed=models.BooleanField(default=False)
+    followup_quiz=models.BooleanField(default=False)
     weekid = models.ForeignKey(WeeklyGoals, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    is_mcq = models.BooleanField(default=True)
+    total_versions=models.IntegerField(default=0)
+    # title = models.CharField(max_length=255)
 
 class Question(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    content = models.TextField()
-    is_mcq = models.BooleanField(default=True)
-    distractors = models.TextField()    
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='belongs_to_quiz')
+    version=models.IntegerField(default=1)
+    question = models.TextField()
+    answer = models.TextField()
+    distractors = JSONField(null=True)
+    is_mcq=models.BooleanField(default=True)
+    context = models.TextField(default="")
+    feedback = models.TextField(default="")
+    topic=models.ForeignKey(Topic, on_delete=models.CASCADE)   
+
 
 class QuizRoom(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE,related_name="owned_quizroom")

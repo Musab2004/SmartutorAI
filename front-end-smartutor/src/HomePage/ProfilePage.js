@@ -88,14 +88,11 @@ const UserProfile = () => {
 			try {
 				const formData = {
 					name,
-					email_address,
-					password,
-					confirmPassword,
 					current_academic_level,
-					Country: selectedCountry["value"],
-					City: selectedCity["value"],
 				};
-
+				const response = await userService.put(`/api/users/${userData.id}/`, formData);
+                console.log("response is here  ",response.data);
+                fetchUser()
 				setReportAlert({ show: true, variant: "success", message: "Signup successful!" });
 			} catch (error) {
 				console.error("Error posting data:", error);
@@ -107,9 +104,6 @@ const UserProfile = () => {
 		}
 	};
 
-	// useEffect(() => {
-	//   fetchUserActivity(); // This will run only once, when the component mounts
-	// }, []);
 
 	const validateForm = async (e) => {
 		const errors = {};
@@ -233,13 +227,15 @@ const UserProfile = () => {
 			},
 		],
 	};
-
+    // var [user,setUser]=useState();
 	const { userData } = useContext(UserContext);
-
+	// var user=userData;
+	const { setUser } = useContext(UserContext);
+   //    setUser(userData);
 	const fetchUserActivity = async () => {
 		try {
 			if (userData) {
-				const response = await userService.get(`/api/useractivity/?user_id=${userData.pk}`);
+				const response = await userService.get(`/api/useractivity/?user_id=${userData.id}`);
 
 				setuseractivityData(response.data);
 				// const userActivityDates = useractivityData.map(item => new Date(item.date).getTime());
@@ -256,8 +252,40 @@ const UserProfile = () => {
 			// navigate('/landingpage');
 		}
 	};
+	useEffect(() => {
+		fetchUserActivity(); // This will run only once, when the component mounts
+	  }, [userData]);
 
-	fetchUserActivity();
+
+
+	  const fetchUser = async () => {
+		try {
+			if (userData) {
+				const response = await userService.get(`/api/users/${userData.id}/`);
+
+			    // var user=response.data;
+				setUser(response.data);
+				// console.log()
+				console.log("got here : ",userData)
+				// const userActivityDates = useractivityData.map(item => new Date(item.date).getTime());
+
+				// markedDates=userActivityDates;
+				// setuseractivityData(userActivityData);
+
+				// console.log(markedDates);
+			}
+
+			// setbookData(response.data);
+		} catch (error) {
+			console.error("Failed to fetch posts", error);
+			// navigate('/landingpage');
+		}
+	};
+	useEffect(() => {
+		fetchUser(); // This will run only once, when the component mounts
+	  }, [userData]);
+  
+	// fetchUserActivity();
 	var markedDates = [];
 	var Dates = [];
 
@@ -283,7 +311,7 @@ const UserProfile = () => {
 
 	var baseURL = "";
 	if (userData) {
-		baseURL = "http://127.0.0.1:8000/media/" + userData.profile_pic;
+		baseURL =  userData.profile_pic;
 	}
 	return (
 		<>
@@ -306,9 +334,7 @@ const UserProfile = () => {
 							</div>
 							<h6 className="f-w-600">{userData.name} </h6>
 							<p>{userData.email_address}</p>
-							<p>
-								{userData.City}, {userData.Country}
-							</p>
+					
 							<i className="mdi mdi-square-edit-outline feather icon-edit m-t-10 f-16"></i>
 							<Button
 								className="m-2"

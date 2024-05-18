@@ -22,16 +22,12 @@ function App() {
   const [data, setData] = useState([]);
 
   const fetchWeeklyGoals = async () => {
-    // if (!userData) {
-    //   console.log('User data is not available');
-    //   return;
-    // }
     setIsLoading(true);
     try {
       const response = await userService.get('api/getweeklygoals/', {
         params: {
           studyplan_id: studyPlan_id,
-          user_id: userData.pk,
+          user_id: userData.id,
         }
       });
       console.log(response.data);

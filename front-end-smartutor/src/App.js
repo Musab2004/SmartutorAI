@@ -3,7 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 
 import LandingPage from "./landing_page_component/LandinPage";
-import QuizPage from "./landing_page_component/QuizPage";
+import QuizPage from "./DashBoard/Quiz";
+import SingleQuizPage from "./DashBoard/SingleQuiz";
 import SummaryGenPage from "./landing_page_component/SummaryGenPage";
 import CreateStudyPlan from "./HomePage/CreateStudyPlans";
 import SearchStudyPlans from "./HomePage/SearchStudyPlans";
@@ -58,11 +59,13 @@ function App() {
 						/>
 						<Route exact path="/homepage" element={<HomePage />} />
 						<Route exact path="/quiz" element={<QuizPage />} />
+						<Route exact path="/singlequiz" element={<SingleQuizPage />} />
 						<Route exact path="/summary" element={<SummaryGenPage />} />
 						<Route exact path="/createstudyplan" element={<CreateStudyPlan />} />
 						<Route exact path="/my-courses" element={<MyStudyPlans />} />
 						<Route exact path="/explore-courses" element={<SearchStudyPlans />} />
 						<Route exact path="/maketimetable" element={<TimetableMaker />} />
+						<Route exact path="/finalstep" element={<TimeTableFinal />} />
 						<Route exact path="/finalstep" element={<TimeTableFinal />} />
 						{/* <Route exact path="/dashboard/post" element={<Post />} /> */}
 					</Routes>

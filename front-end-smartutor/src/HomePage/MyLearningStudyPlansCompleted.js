@@ -15,8 +15,8 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 	useEffect(() => {
 		const fetchUsers = async () => {
 			try {
-				const response = await userService.get(`/api/completedstudyplans/?user_id=${userData.pk}`);
-				// setCompletedStudyPlans(response.data);
+				const response = await userService.get(`/api/completedstudyplans/?user_id=${userData.id}`);
+				setCompletedStudyPlans(response.data);
 				setLoading(false);
 			} catch (error) {
 				console.error("Failed to fetch study plans", error);
@@ -24,8 +24,9 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 				setLoading(false);
 			}
 		};
-
+				
 		fetchUsers();
+
 	}, []);
 
 	const handlePageChange = (pageNumber) => {
@@ -44,10 +45,6 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 		return <p>{error}</p>;
 	}
 
-	const indexOfLastItem = activePage * itemsPerPage;
-	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-	const currentStudyPlans = studyPlans.slice(indexOfFirstItem, indexOfLastItem);
-	const totalPages = Math.ceil(studyPlans.length / itemsPerPage);
 
 	return (
 		<div className="container" style={{minHeight:'350px'}}>
@@ -59,7 +56,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 			) : (
 				<>
 					<Grid container spacing={4} sx={{ mb: 4 }} >
-						{currentStudyPlans.map((studyPlan, index) => (
+						{studyPlans.map((studyPlan, index) => (
 							<Grid item xs={12} md={4}>
 								<Card
 									key={index}
@@ -94,7 +91,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 							</Grid>
 						))}
 					</Grid>
-					<Pagination className="justify-content-center">
+					{/* <Pagination className="justify-content-center">
 						{Array.from({ length: totalPages }, (_, index) => (
 							<Pagination.Item
 								key={index + 1}
@@ -104,7 +101,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 								{index + 1}
 							</Pagination.Item>
 						))}
-					</Pagination>
+					</Pagination> */}
 				</>
 			)}
 		</div>

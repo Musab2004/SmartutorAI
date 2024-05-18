@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-$d(u5dkz@ev&0(s33ra)7_39k0drs@fct5+38rko=qr^m!)4v#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'fypbackend.User'
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "fypbackend.apps.FypbackendConfig",
     'rest_framework',
     'corsheaders',
+    'django_celery_beat',
     'rest_framework_simplejwt',
 ]
 CORS_ALLOW_ALL_ORIGINS = False
@@ -80,6 +81,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "QuesGenerator.wsgi.application"
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Adjust for Redis or RabbitMQ
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 
 # Database
@@ -88,7 +93,7 @@ WSGI_APPLICATION = "QuesGenerator.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'new_fyp_database',
+        'NAME': 'smartutorai_database2',
         'USER': 'root',
         'PASSWORD': 'Ironman2004@',
         'HOST': 'localhost',    # Usually 'localhost' for local development

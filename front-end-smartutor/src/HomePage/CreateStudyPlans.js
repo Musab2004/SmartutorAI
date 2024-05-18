@@ -90,7 +90,7 @@ const StudyPlanForm = () => {
 		postData.append("name", formData.name);
 		postData.append("duration", formData.duration);
 		postData.append("subject", formData.subject);
-		postData.append("owner", userData.pk);
+		postData.append("owner", userData.id);
 		postData.append("books", selectedFile);
 		postData.append("academic_level", formData.academic_level);
 		postData.append("is_public", formData.is_public);

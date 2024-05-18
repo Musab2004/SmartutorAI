@@ -13,7 +13,7 @@ const StudyPlans = ({ itemsPerPage }) => {
 	useEffect(() => {
 		const fetchStudyPlans = async () => {
 			try {
-				const response = await userService.get(`/api/ongoingstudyplans/?user_id=${userData.pk}`);
+				const response = await userService.get(`/api/ongoingstudyplans/?user_id=${userData.id}`);
 				setStudyPlans(response.data);
 			} catch (error) {
 				console.error("Failed to fetch study plans", error);

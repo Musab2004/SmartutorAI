@@ -230,7 +230,7 @@ useEffect(() => {
       postData.append('studyplan_id', studyPlan.id);
       postData.append('chapters_id', topics_id);
       postData.append('start_date', startDate);
-      postData.append('user', userData.pk);
+      postData.append('user', userData.id);
       postData.append('owner', false);
       weekNo++;
      

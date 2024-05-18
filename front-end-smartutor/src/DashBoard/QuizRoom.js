@@ -82,7 +82,7 @@ const StylishTabs = () => {
 				numQuestions,
 				quizType,
 				study_plan: studyPlan.id,
-				owner: userData.pk,
+				owner: userData.id,
 			};
 
 			userService

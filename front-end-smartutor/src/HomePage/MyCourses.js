@@ -62,8 +62,8 @@ function App() {
 
 	const fetchUsers = async () => {
 		try {
-			const response = await userService.get(`/api/ongoingstudyplans/?user_id=${userData.pk}`, {
-				user_id: userData.pk,
+			const response = await userService.get(`/api/ongoingstudyplans/?user_id=${userData.id}`, {
+				user_id: userData.id,
 			}); // Your Django endpoint to fetch users
 			console.log(response.data);
 			setOngoingStudyPLans(response.data);
@@ -150,7 +150,6 @@ function App() {
 						<div class="container">
 							{activeTab2 === 2 && (
 								<>
-									{" "}
 									<MyLearningStudyPlans studyPlans={completedstudyplans} itemsPerPage={5} />{" "}
 								</>
 							)}

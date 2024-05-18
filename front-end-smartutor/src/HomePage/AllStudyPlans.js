@@ -7,6 +7,9 @@ import book from './book.svg'
 import userService from '../landing_page_component/UserSerive';
 import { UserContext } from '../landing_page_component/UserContext';
 const StudyPlans = ({ studyPlans, itemsPerPage }) => {
+
+
+  console.log("study plans",studyPlans)
   const { userData } = useContext(UserContext);
   const [activePage, setActivePage] = useState(1);
   const [locationFilter, setLocationFilter] = useState('');
@@ -43,7 +46,7 @@ const StudyPlans = ({ studyPlans, itemsPerPage }) => {
   
     const formData = {
       studyplan:postDataid,
-      user:userData.pk,
+      user:userData.id,
     }
     try {
       const study_plan = await userService.post('/api/joinstudyplans/', formData);

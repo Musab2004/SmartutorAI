@@ -1,4 +1,6 @@
 from django.apps import AppConfig
+from celery.schedules import crontab
+
 
 
 class FypbackendConfig(AppConfig):

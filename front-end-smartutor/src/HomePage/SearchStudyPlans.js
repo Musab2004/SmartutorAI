@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, FormControl, Button } from 'react-bootstrap';
 // import './App.css';
@@ -6,6 +6,7 @@ import Navbar from "./HomePageNavbar"
 import AllStudyPlans from './AllStudyPlans';
 import userService from '../landing_page_component/UserSerive';
 import Footer from "../landing_page_component/footer"
+import { UserContext } from "../landing_page_component/UserContext";
 const CardList = ({ filteredCards }) => {
   return (
     <Col md={8}>
@@ -26,23 +27,27 @@ const CardList = ({ filteredCards }) => {
 
 
 const App = () => {
+  const { userData } = useContext(UserContext);
+  console.log("userdata is here : ",userData);
   const [activeTab, setActiveTab] = useState("explore-courses");
   const [posts, setPosts] = useState([]);
 
+  const fetchUsers = async () => {
+    try {
+    
+     
+      const response = await userService.get("/api/studyplans/", { params: { user_id: userData.id } }); // Your Django endpoint to fetch users
+      
+      console.log(response.data)
+      setPosts(response.data);
+    } catch (error) {
+      console.error('Failed to fetch users', error);
+    }
+  };
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await userService.get('/api/studyplans/'); // Your Django endpoint to fetch users
-        
-        console.log(response.data)
-        setPosts(response.data);
-      } catch (error) {
-        console.error('Failed to fetch users', error);
-      }
-    };
-
     fetchUsers();
-  }, []);
+
+  }, [posts]);
  
   const [cards, setCards] = useState([]); // Your card data
   const [filteredCards, setFilteredCards] = useState(cards);

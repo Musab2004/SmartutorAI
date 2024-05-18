@@ -13,6 +13,7 @@ import {
 	Form,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from 'axios';
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
 import DisscusionForum from "./DisscusionForum";
@@ -30,109 +31,30 @@ import DatePicker from "react-datepicker";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import { TimePicker } from "react-ios-time-picker";
+import LoaderScreen from '../HomePage/LoaderScreen';
 const StylishTabs = () => {
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
 	const [activeButton, setActiveButton] = useState("tab2");
-
-	const [key, setKey] = useState("tab2");
-	// const [alertPost, setAlertPost] = useState({show: false, variant: '', message: ''});
+	const [loading, setLoading] = useState(false);
 	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
-
-	const [posts, setPosts] = useState([]);
-	const [bookData, setbookData] = useState([]);
-
-	const [visiblePosts, setVisiblePosts] = useState(4); // Number of posts to display initially
-	// console.log(userData)
-
 	const location = useLocation();
-
 	const studyPlan = location.state?.studyPlan;
-	const plan = studyPlan;
 	const book_id = studyPlan.books[0];
 	console.log(studyPlan);
 
 	if (!studyPlan) {
-		navigate("/homepage"); // Replace '/homepage' with your homepage route
+		navigate("/homepage");
 	}
-
-	const fetchBook = async () => {
-		try {
-			const response = await userService.get(`/api/books/${studyPlan.books}/`);
-			// console.log(response.data);
-			setbookData(response.data);
-		} catch (error) {
-			console.error("Failed to fetch posts", error);
-			// navigate('/');
-		}
-	};
-
-	useEffect(() => {
-		fetchBook(); // This will run only once, when the component mounts
-	}, []);
-
-	const [showModal, setShowModal] = useState(false);
-	const [postInput, setPostInput] = useState("");
-	const [textAreaValue, setTextAreaValue] = useState("");
-	const handleModalClose = () => {
-		setShowModal(false);
-	};
-
-	const handleModalShow = () => {
-		setShowModal(true);
-	};
-
-	const handlePostSubmit = async (e) => {
-		// Assuming postInput contains the data to be sent
-		const postData = {
-			title: textAreaValue,
-			content: textAreaValue,
-			author: userData.pk,
-			study_plan: studyPlan.id,
-		};
-
-		try {
-			const response = await userService.post("/api/queryposts/", postData);
-			// Handle success - maybe show a success message or redirect
-			console.log("Response:", response.data);
-			console.log("Response:", response.data);
-			handleModalClose();
-			setAlert({ show: true, variant: "success", message: "Post submitted successfully!" });
-		} catch (error) {
-			// Handle error - show error message or perform necessary actions
-			// console.error('Error:', error);
-			console.error("Error:", error);
-			handleModalClose();
-			setAlert({ show: true, variant: "danger", message: "Error submitting post!" });
-		}
-	};
-
-	const postsPerPage = 4; // Number of posts to load per click
-
-	const handleLoadMore = () => {
-		setVisiblePosts(visiblePosts + postsPerPage);
-	};
-
-	const [content, setContent] = useState("");
-
-	const handleEditorChange = (content) => {
-		setPostInput(content);
-	};
-
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-			// Redirect to landing page if token doesn't exist
 
 			navigate("/");
 		}
 	}, []);
 
-	// Step 3: Event handler to capture changes in the text area
-	const handleTextAreaChange = (event) => {
-		setTextAreaValue(event.target.value);
-	};
 
 	const handleClick = (tab, path) => {
 		setActiveButton(tab);
@@ -143,71 +65,12 @@ const StylishTabs = () => {
 		});
 	};
 
-	const [selectedDate, setSelectedDate] = useState(new Date());
-	const [selectedTime, setSelectedTime] = useState("12:00");
-	const [chapter, setChapter] = useState("");
-	const [topic, setTopic] = useState("");
-	const [duration, setDuration] = useState();
+
 	const [numQuestions, setNumQuestions] = useState("");
 	const [quizType, setQuizType] = useState("");
-	const [QuizRooms, setQuizRooms] = useState([]);
-	// Function to handle form submission
-	const formatDate = (date) => {
-		const d = new Date(date),
-			month = "" + (d.getMonth() + 1),
-			day = "" + d.getDate(),
-			year = d.getFullYear();
-
-		return [year, month.padStart(2, "0"), day.padStart(2, "0")].join("-");
-	};
-
-	const handleSubmit = () => {
-		console.log("called");
-		if (userData) {
-			const quizRoomData = {
-				time,
-				date: formatDate(selectedDate),
-				chapter,
-				topic,
-				duration: parseInt(duration, 10),
-				numQuestions,
-				quizType,
-				study_plan: studyPlan.id,
-				owner: userData.pk,
-			};
-
-			userService
-				.post("/api/quizroom/", quizRoomData)
-				.then((response) => {
-					console.log(response.data);
-					// You can do something with the response here
-					// ...
-
-					// Close the modal
-					// handleClose();
-				})
-				.catch((error) => {
-					console.error(error);
-					// Handle the error here
-					// ...
-				});
-		}
-	};
-
-	const fetchUsers = async () => {
-		try {
-			const response = await userService.get("/api/quizroom/"); // Your Django endpoint to fetch users
-
-			console.log(response.data);
-			setQuizRooms(response.data);
-		} catch (error) {
-			console.error("Failed to fetch users", error);
-			// navigate('/landingpage');
-		}
-	};
-
+	
 	useEffect(() => {
-		fetchUsers();
+	
 		fetchTopics();
 	}, []);
 
@@ -227,23 +90,6 @@ const StylishTabs = () => {
 			console.error("Error:", error);
 		}
 	};
-
-	const [time, settime] = useState("10:00");
-
-	const onChange = (timeValue) => {
-		settime(timeValue);
-	};
-
-	const [selectedOptions, setSelectedOptions] = useState([]);
-
-	// Your topics array
-	// const options = [
-	//   { value: 'chocolate', label: 'Chocolate' },
-	//   { value: 'strawberry', label: 'Strawberry' },
-	//   { value: 'vanilla', label: 'Vanilla' }
-	// ];
-
-	// State to hold the selected option
 	const [selectedOption, setSelectedOption] = useState([]);
 
 	// Handler for when options are selected
@@ -264,7 +110,74 @@ const StylishTabs = () => {
 			  }))
 			: [];
 	}
+	const fetchTopic = async (pk) => {
+		try {
+		  const response = await userService.get(`api/topics/${pk}/`);
+		  return response.data;
+		} catch (error) {
+		  console.error("Error:", error);
+		  return error;
+		}
+	  };
 
+	  const startQuiz = async (topics) => {
+		let numQuestions=10;
+		// let quizType="MCQ";
+		
+		
+		setLoading(true);
+		console.log("quizType : ", quizType);
+		if (quizType === 'MCQ') {
+		  // numQuestions = 5;
+		
+		axios.post('https://ed6e-104-196-240-91.ngrok-free.app/generate-questions/', {
+			topics: topics
+		}).then(response => {
+			const r=response.data;
+			console.log(response.data);
+			navigate("/singlequiz", {state:{quizes:response.data, numQuestions, quizType,is_mcq:true}});	
+		}).catch(error => {
+			console.error('Error:', error);
+			setLoading(false);
+		});
+		}
+		else{
+		  
+		  axios.post('https://9a1e-34-143-169-220.ngrok-free.app/generate-questions/', {
+			topics: topics
+		}).then(response => {
+			const r=response.data;
+			console.log(response.data);
+			navigate("/singlequiz", {state:{quizes:response.data, numQuestions, quizType,is_mcq:false,studyPlan}});	
+		}).catch(error => {
+			console.error('Error:', error);
+			setLoading(false);
+		});
+		
+		
+		}
+		 
+		}
+
+
+	const GenerateQuiz = async () => {
+		console.log("selectedOption", selectedOption);
+		console.log("numQuestions", numQuestions);
+		console.log("quizType", quizType);
+		const summaries = await Promise.all(
+			selectedOption.map(option =>
+			  fetchTopic(option.value).then(response => ({
+				title: response.title,
+				id: response.id,
+				content: response.content,  // replace 'summary' with the actual key in the response
+			  }))
+			)
+		  );
+
+         startQuiz(summaries);
+		
+
+	};
 	return (
 		<>
 			<style>
@@ -294,57 +207,52 @@ const StylishTabs = () => {
 					{alert.message}
 				</Alert>
 			)}
-			<div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
-				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
-			</div>
-			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-     <h1>Not Implemented Yet</h1>
-       {/* <CircularProgress /> */}
-     </div>
-			{/* <Container style={{ backgroundColor: "white" }}>
-				<Form>
-					<label htmlFor="flavors">Select topics</label>
-					<Select
-						isMulti
-						name="flavors"
-						options={options}
-						className="basic-multi-select"
-						classNamePrefix="select"
-						onChange={handleChange}
-						value={selectedOption}
-					/>
-
-					
-					<Form.Group controlId="formNumQuestions">
-						<Form.Label>Number of Questions</Form.Label>
-						<Form.Control as="select" onChange={(e) => setNumQuestions(e.target.value)}>
-							<option value="5">5 questions</option>
-							<option value="10">10 questions</option>
-							<option value="15">15 questions</option>
-							<option value="20">20 questions</option>
-						</Form.Control>
-					</Form.Group>
-
-					
-					<Form.Group controlId="formQuizType">
-						<Form.Label>Quiz Type</Form.Label>
-						<Form.Control as="select" onChange={(e) => setQuizType(e.target.value)}>
+		{!loading && (
+    <>
+        <div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
+            <DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+            <Container style={{ backgroundColor: "white" }}>
+                <Form>
+                    <label htmlFor="flavors">Select topics</label>
+                    <Select
+                        isMulti
+                        name="flavors"
+                        options={options}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        onChange={handleChange}
+                        value={selectedOption}
+                    />
+                    <Form.Group controlId="formNumQuestions">
+                        <Form.Label>Number of Questions</Form.Label>
+                        <Form.Control as="select" onChange={(e) => setNumQuestions(e.target.value)}>
+                            <option value="5">5 questions</option>
+                            <option value="10">10 questions</option>
+                            <option value="15">15 questions</option>
+                            <option value="20">20 questions</option>
+                        </Form.Control>
+                    </Form.Group>
+                    <Form.Group controlId="formQuizType">
+                        <Form.Label>Quiz Type</Form.Label>
+                        <Form.Control as="select" onChange={(e) => setQuizType(e.target.value)}>
+                            <option value="MCQ">MCQ</option>
 							<option value="MCQ">MCQ</option>
-							<option value="ShortQ">Short Q/A</option>
-						</Form.Control>
-					</Form.Group>
-
-					
-					<Button variant="primary" onClick={handleSubmit}>
-						Generate Quiz
-					</Button>
-				</Form>
-			</Container> */}
-
-			{/* <footer className="bg-light text-lg-start" style={{ position: 'fixed', bottom: 0, width: '100%' }}>
-  <Footer />
-</footer> */}
-		</>
+                            <option value="ShortQA">Short Q/A</option>
+                        </Form.Control>
+                    </Form.Group>
+                    <Button variant="primary" onClick={GenerateQuiz} >
+                        Generate Quiz
+                    </Button>
+                </Form>
+            </Container>
+        </div>
+    </>
+// ) : (
+//     <LoaderScreen />
+)};
+</>
 	);
 };
 

@@ -10,9 +10,9 @@ from . import views
 # ]
 urlpatterns = [
     # ... (existing patterns)
-    path('api/questions/', views.QuestionListCreate.as_view(), name='question-list'),
+    # path('api/questions/', views.QuestionListCreate.as_view(), name='question-list'),
     path('api/questions/<int:pk>/', views.QuestionDetailsUpdate.as_view(), name='question-detail'),
-
+    path('api/check-answer/', views.CheckAnswer.as_view(), name='check-answer'),
     path('api/custom-login/', views.custom_login, name='custom_login'),
      path('api/checkusers/', views.CheckUser, name='check-user'),
     path('api/upvotecomment/', views.UpvoteComment, name='upvotecomment'),
@@ -46,6 +46,7 @@ urlpatterns = [
     path('api/topics/', views.TopicListCreate.as_view(), name='topic-list'),
     path('api/topics/<int:pk>/', views.TopicDetailsUpdate.as_view(), name='topic-detail'),
     path('api/chapters/', views.ChapterListCreate.as_view(), name='chapter-list'),
+    path('api/quiz-submission/', views.QuizSubmission.as_view(), name='weeklygoals-list'),
     path('api/chapters/<int:pk>/', views.ChapterDetailsUpdate.as_view(), name='chapter-detail'),
     path('api/books/', views.BookListCreate.as_view(), name='book-list'),
     path('api/books/<int:pk>/', views.BookDetailsUpdate.as_view(), name='book-detail'),
@@ -53,6 +54,7 @@ urlpatterns = [
     path('api/weeklygoaltopiccovered/', views.WeeklyGoals_Topic_Covered.as_view(), name='studyplan-list'),
     path('api/studyplans/<int:pk>/', views.StudyPlanDetailsUpdate.as_view(), name='studyplan-detail'),
     path('api/users/', views.UserListCreate.as_view(), name='user-list'),
+    path('api/questions/', views.QuestionsView.as_view(),name="creaete-questions"),
     path('api/users/<int:pk>/', views.UserDetailsUpdate.as_view(), name='user-detail'),
     # Add similar URL patterns for other models' views
     # Add similar URL patterns for other models' views

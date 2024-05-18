@@ -72,7 +72,7 @@ const Comments = (props) => {
 		const reportData = {
 			comment: comment.id,
 			reason: reason,
-			reporter: userData.pk,
+			reporter: userData.id,
 		};
 
 		try {
@@ -86,7 +86,7 @@ const Comments = (props) => {
 		try {
 			await userService.put(`/api/answersposts/${comment.id}/`, {
 				text: editedText,
-				author: userData.pk,
+				author: userData.id,
 				post: post.id,
 			});
 		} catch (error) {
@@ -125,13 +125,13 @@ const Comments = (props) => {
 	};
 
 	const handleUpvoteComment = (comment, comment_id) => {
-		if (comment.is_upvoted.includes(userData.pk)) {
-			userService.post(`api/downvotecomment/`, { user: userData.pk, comment: comment_id });
+		if (comment.is_upvoted.includes(userData.id)) {
+			userService.post(`api/downvotecomment/`, { user: userData.id, comment: comment_id });
 			props.commentfunc(props.post.id);
 			props.commentfunc(props.post.id);
 			props.commentfunc(props.post.id);
 		} else {
-			userService.post(`api/upvotecomment/`, { user: userData.pk, comment: comment_id });
+			userService.post(`api/upvotecomment/`, { user: userData.id, comment: comment_id });
 
 			props.commentfunc(props.post.id);
 			props.commentfunc(props.post.id);
@@ -218,7 +218,7 @@ const Comments = (props) => {
 										onClick={() => handleUpvoteComment(comment, comment.id)}
 										style={{ background: "none", border: "None" }}
 									>
-										{comment.is_upvoted.includes(userData.pk) ? (
+										{comment.is_upvoted.includes(userData.id) ? (
 											<i className="fas fa-thumbs-up" style={{ color: "blue" }}></i>
 										) : (
 											<i className="far fa-thumbs-up " style={{ color: "grey" }}></i>

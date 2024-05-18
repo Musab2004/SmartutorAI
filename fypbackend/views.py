@@ -11,6 +11,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+import numpy as np
+from sentence_transformers import SentenceTransformer
 from django.core.serializers import serialize
 from django.contrib.auth.hashers import make_password
 from datetime import date
@@ -38,6 +40,17 @@ from django.db.models import Count
 from django.core import serializers
 from django.http import JsonResponse
 
+from celery import shared_task
+from django.utils import timezone
+from .models import WeeklyGoals
+
+@shared_task
+def check_completion_of_weekly_goals():
+    today = timezone.localdate()
+    goals_to_complete = WeeklyGoals.objects.filter(end_date__lte=today, is_completed=False)
+    for goal in goals_to_complete:
+        goal.is_completed = True
+        goal.save()
 
 class AnswersPostListCreate(generics.ListCreateAPIView):
     queryset = AnswersPost.objects.all()
@@ -76,7 +89,7 @@ def custom_login(request):
     # print("profile pi is here : ",user.profile_pic.url)
     user_dict = json.loads(user_data)[0]['fields']  # Convert serialized data to dictionary
     # print(user_dict)
-    user_dict['pk'] = user.pk
+    user_dict['id'] = user.pk
     # print(refresh)
     # print(access_token)
     return Response({'access_token': access_token,'user':user_dict})
@@ -94,11 +107,15 @@ class CompletedStudyPlans(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
+        print("here")
         user_id = self.request.GET.get('user_id')  # Assuming the ID is sent via query parameters
 
         if user_id:
-            study_plans=StudyPlan.objects.all().filter(owner=user_id)
-            study_plans = [study_plan for study_plan in study_plans if not WeeklyGoals.objects.filter(Q(user=user_id) & Q(study_plan=study_plan)).exists()]
+            study_plans=StudyPlan.objects.all().filter(members=user_id)
+            print("studyplans", study_plans)
+            study_plans = [study_plan for study_plan in study_plans if not WeeklyGoals.objects.filter(Q(user=user_id) & Q(study_plan=study_plan)).exists()]  
+            print("after filter studyplans", study_plans)
+            # study_plans = [study_plan for study_plan in study_plans if not WeeklyGoals.objects.filter(Q(user=user_id) & Q(study_plan=study_plan)).exists()]
             return study_plans
         else:
             # If study plan ID is not provided, return an empty queryset or handle as needed
@@ -217,6 +234,22 @@ class QuizDetailsUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = QuizSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        response = super().retrieve(request, *args, **kwargs)
+
+        # Modify the response data to include the whole question objects
+        version = instance.total_versions  # or any other way you get the version
+
+        correct_questions = instance.correct_questions.filter(version=version)
+        wrong_questions = instance.wrong_questions.filter(version=version)
+        questions = instance.questions.filter(version=version)
+        response.data['correct_questions'] = QuestionSerializer(correct_questions, many=True).data
+        response.data['wrong_questions'] = QuestionSerializer(wrong_questions, many=True).data  
+        response.data['questions'] = QuestionSerializer(questions, many=True).data
+
+        return response
+    
 
 class QuizRoomListCreate(generics.ListCreateAPIView):
     queryset = QuizRoom.objects.all()
@@ -254,12 +287,23 @@ class WeeklyGoalsListCreate(generics.ListCreateAPIView):
         studyplan = get_object_or_404(StudyPlan, id=int(studyplan_id))
         if not is_owner:
             studyplan.members.add(user)
+            
         user_id = get_object_or_404(User, id=int(user))
         prev_order=int(order)-1
         start_date=start_date+timedelta(weeks=int(prev_order))
         end_date=start_date+timedelta(weeks=int(order))
         # Get all Chapter objects from the chapters_id
         chapters_id_list = [int(id) for id in chapters_id.split(',')]
+        print(chapters_id_list)
+        quizes_per_week=studyplan.QuizesPerWeek
+        segment_length=int(len(chapters_id_list)/quizes_per_week)
+        print(chapters_id_list)
+        if len(chapters_id_list)>1:
+            chapter_segments = [chapters_id_list[i:i + segment_length] for i in range(0, len(chapters_id_list), segment_length)]
+        else:
+            chapter_segments=[chapters_id_list]
+            # num_of_segments=1
+        print("chapter segments : ",chapter_segments)
         chapters = Topic.objects.filter(id__in=chapters_id_list)
 
         # Create a new WeeklyGoals object
@@ -269,7 +313,13 @@ class WeeklyGoalsListCreate(generics.ListCreateAPIView):
         for chapter in chapters:
             weekly_goals.all_topics.add(chapter)
             weekly_goals.topics_to_be_covered.add(chapter)
-
+        for segment in chapter_segments:
+            print("segments here : ",segment)
+            quiz = Quiz.objects.create(weekid=weekly_goals)
+            for topic_id in segment:
+                topic=Topic.objects.get(id=topic_id)
+                quiz.topics.add(topic)
+            quiz.save()
         # Save the weekly_goals object
         weekly_goals.save()
         # WeeklyGoals.objects.all().delete()
@@ -297,15 +347,33 @@ class WeeklyGoals_all_StudyPlan(generics.ListCreateAPIView):
                 all_weekly_goals = {}
                 all_weekly_goals['weekly_goals'] = WeeklyGoalsSerializer(weeklygoal).data
                 all_weekly_goals['chapters'] = []
-                for chapter in weeklygoal.all_topics.all():
-                    # print(chapter)
-                    my_dict={'topics':TopicSerializer(chapter).data}
-                    if chapter in weeklygoal.topics_to_be_covered.all():
-                        my_dict['is_covered'] = False
-                    elif chapter in weeklygoal.topics_covered.all():
-                        my_dict['is_covered'] = True
-                    all_weekly_goals['chapters'].append(my_dict)
-                result.append(all_weekly_goals)
+                quizes_per_week = studyplan.QuizesPerWeek  # replace study_plan.QuizesPerWeek with the correct field name
+                all_topics = list(weeklygoal.all_topics.all())
+                segment_length=int(len(all_topics)/quizes_per_week)
+                if len(all_topics)>1:
+                    chapter_segments = [all_topics[i:i + segment_length] for i in range(0, len(all_topics), segment_length)]
+                else:
+                    chapter_segments=[all_topics]
+                quizzes = list(Quiz.objects.filter(weekid=weeklygoal))  # replace Quiz with your Quiz model and weekly_goal with the correct field name
+
+                for i, segment in enumerate(chapter_segments):
+                    for chapter in segment:
+                        my_dict={'topics':TopicSerializer(chapter).data}
+                        my_dict['topics'].pop('content', None)
+                        if chapter in weeklygoal.topics_to_be_covered.all():
+                            my_dict['is_covered'] = False
+                        elif chapter in weeklygoal.topics_covered.all():
+                            my_dict['is_covered'] = True
+                        my_dict['topics']['is_quiz']=False  
+                        all_weekly_goals['chapters'].append(my_dict)
+                    
+                    if i < len(quizzes):
+                        quiz_dict = {'topics': QuizSerializer(quizzes[i]).data}
+                        quiz_dict['topics']['title']='Quiz'
+                        quiz_dict['topics']['is_quiz']=True  # replace QuizSerializer with your Quiz serializer
+                        all_weekly_goals['chapters'].append(quiz_dict)
+                if all_weekly_goals is not None:        
+                    result.append(all_weekly_goals)
             # print(result)        
             return Response({'response': result,'all_complete':all_complete})
         else:
@@ -338,6 +406,9 @@ class Complete_StudyPlan(generics.ListCreateAPIView):
         user = User.objects.get(pk=user_id)
         studyplan = StudyPlan.objects.get(pk=studyplan_id)        
         studyplan.members.remove(user)
+        studyplan.is_completed=True
+        studyplan.save()
+        print("study plan here : ",studyplan)
         if studyplan:
             WeeklyGoals.objects.filter(study_plan=studyplan, user=user).delete() 
             return Response([])
@@ -353,11 +424,14 @@ class WeeklyGoals_Topic_Covered(generics.ListCreateAPIView):
         weeklygoal_id = request.GET.get('weeklygoal_id')   # Assuming the ID is sent via query parameters
         topic = Topic.objects.get(pk=topic_id)
         weeklygoal = WeeklyGoals.objects.get(pk=weeklygoal_id)
+        weeklygoal.study_plan.is_completed=True
+        weeklygoal.study_plan.save()
         weeklygoal.topics_covered.add(topic)
         weeklygoal.topics_to_be_covered.remove(topic)
         if  weeklygoal.topics_to_be_covered.all().count()==0:
             weeklygoal.is_completed=True 
         weeklygoal.save()
+
         my_dict={'topics':TopicSerializer(topic).data,'is_covered':True}    
         return Response(my_dict)
        
@@ -394,7 +468,86 @@ class ReportPostDetailsUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = ReportPostSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+class QuizSubmission(generics.ListCreateAPIView):
+    queryset = ReportPost.objects.all()
+    serializer_class = ReportPostSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        correct = data.get('correct')
+        wrong = data.get('wrong')
+        quiz_id = data.get('quiz_id')
+        topic_to_revisit=[]
+        topic_to_revisit_ids=[]
+        # Assuming you have models for Question, WeeklyGoal, and Quiz
+        # weekly_goal = WeeklyGoals.objects.get(id=weekly_goal_id)
+        quiz = Quiz.objects.get(id=quiz_id)
+        quiz.is_completed=True
+        if len(wrong)!=0:
+            quiz.followup_quiz=True
+        for question in correct:
+            q=Question.objects.get(id=question)
+            quiz.correct_questions.add(q)
+        for question in wrong: 
+            q=Question.objects.get(id=question)
+            if q.topic.id not in topic_to_revisit_ids:
+                my_dict=TopicSerializer(q.topic).data     
+                topic_to_revisit.append(my_dict)
+                topic_to_revisit_ids.append(q.topic.id)
+            quiz.wrong_questions.add(q)
+        quiz.topics_to_revisit=topic_to_revisit    
+        quiz.save()    
+        return JsonResponse({'status': 'success'}, status=201)        
+class QuestionsView(generics.ListCreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        questions = data.get('questions')
+        # weekly_goal_id = data.get('weekly_goal_id')
+        quiz_id = data.get('quiz_id')
 
+        # Assuming you have models for Question, WeeklyGoal, and Quiz
+        # weekly_goal = WeeklyGoals.objects.get(id=weekly_goal_id)
+        quiz = Quiz.objects.get(id=quiz_id)
+        quiz.total_versions=quiz.total_versions+1
+        quiz.save()
+        version_number=quiz.total_versions
+        print(questions)
+        for question_data in questions['results']:
+            print(question_data)
+            topic=Topic.objects.get(id=question_data['id'])
+            q=Question.objects.create(question=question_data['question'],answer=question_data["correct_answer"],distractors=question_data['distractors'],context=question_data["context"],topic=topic, quiz=quiz,version=version_number)
+            quiz.questions.add(q)
+
+        return JsonResponse({'status': 'success'}, status=201)
+class CheckAnswer(generics.ListCreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        correct_answer = data.get('correct_answer')
+        # weekly_goal_id = data.get('weekly_goal_id')
+        selected_answer = data.get('selected_answer')
+        model = SentenceTransformer('all-MiniLM-L6-v2')
+        def encode(text):
+            return model.encode(text)
+        def cosine_similarity(vec1, vec2):
+            return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+        def check_similarity(reference_answer, student_answer):
+            ref_vec = encode(reference_answer)
+            student_vec = encode(student_answer)
+            similarity = cosine_similarity(ref_vec, student_vec)
+            return similarity
+        similarity_score = check_similarity(correct_answer, selected_answer)
+        similarity_score=float(similarity_score)
+        print(f"Similarity score: {similarity_score:.2f}")
+        return JsonResponse({'status': 'success','similarity_score':similarity_score}, status=201)    
 class AnswersPostListCreate(generics.ListCreateAPIView):
     queryset = AnswersPost.objects.all()
     serializer_class = AnswersPostSerializer
@@ -671,6 +824,17 @@ class UserDetailsUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        print("before ",instance)
+        name = request.data.get('name')
+        current_academic_level = request.data.get('current_academic_level')
+        instance.name=name
+        instance.current_academic_level=current_academic_level
+        instance.save()
+        print("after : ",instance)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 class UserActivityUpdateAPIView(generics.RetrieveUpdateAPIView):
     authentication_classes = []  # If using JWT, adjust accordingly
@@ -686,6 +850,7 @@ class UserActivityUpdateAPIView(generics.RetrieveUpdateAPIView):
             activity.save()
 
         return Response({'status': 'success'}, status=status.HTTP_200_OK)
+
 
 
      
@@ -740,9 +905,11 @@ class StudyPlanListCreate(generics.ListCreateAPIView):
         study_plan.save()
         study_plan_serializer = StudyPlanSerializer(study_plan)
         return Response(study_plan_serializer.data)
-    def list(self, request, *args, **kwargs): # Replace 1 with the ID of the user you want recommendations for
-        study_plans = StudyPlan.objects.all()
-        study_plans = [study_plan for study_plan in study_plans if WeeklyGoals.objects.filter(Q(study_plan=study_plan)).exists()]
+    def list(self, request, *args, **kwargs):
+         # Replace 1 with the ID of the user you want recommendations for
+        user_id = request.GET.get('user_id')
+        print("user id should be this : ",user_id)
+        study_plans = StudyPlan.objects.exclude(members=user_id)
         study_plan_serializer = StudyPlanSerializer(study_plans, many=True)
 
         return Response(study_plan_serializer.data)     
@@ -789,9 +956,9 @@ def extract_outline_and_text_to_json(doc,book):
             for page_num in range(start_page, end_page + 1):
                 page = doc.load_page(page_num)
                 text += page.get_text()
-            # pattern = r'^\d+\.\d+ '
-            # if re.match(pattern, title):
-            Topic.objects.create(chapter=chapter,book=book, title=title, content=text,order=topic_order)
+            pattern = r'^\d+\.\d+ '
+            if re.match(pattern, title):
+                Topic.objects.create(chapter=chapter,book=book, title=title, content=text,order=topic_order)
 
     return topics        
    

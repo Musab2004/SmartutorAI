@@ -95,7 +95,7 @@ const StylishTabs = () => {
 		// Assuming postInput contains the data to be sent
 		const postData = {
 			content: textAreaValue,
-			author: userData.pk,
+			author: userData.id,
 			study_plan: studyPlan.id,
 		};
 
