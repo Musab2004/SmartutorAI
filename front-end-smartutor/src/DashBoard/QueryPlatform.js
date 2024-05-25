@@ -154,7 +154,7 @@ const StylishTabs = () => {
 			</style>
 			{/* <DashBoardNavbar /> */}
 			
-			{/* <DashboardTabs studyPlan={studyPlan} activeButton={activeButton} /> */}
+			
 			{alert.show && (
 				<Alert
 					variant={alert.variant}
@@ -172,10 +172,10 @@ const StylishTabs = () => {
 					{alert.message}
 				</Alert>
 			)}
-			{/* <div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}> */}
+			<div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
-			{/* </div> */}
-			<div style={{ marginTop: "100px",minHeight:'400px',marginLeft:'100px' }}>
+			{/* </div>
+			<div style={{ marginTop: "100px",minHeight:'400px',marginLeft:'100px' }}> */}
 				
 				<Container>
 					<Row>

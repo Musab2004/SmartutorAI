@@ -517,10 +517,10 @@ class QuestionsView(generics.ListCreateAPIView):
         quiz.save()
         version_number=quiz.total_versions
         print(questions)
-        for question_data in questions['results']:
+        for question_data in questions:
             print(question_data)
             topic=Topic.objects.get(id=question_data['id'])
-            q=Question.objects.create(question=question_data['question'],answer=question_data["correct_answer"],distractors=question_data['distractors'],context=question_data["context"],topic=topic, quiz=quiz,version=version_number)
+            q=Question.objects.create(question=question_data['question'],answer=question_data["correct_answer"],distractors=question_data['distractors'],feedback=question_data['explanation'],context=question_data["context"],topic=topic, quiz=quiz,version=version_number)
             quiz.questions.add(q)
 
         return JsonResponse({'status': 'success'}, status=201)
@@ -534,6 +534,12 @@ class CheckAnswer(generics.ListCreateAPIView):
         correct_answer = data.get('correct_answer')
         # weekly_goal_id = data.get('weekly_goal_id')
         selected_answer = data.get('selected_answer')
+        if selected_answer is None:
+            return JsonResponse({'status': 'success','similarity_score':0}, status=201)
+
+        print("answer we getting : ",selected_answer)
+        if selected_answer=="":
+            return JsonResponse({'status': 'success','similarity_score':0}, status=201) 
         model = SentenceTransformer('all-MiniLM-L6-v2')
         def encode(text):
             return model.encode(text)

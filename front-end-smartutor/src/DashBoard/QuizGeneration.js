@@ -66,8 +66,9 @@ const StylishTabs = () => {
 	};
 
 
-	const [numQuestions, setNumQuestions] = useState("");
-	const [quizType, setQuizType] = useState("");
+	const [numQuestions, setNumQuestions] = useState("5");
+	const [quizType, setQuizType] = useState("MCQ");
+	const [instruction, setInstruction] = useState("");
 	
 	useEffect(() => {
 	
@@ -119,43 +120,164 @@ const StylishTabs = () => {
 		  return error;
 		}
 	  };
+	  function partition(id, title, text) {
+		const words = text.split(' ');
+		const totalWords = words.length;
+		const partitions = [];
+		const minWordsPerPartition = 50;
+		const maxWordsPerPartition = 100;
+		let currentStart = 0;
+	
+		while (currentStart < totalWords) {
+			let endIndex = currentStart + maxWordsPerPartition;
+			if (endIndex > totalWords) {
+				endIndex = totalWords;
+			}
+			if (endIndex - currentStart < minWordsPerPartition) {
+				endIndex = totalWords;
+			}
+	
+			const partition = {
+				id: id,
+				title: title,
+				content: words.slice(currentStart, endIndex).join(' ')
+			};
+	
+			partitions.push(partition);
+			currentStart = endIndex;
+		}
+	
+		return partitions;
+	}
+	
+	const alpaca_prompt = `Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+	
+	### Instruction:
+	{}
+	
+	### Input:
+	{}
+	
+	### Response:
+	{}`;
+	
+	async function generateShortQA(id, title, content, Id) {
+		const mcqOutput = [];
+		const outputText = await generateMCQsForPartition(content);
+		if (quizType === 'ShortQA') {
+		const pattern = /<question>(.*?)<\/question>.*?<answer>(.*?)<\/answer>/gs;
+		const matches = [...outputText.matchAll(pattern)];
+	    console.log(matches)
+		for (const match of matches) {
+			const question = match[1].trim();
+			const correctAnswer = match[2].trim();
+			mcqOutput.push({
+				id: id,
+				Id: Id,
+				context: content,
+				title: title,
+				distractors: null,
+				question: question,
+				correct_answer: correctAnswer
+			});
+		}
+	
+		return mcqOutput;
+	}
+	else{
 
-	  const startQuiz = async (topics) => {
-		let numQuestions=10;
-		// let quizType="MCQ";
+		const allQuestions = [];
+        console.log("output text : ",outputText);
+		const mcqPattern = /<question>(.*?)<\/question>.*?<answer>(.*?)<\/answer>.*?<distractor>(.*?)<\/distractor>/gs;
+		const matches = [...outputText.matchAll(mcqPattern)];
 		
+			for (const match of matches) {
+				const [_, question, answer, distractors] = match;
+				allQuestions.push({
+					id: id,
+					Id: Id,
+					context: content,
+					title: title,
+					question: question.trim(),
+					correct_answer: answer.trim(),
+					distractors: distractors.split('<d>').filter(d => d.trim()).map(d => d.replace('</d>', '').trim())
+				});
+			}
 		
-		setLoading(true);
-		console.log("quizType : ", quizType);
+			return allQuestions;
+		}
+
+
+
+	}
+	
+	
+	async function generateMCQsForPartition(partition, instruction = "Generate Biology based Short qa from it") {
+		const inputs = alpaca_prompt.replace('{}', instruction).replace('{}', partition).replace('{}', '')
+		console.log("Quiz type : ",quizType);
 		if (quizType === 'MCQ') {
-		  // numQuestions = 5;
-		
-		axios.post('https://ed6e-104-196-240-91.ngrok-free.app/generate-questions/', {
-			topics: topics
-		}).then(response => {
-			const r=response.data;
-			console.log(response.data);
-			navigate("/singlequiz", {state:{quizes:response.data, numQuestions, quizType,is_mcq:true}});	
-		}).catch(error => {
-			console.error('Error:', error);
-			setLoading(false);
-		});
+			try {
+				const response = await axios.post('https://2114-34-126-68-193.ngrok-free.app/generate-questions/', {
+					input_text: inputs
+				});
+				return response.data.results;
+			} catch (error) {
+				console.error('Error:', error);
+				throw error;
+			}
+			}
+			else{
+				try {
+					const response = await axios.post('https://cfc1-34-125-125-169.ngrok-free.app/generate-questions/', {
+						input_text: inputs
+					});
+					return response.data.results;
+				} catch (error) {
+					console.error('Error:', error);
+					throw error;
+				}
+			
+			
+			}
+	}
+	
+	
+	async function createQuestions(topics) {
+		try {
+			const results = [];
+			const allPartitions = [];
+	
+			console.log("started");
+	        console.log(topics);
+			topics.topics.forEach(topic => {
+				const parts = partition(topic.id, topic.title, topic.content);
+				allPartitions.push(...parts);
+			});
+	
+			const numSamples = Math.min(parseInt(numQuestions), allPartitions.length);
+			const selectedPartitions = allPartitions.sort(() => 0.5 - Math.random()).slice(0, numSamples);
+	
+			console.log("slected partitions : ",selectedPartitions);
+	        let newId=0
+			for (const topic of selectedPartitions) {
+				const questions = await generateShortQA(topic.id, topic.title, topic.content, newId); // Await the API call
+				newId++;
+				console.log("questions : ",questions);
+				results.push(...questions);
+			}
+	
+			return results;
+		} catch (e) {
+			throw new Error(e.message);
 		}
-		else{
-		  
-		  axios.post('https://9a1e-34-143-169-220.ngrok-free.app/generate-questions/', {
-			topics: topics
-		}).then(response => {
-			const r=response.data;
-			console.log(response.data);
-			navigate("/singlequiz", {state:{quizes:response.data, numQuestions, quizType,is_mcq:false,studyPlan}});	
-		}).catch(error => {
-			console.error('Error:', error);
-			setLoading(false);
-		});
+	}
+
+
+	  const startQuiz = async (topics) => {	
+        setLoading(true);
+		const generatedQuestions = await createQuestions({ topics: topics });
 		
-		
-		}
+		navigate("/singlequiz", {state:{quizes:generatedQuestions, numQuestions, quizType,is_mcq:quizType==="MCQ" ? true : false}});	
 		 
 		}
 
@@ -189,7 +311,8 @@ const StylishTabs = () => {
       }
     `}
 			</style>
-			<DashBoardNavbar />
+			{!loading && (<DashBoardNavbar />)}
+			{loading && (<LoaderScreen />)}
 			{alert.show && (
 				<Alert
 					variant={alert.variant}
@@ -242,6 +365,7 @@ const StylishTabs = () => {
                             <option value="ShortQA">Short Q/A</option>
                         </Form.Control>
                     </Form.Group>
+					
                     <Button variant="primary" onClick={GenerateQuiz} >
                         Generate Quiz
                     </Button>

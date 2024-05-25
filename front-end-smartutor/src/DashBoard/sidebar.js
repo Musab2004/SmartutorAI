@@ -11,6 +11,8 @@ import { Weekend, ExpandMore } from '@mui/icons-material';
 
 import LoaderScreen from '../HomePage/LoaderScreen';
 import StudyPlans from '../HomePage/AllStudyPlans';
+
+// require('dotenv').config()
 // import CircularProgress from '@mui/material/CircularProgress';
 // const TopicContent = ({ topic,weekly_goal_id,fetchWeeklyGoals }) => {
 //   const [isCovered, setIsCovered] = useState(false);
@@ -46,8 +48,11 @@ const fetchTopic = async (pk) => {
   const QuizForm = ({ quiz, weeklyGoalId ,studyPlan}) => {
     // console.log("Study plan is here in Quiz Now : ",studyPlan)
     const [all_topics, setAllTopics] = useState([]);
-    const [quizType, setQuizType] = useState('ShortQA');
+    const [quizType, setQuizType] = useState('MCQ');
+    const numQuestions=10
+    const [selectedOption, setSelectedOption] = useState([]);
     console.log("weekly goal id : ",weeklyGoalId)
+    console.log("quiz : ",quiz)
     const [Quiz, setQuiz] = useState([]);
     const navigate = useNavigate();
     useEffect(() => {
@@ -69,7 +74,6 @@ const fetchTopic = async (pk) => {
     const fetchQuestions = async () => {  
 
       userService.get(`api/quizzes/${quiz.topics.id}/`).then((response) => { 
-        console.log("quiz is here : ",response.data)
         setQuiz(response.data);
        
   
@@ -79,55 +83,232 @@ const fetchTopic = async (pk) => {
       })
   
     };
-console.log("topics are here : ",all_topics)
 const [Questions, setQuestions] = useState([]);
 const [loading, setLoading] = useState(false);
 
 useEffect(() => {
   fetchQuestions();
-  // console.log(questions)
     }, [quiz]);
 const startQuiz = async (topics) => {
-let numQuestions=10;
-// let quizType="MCQ";
-
 
 setLoading(true);
-if (quizType === 'MCQ') {
-  // numQuestions = 5;
 
-axios.post('https://ed6e-104-196-240-91.ngrok-free.app/generate-questions/', {
-    topics: topics
-}).then(response => {
-    const r=response.data;
-    console.log(response.data);
-    userService.post('api/questions/', { questions: response.data, weekly_goal_id: weeklyGoalId ,quiz_id:quiz.topics.id,is_mcq:true}).then(response => {
-    navigate("/quiz", {state:{ quizId:quiz.topics.id,quizes:r, numQuestions, quizType, weekid:weeklyGoalId ,studyPlan:studyPlan,is_mcq:true}});	
-    }).catch(error => { console.error('Error:', error);setLoading(false);})
-}).catch(error => {
-    console.error('Error:', error);
-    setLoading(false);
-});
+const generatedQuestions = await createQuestions({ topics: topics });
+setLoading(true);
+userService.post('api/questions/', { questions: generatedQuestions, weekly_goal_id: weeklyGoalId ,quiz_id:quiz.topics.id,is_mcq:quizType==="MCQ" ? true : false})
+navigate("/quiz", {state:{ quizId:quiz.topics.id,quizes:generatedQuestions, numQuestions,timer:10, quizType, weekid:weeklyGoalId ,studyPlan:studyPlan,is_mcq:quizType==="MCQ" ? true : false}});	
 }
-else{
+
+
+
+
+
+
+
+function partition(id, title, text) {
+  const words = text.split(' ');
+  const totalWords = words.length;
+  const partitions = [];
+  const minWordsPerPartition = 50;
+  const maxWordsPerPartition = 100;
+  let currentStart = 0;
+
+  while (currentStart < totalWords) {
+    let endIndex = currentStart + maxWordsPerPartition;
+    if (endIndex > totalWords) {
+      endIndex = totalWords;
+    }
+    if (endIndex - currentStart < minWordsPerPartition) {
+      endIndex = totalWords;
+    }
+
+    const partition = {
+      id: id,
+      title: title,
+      content: words.slice(currentStart, endIndex).join(' ')
+    };
+
+    partitions.push(partition);
+    currentStart = endIndex;
+  }
+
+  return partitions;
+}
+
+const alpaca_prompt = `Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+
+### Instruction:
+{}
+
+### Input:
+{}
+
+### Response:
+{}`;
+
+async function getExplanation(question, answer) {
+  const apiKey = "add your own";
+  console.log("APi key : ",apiKey) // Replace with your actual OpenAI API key
+  const endpoint = 'https://api.openai.com/v1/chat/completions';
+
+  const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+  };
+
+  const data = {
+      model: 'gpt-3.5-turbo',
+      messages: [
+          { role: 'system', content: 'You are a helpful assistant.' },
+          { role: 'user', content: `Question: ${question}\nAnswer: ${answer}\nExplain this in simple and understandable terms.` }
+      ],
+      max_tokens: 150
+  };
+
+  try {
+      const response = await axios.post(endpoint, data, { headers });
+      const explanation = response.data.choices[0].message.content.trim();
+      return explanation;
+  } catch (error) {
+      console.error('Error making API call:', error);
+      throw error;
+  }
+}
+
+async function generateShortQA(id, title, content, Id) {
+  const mcqOutput = [];
+  const outputText = await generateMCQsForPartition(content);
+	if (quizType === 'ShortQA') {
+		const pattern = /<question>(.*?)<\/question>.*?<answer>(.*?)<\/answer>/gs;
+		const matches = [...outputText.matchAll(pattern)];
+	    console.log(matches)
+		for (const match of matches) {
+			const question = match[1].trim();
+			const correctAnswer = match[2].trim();
+      
+      const explanation=await getExplanation(question,correctAnswer);
+			mcqOutput.push({
+				id: id,
+				Id: Id,
+				context: content,
+				title: title,
+				distractors: null,
+				question: question,
+				correct_answer: correctAnswer,
+        explanation:explanation
+			});
+		}
+	
+		return mcqOutput;
+	}
+	else{
+
+		const allQuestions = [];
+        console.log("output text : ",outputText);
+		const mcqPattern = /<question>(.*?)<\/question>.*?<answer>(.*?)<\/answer>.*?<distractor>(.*?)<\/distractor>/gs;
+		const matches = [...outputText.matchAll(mcqPattern)];
+		
+			for (const match of matches) {
+				const [_, question, answer, distractors] = match;
+        const explanation=await getExplanation(question,answer.trim());
+				allQuestions.push({
+					id: id,
+					Id: Id,
+					context: content,
+					title: title,
+					question: question.trim(),
+					correct_answer: answer.trim(),
+					distractors: distractors.split('<d>').filter(d => d.trim()).map(d => d.replace('</d>', '').trim()),
+          explanation:explanation
+				});
+			}
+		
+			return allQuestions;
+		}
+}
+
+async function generateMCQsForPartition(partition, instruction = "Generate Biology based Short qa from it") {
+  const inputs = alpaca_prompt.replace('{}', instruction).replace('{}', partition).replace('{}', '')
+  console.log(inputs);
+	if (quizType === 'MCQ') {
+    try {
+      const response = await axios.post('https://3de8-34-124-222-86.ngrok-free.app/generate-questions/', {
+        input_text: inputs
+      });
+      return response.data.results;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+    }
+    else{
+      try {
+        const response = await axios.post(' https://d9f6-34-16-138-45.ngrok-free.app/generate-questions/', {
+          input_text: inputs
+        });
+        return response.data.results;
+      } catch (error) {
+        console.error('Error:', error);
+        throw error;
+      }
+    
+    
+    }
+}
+
+
+async function createQuestions(topics) {
+  try {
+    const results = [];
+    const allPartitions = [];
+
+    console.log("started");
+        console.log(topics);
+    topics.topics.forEach(topic => {
+      const parts = partition(topic.id, topic.title, topic.content);
+      allPartitions.push(...parts);
+    });
+
+    const numSamples = Math.min(numQuestions, allPartitions.length);
+    const selectedPartitions = allPartitions.sort(() => 0.5 - Math.random()).slice(0, numSamples);
+
+    console.log("slected partitions : ",selectedPartitions);
+
+    for (const topic of selectedPartitions) {
+      const questions = await generateShortQA(topic.id, topic.title, topic.content, topic.id); // Await the API call
+      console.log("questions : ",questions);
+      results.push(...questions);
+    }
+
+    return results;
+  } catch (e) {
+    throw new Error(e.message);
+  }
+}
+
+
   
-  axios.post('https://ae63-35-204-250-60.ngrok-free.app/generate-questions/', {
-    topics: topics
-}).then(response => {
-    const r=response.data;
-    console.log(response.data);
-    userService.post('api/questions/', { questions: response.data, weekly_goal_id: weeklyGoalId ,quiz_id:quiz.topics.id,is_mcq:false}).then(response => {
-    navigate("/quiz", {state:{ quizId:quiz.topics.id,quizes:r, numQuestions, quizType, weekid:weeklyGoalId ,studyPlan:studyPlan,is_mcq:false}});	
-    }).catch(error => { console.error('Error:', error);setLoading(false);})
-}).catch(error => {
-    console.error('Error:', error);
-    setLoading(false);
-});
+
+const GenerateQuiz = async () => {
+  console.log("selectedOption", selectedOption);
+  console.log("numQuestions", numQuestions);
+  console.log("quizType", quizType);
+  const summaries = await Promise.all(
+    selectedOption.map(option =>
+      fetchTopic(option.value).then(response => ({
+      title: response.title,
+      id: response.id,
+      content: response.content,  // replace 'summary' with the actual key in the response
+      }))
+    )
+    );
+
+       startQuiz(summaries);
+  
+
+};
 
 
-}
- 
-}
   return (
     <>
    {!loading && <div>

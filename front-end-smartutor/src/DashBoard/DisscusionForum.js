@@ -321,7 +321,7 @@ const RedditPost = (props) => {
 								onClose={handleClose}
 								PaperProps={{
 									style: {
-										maxHeight: ITEM_HEIGHT * 4.5,
+										maxHeight: 1 * 4.5,
 										width: "20ch",
 									},
 								}}

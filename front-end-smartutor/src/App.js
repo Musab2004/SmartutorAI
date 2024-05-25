@@ -3,7 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 
 import LandingPage from "./landing_page_component/LandinPage";
-import QuizPage from "./DashBoard/Quiz";
+import Aboutus from "./landing_page_component/AboutUS";
+import Quiz from "./DashBoard/Quiz";
 import SingleQuizPage from "./DashBoard/SingleQuiz";
 import SummaryGenPage from "./landing_page_component/SummaryGenPage";
 import CreateStudyPlan from "./HomePage/CreateStudyPlans";
@@ -58,7 +59,8 @@ function App() {
 							element={<DisscusionForumDashBoard />}
 						/>
 						<Route exact path="/homepage" element={<HomePage />} />
-						<Route exact path="/quiz" element={<QuizPage />} />
+						<Route exact path="/quiz" element={<Quiz />} />
+						<Route exact path="/aboutus" element={<Aboutus />} />
 						<Route exact path="/singlequiz" element={<SingleQuizPage />} />
 						<Route exact path="/summary" element={<SummaryGenPage />} />
 						<Route exact path="/createstudyplan" element={<CreateStudyPlan />} />

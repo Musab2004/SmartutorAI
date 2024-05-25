@@ -16,6 +16,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import Dashboard from "../DashBoard";
 import Weekicon from "./week-icon.png";
 import axios from "axios";
+import ChatbotApp from "./chatbot";
 const StylishTabs = () => {
 
 
@@ -36,7 +37,11 @@ const StylishTabs = () => {
 	const studyPlan = location.state?.studyPlan;
     Data = location.state?.data;
     console.log(Data)
- 
+	const [showChatbot, setShowChatbot] = useState(false);
+
+	const toggleChatbot = () => {
+	  setShowChatbot(prevShowChatbot => !prevShowChatbot);
+	};
 	
 
 	//   useEffect(() => {
@@ -161,7 +166,7 @@ const StylishTabs = () => {
       }
     `}
 			</style>
-			<DashBoardNavbar />
+			{/* <DashBoardNavbar /> */}
 			{alert.show && (
 				<Alert
 					variant={alert.variant}
@@ -226,20 +231,25 @@ const StylishTabs = () => {
 				)}
 			</div>
 			{!showChat && (
-				<Button
-					onClick={() => setShowChat(true)}
-					style={{
-						position: "fixed",
-						backgroundColor: "white",
-						color: "black",
-						bottom: "20px",
-						right: "20px",
-						fontSize: "16px",
-					}}
-				>
-					<img src={Weekicon} style={{ width: "45px", height: "auto" }} />
-					Chat with GPT
-				</Button>
+			  <Container>
+			 
+			  {showChatbot && (
+				<div style={{
+				  position: 'fixed',
+				  bottom: 150,
+				  right: 0,
+				  width: '350px',
+				  height: '600px',
+				  overflow: 'auto',
+				  zIndex: 1000,
+				}}>
+				  <ChatbotApp/>
+				</div>
+			  )}
+
+<Button style={{width:'200px',position: 'fixed', bottom: 100,right: 100,}} onClick={toggleChatbot}>Assistant</Button>
+			</Container>
+			
 			)}
 				<footer className="bg-light text-lg-start" style={{ marginLeft:'4%',width: 'auto' }}>
   <Footer />

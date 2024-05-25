@@ -42,7 +42,7 @@ const LNavbar = () => {
 								Home
 							</Link>
 							<Link
-								to="/quiz"
+								to="/aboutus"
 								className="me-3"
 								style={{
 									textDecoration: "none",

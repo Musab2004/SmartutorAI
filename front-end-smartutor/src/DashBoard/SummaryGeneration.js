@@ -30,6 +30,7 @@ import DatePicker from "react-datepicker";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import { TimePicker } from "react-ios-time-picker";
+import axios from 'axios';
 const StylishTabs = () => {
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
@@ -119,14 +120,41 @@ const StylishTabs = () => {
 		console.log("Topics", selectedOption);
 	  
 		const summaries = await Promise.all(
-		  selectedOption.map(option =>
-			fetchTopic(option.value).then(response => ({
-			  title: option.label,
-			  summary: response.content,  // replace 'summary' with the actual key in the response
+			selectedOption.map(option =>
+			  fetchTopic(option.value).then(response => ({
+				title: option.label,
+				summary: response.content,  // replace 'summary' with the actual key in the response
+			  }))
+			)
+		  );
+		  
+		  const input = [
+			{
+			  role: 'system',
+			  content: 'You are a helpful assistant.'
+			},
+			...summaries.map(summary => ({
+			  role: 'user',
+			  content: `Please summarize the following content in simple words using heading and bulltet points like explaining to kid (give response in html): ${summary.title} - ${summary.summary}`
 			}))
-		  )
-		);
-		setGeneratedSummary(summaries);
+		  ];
+		  
+		  const response = await axios.post(
+			'https://api.openai.com/v1/chat/completions',
+			{
+			  model: 'gpt-4-turbo',
+			  messages: input,
+			  temperature: 0.7,  // Optional: Adjust the temperature for more or less creative summaries
+			},
+			{
+			  headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer sk-proj-pkbGUWeUuBRgLDoIrVvzT3BlbkFJ7SgsqhvSbuhJkIxjQZf8`,
+			  },
+			}
+		  );
+		// console.log(response.data.choices[0].message.content);  
+		setGeneratedSummary(response.data.choices[0].message.content);
 		// console.log(summaries);
 	  };
 
@@ -187,14 +215,9 @@ const StylishTabs = () => {
 			</div>
 			<div>
 			<Container style={{ backgroundColor: "white", height: '500px', width: '500px', border: '2px solid gray' }}>
-			<h2>Generated Summary</h2>
 			<div style={{ overflow: 'auto', height: '400px' }}>
-      {generatedSummary.map((summary, index) => (
-        <div key={index} >
-          <h2>{summary.title}</h2>
-          <p >{summary.summary}</p>
-        </div>
-      ))}
+		  <div dangerouslySetInnerHTML={{ __html: generatedSummary }} />
+    
     </div>
 			{/* <textarea class="form-control" id="exampleFormControlTextarea1" rows="20" readOnly style={{ width: '400px' }}></textarea> */}
 			</Container>

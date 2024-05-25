@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { Container, Form, Button, Alert, resetForm } from "react-bootstrap";
 import Select from "react-select";
-
+import emailjs from 'emailjs-com';
 
 const SignupForm = ({ show, setShow }) => {
 	const handleClose = () => {
@@ -107,6 +107,20 @@ const SignupForm = ({ show, setShow }) => {
 		setIsSubmitting(true);
 		const generatedToken = Math.floor(1000 + Math.random() * 9000);
 		setVerificationToken(generatedToken);
+		console.log(email_address)
+		const templateParams = {
+			to_name: lastname,
+			to_email: email_address,
+			verification_token: generatedToken,
+		  };
+		emailjs.send('service_ep7k7kp', 'template_g6lyxyj', templateParams, 'ESTStH_BKN13hacuc')
+		.then((response) => {
+		  console.log('SUCCESS!', response.status, response.text);
+		  alert('Email sent successfully');
+		}, (error) => {
+		  console.log('FAILED...', error);
+		  alert('Failed to send email');
+		});
 		console.log("verification token generated", verificationToken);
 		setResendValid(false);
         startTimer()
@@ -235,7 +249,7 @@ const SignupForm = ({ show, setShow }) => {
 									value={email_address}
 									onChange={(e) => setEmailAddress(e.target.value)}
 									disabled={isSubmitting || !!verificationToken}
-									maxLength={35}
+									maxLength={75}
 								/>
 								{errors.email_address && <p style={{ color: "red" }}>{errors.email_address}</p>}
 							</Form.Group>
