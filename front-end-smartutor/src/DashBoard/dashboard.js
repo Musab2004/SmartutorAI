@@ -17,9 +17,9 @@ import Dashboard from "../DashBoard";
 import Weekicon from "./week-icon.png";
 import axios from "axios";
 import ChatbotApp from "./chatbot";
+import { Fab, Tooltip } from "@mui/material";
+import { Chat } from "@mui/icons-material";
 const StylishTabs = () => {
-
-
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
 	const [activeButton, setActiveButton] = useState("tab1");
@@ -35,14 +35,13 @@ const StylishTabs = () => {
 	const [textAreaValue, setTextAreaValue] = useState("");
 	console.log(location.state);
 	const studyPlan = location.state?.studyPlan;
-    Data = location.state?.data;
-    console.log(Data)
+	Data = location.state?.data;
+	console.log(Data);
 	const [showChatbot, setShowChatbot] = useState(false);
 
 	const toggleChatbot = () => {
-	  setShowChatbot(prevShowChatbot => !prevShowChatbot);
+		setShowChatbot((prevShowChatbot) => !prevShowChatbot);
 	};
-	
 
 	//   useEffect(() => {
 	// 	if (!studyPlan) {
@@ -50,7 +49,7 @@ const StylishTabs = () => {
 	// 		navigate("/");
 	// 	}
 	// }, []);
-	console.log(studyPlan)
+	console.log(studyPlan);
 	const plan = studyPlan;
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -61,25 +60,24 @@ const StylishTabs = () => {
 	}, []);
 	const fetchWeeklyGoals = async () => {
 		try {
-		  const response = await userService.get('api/getweeklygoals/', {
-			params: {
-			  studyplan_id: plan.id,
-			  user_id: userData.id,
-			},
-		  });
-	
-		  setData(response.data.response);
-		//   setIs_covered(response.data.all_complete);
-		  console.log(response.data.response)
-		} catch (error) {
-		  console.error('Error:', error);
-		}
-	  };
-	// fetchWeeklyGoals();
-	  useEffect(() => {
-		fetchWeeklyGoals();
-	  }, [plan,userData]);
+			const response = await userService.get("api/getweeklygoals/", {
+				params: {
+					studyplan_id: plan.id,
+					user_id: userData.id,
+				},
+			});
 
+			setData(response.data.response);
+			//   setIs_covered(response.data.all_complete);
+			console.log(response.data.response);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+	// fetchWeeklyGoals();
+	useEffect(() => {
+		fetchWeeklyGoals();
+	}, [plan, userData]);
 
 	const fetchBook = async () => {
 		try {
@@ -149,12 +147,10 @@ const StylishTabs = () => {
 			},
 		});
 	};
-	const [showChat, setShowChat] = useState(false);
+
 	const [messages, setMessages] = useState([]);
 
-	const sendMessage = async (text) => {
-
-	};
+	const sendMessage = async (text) => {};
 	return (
 		<>
 			<style>
@@ -189,8 +185,8 @@ const StylishTabs = () => {
 				<Sidebar studyPlan={studyPlan} data={Data} />
 			</div>
 
-			<div className="App" style={{minHeight:'400px'}}>
-				{showChat && (
+			{/* <div className="App" style={{ minHeight: "400px" }}> */}
+			{/* {showChat && (
 					<div
 						style={{
 							position: "fixed",
@@ -206,9 +202,9 @@ const StylishTabs = () => {
 							overflow: "hidden",
 						}}
 					>
-						<div style={{ marginBottom: "10px", textAlign: "right" }}>
+						{/* <div style={{ marginBottom: "10px", textAlign: "right" }}>
 							<button onClick={() => setShowChat(false)}>Close</button>
-						</div>
+						</div> 
 						<div style={{ overflowY: "scroll", height: "300px" }}>
 							{messages.map((msg) => (
 								<div key={msg.id} style={{ textAlign: msg.sender === "user" ? "right" : "left" }}>
@@ -228,33 +224,31 @@ const StylishTabs = () => {
 							style={{ width: "100%", boxSizing: "border-box" }}
 						/>
 					</div>
-				)}
-			</div>
-			{!showChat && (
-			  <Container>
-			 
-			  {showChatbot && (
-				<div style={{
-				  position: 'fixed',
-				  bottom: 150,
-				  right: 0,
-				  width: '350px',
-				  height: '600px',
-				  overflow: 'auto',
-				  zIndex: 1000,
-				}}>
-				  <ChatbotApp/>
-				</div>
-			  )}
-
-<Button style={{width:'200px',position: 'fixed', bottom: 100,right: 100,}} onClick={toggleChatbot}>Assistant</Button>
-			</Container>
-			
+				)} */}
+			{/* </div> */}
+			<ChatbotApp open={showChatbot} setOpen={setShowChatbot} />
+			{/* <Button
+						style={{ width: "200px", position: "fixed", bottom: 100, right: 100 }}
+						onClick={toggleChatbot}
+					>
+						Assistant
+					</Button> */}
+			{!showChatbot ? (
+				<Fab
+					sx={{ position: "fixed", bottom: 20, right: 20 }}
+					color={"primary"}
+					onClick={toggleChatbot}
+				>
+					<Tooltip title="Assistant">
+						<Chat />
+					</Tooltip>
+				</Fab>
+			) : (
+				<></>
 			)}
-				<footer className="bg-light text-lg-start" style={{ marginLeft:'4%',width: 'auto' }}>
-  <Footer />
-</footer>
-
+			<footer className="bg-light text-lg-start" style={{ marginLeft: "4%", width: "auto" }}>
+				<Footer />
+			</footer>
 		</>
 	);
 };
