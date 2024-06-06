@@ -8,17 +8,8 @@ import { UserContext } from '../landing_page_component/UserContext';
 const App = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [timer, setTimer] = useState(100);
-  // const [timer, setTimer] = useState(() => {
-  //   // Get the initial value from localStorage if it exists, otherwise use 100
-  //   const savedTimer = localStorage.getItem('timer');
-  //   return savedTimer ? JSON.parse(savedTimer) : 100;
-  // });
-  
-  useEffect(() => {
-    // Save the timer value to localStorage whenever it changes
-    localStorage.setItem('timer', timer);
-  }, [timer]);
+  const [results, setResults] = useState({});
+  const [timer, setTimer] = useState(15 * 60);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [showExplanation, setShowExplanation] = useState({});
   const { userData } = useContext(UserContext);
@@ -26,7 +17,17 @@ const App = () => {
   const [questions, setQuestions] = useState([]);
 
   const { quizId, quizes, numQuestions, quizType, weekid, studyPlan, is_mcq } = location.state;
-  // timers=timer
+
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  }
+
+  useEffect(() => {
+    localStorage.setItem('timer', timer);
+  }, [timer]);
+
   const handleOptionSelect = (questionId, option) => {
     if (!quizSubmitted) {
       setSelectedAnswers((prev) => ({ ...prev, [questionId]: option }));
@@ -45,24 +46,31 @@ const App = () => {
   useEffect(() => {
     fetchQuestions();
     startTimer();
-  }, [quizes]);
-
-
+  }, []);
 
   const handleFinishQuiz = async () => {
+    setQuizSubmitted(true);
     let correct = [];
     let wrong = [];
-    setQuizSubmitted(true);
+    const resultTemp = {};
 
-    for (const question of questions) {
-      const isCorrect = await checkAnswer(question.answer, selectedAnswers[question.id]);
+    const answerCheckPromises = quizes.map(async (question) => {
+      const isCorrect = await checkAnswer(question.correct_answer, selectedAnswers[question.id]);
+      resultTemp[question.id] = isCorrect;
       if (isCorrect) {
         correct.push(question.id);
-        setCorrectAnswers((prev) => prev + 1);
       } else {
         wrong.push(question.id);
       }
-    }
+    });
+
+    await Promise.all(answerCheckPromises);
+
+    setResults(resultTemp);
+    setCorrectAnswers(correct.length);
+
+    console.log("correct ones: ", correct);
+    console.log("wrong ones: ", wrong);
 
     try {
       await userService.post('api/quiz-submission/', { correct, wrong, user_id: userData.id, weekly_goal_id: weekid, quiz_id: quizId });
@@ -70,6 +78,21 @@ const App = () => {
       console.error('Error submitting quiz:', error);
     }
   };
+
+  async function checkAnswer(correct_answer, selectedAnswer) {
+    if (is_mcq) {
+      return correct_answer === selectedAnswer;
+    }
+    try {
+      console.log(correct_answer,selectedAnswer)
+      const response = await userService.post('api/check-answer/', { correct_answer, selected_answer: selectedAnswer });
+      console.log(response.data);
+      return response.data.similarity_score > 0.6;
+    } catch (error) {
+      console.error('Error:', error);
+      return false;
+    }
+  }
 
   const startTimer = () => {
     const interval = setInterval(() => {
@@ -85,20 +108,6 @@ const App = () => {
     }, 1000);
   };
 
-  const checkAnswer = async (correctAnswer, selectedAnswer) => {
-    if (is_mcq) {
-      return correctAnswer === selectedAnswer;
-    }
-
-    try {
-      const response = await userService.post('api/check-answer/', { correct_answer: correctAnswer, selected_answer: selectedAnswer });
-      return response.data.similarity_score > 0.6;
-    } catch (error) {
-      console.error('Error checking answer:', error);
-      return false;
-    }
-  };
-
   const navigate = useNavigate();
 
   return (
@@ -112,6 +121,17 @@ const App = () => {
           }
         `}
       </style>
+      <div style={{ 
+        position: 'fixed', 
+        right: '50px', 
+        top: '50px', 
+        padding: '10px', 
+        backgroundColor: '#f0f0f0', 
+        borderRadius: '5px',
+        fontSize: '20px' 
+      }}>
+        Time remaining: {formatTime(timer)}
+      </div>
       <Container style={{ width: '50%', margin: 'auto' }}>
         <Card style={{ width: '100%', margin: 'auto' }}>
           <Card.Body>
@@ -165,12 +185,12 @@ const App = () => {
                       </p>
                       <p>
                         <Button onClick={() => setShowExplanation((prevState) => ({ ...prevState, [question.id]: !prevState[question.id] }))}>
-                          Click here {showExplanation[question.id] ? '▲' : '▼'}
+                          See Explanation {showExplanation[question.id] ? '▲' : '▼'}
                         </Button>
                       </p>
                       {showExplanation[question.id] && (
-                        <div>
-                          <p>Explanation goes here: {question.feedback}</p>
+                        <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', marginTop: '10px' }}>
+                          <p><span role="img" aria-label="info">ℹ️</span> {question.feedback}</p>
                         </div>
                       )}
                     </div>
@@ -179,13 +199,8 @@ const App = () => {
               </div>
             ))}
 
-            <p>Time remaining: {timer} seconds</p>
             {!quizSubmitted && (
               <>
-                <Button variant="primary" onClick={startTimer}>
-                  Start Timer
-                </Button>
-
                 <Button variant="success" onClick={handleFinishQuiz}>
                   Finish Quiz
                 </Button>

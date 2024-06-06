@@ -111,9 +111,6 @@ const HomePageNavbar = ({ activeTab }) => {
 						>
 							Profile
 						</Link>
-						<Link to="/profile-visit" className="dropdown-item">
-							Profile Visit
-						</Link>
 						<div className="dropdown-divider"></div>
 						<Link to="/" onClick={handleLogout} className="dropdown-item">
 							Logout

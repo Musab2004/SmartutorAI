@@ -37,6 +37,7 @@ const StylishTabs = () => {
 	const { userData } = useContext(UserContext);
 	const [activeButton, setActiveButton] = useState("tab2");
 	const [loading, setLoading] = useState(false);
+	const [results, setResults] = useState({});
 	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
 	const location = useLocation();
 	const studyPlan = location.state?.studyPlan;
@@ -120,6 +121,35 @@ const StylishTabs = () => {
 		  return error;
 		}
 	  };
+
+	  async function getExplanation(question, answer) {
+		const apiKey = "sk-proj-nLWaYWklGfzp8SEf1MR3T3BlbkFJC9i4esWlQVkZD6lJd2bI";
+		console.log("APi key : ",apiKey) // Replace with your actual OpenAI API key
+		const endpoint = 'https://api.openai.com/v1/chat/completions';
+	  
+		const headers = {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${apiKey}`
+		};
+	  
+		const data = {
+			model: 'gpt-3.5-turbo',
+			messages: [
+				{ role: 'system', content: 'You are a helpful assistant.' },
+				{ role: 'user', content: `Question: ${question}\nAnswer: ${answer}\nExplain this in simple and understandable terms.` }
+			],
+			max_tokens: 150
+		};
+	  
+		try {
+			const response = await axios.post(endpoint, data, { headers });
+			const explanation = response.data.choices[0].message.content.trim();
+			return explanation;
+		} catch (error) {
+			console.error('Error making API call:', error);
+			throw error;
+		}
+	  }
 	  function partition(id, title, text) {
 		const words = text.split(' ');
 		const totalWords = words.length;
@@ -171,6 +201,7 @@ const StylishTabs = () => {
 		for (const match of matches) {
 			const question = match[1].trim();
 			const correctAnswer = match[2].trim();
+			const explanation=await getExplanation(question,correctAnswer);
 			mcqOutput.push({
 				id: id,
 				Id: Id,
@@ -178,7 +209,8 @@ const StylishTabs = () => {
 				title: title,
 				distractors: null,
 				question: question,
-				correct_answer: correctAnswer
+				correct_answer: correctAnswer,
+        explanation:explanation
 			});
 		}
 	
@@ -193,14 +225,16 @@ const StylishTabs = () => {
 		
 			for (const match of matches) {
 				const [_, question, answer, distractors] = match;
+				const explanation=await getExplanation(question,answer.trim());
 				allQuestions.push({
 					id: id,
 					Id: Id,
 					context: content,
 					title: title,
 					question: question.trim(),
-					correct_answer: answer.trim(),
-					distractors: distractors.split('<d>').filter(d => d.trim()).map(d => d.replace('</d>', '').trim())
+					correct_answer: answer.trim().replace(/^[a-zA-Z]\.\s*/, ''),
+					distractors: distractors.split('<d>').filter(d => d.trim()).map(d => d.replace('</d>', '').trim()),
+          			explanation:explanation
 				});
 			}
 		
@@ -217,7 +251,7 @@ const StylishTabs = () => {
 		console.log("Quiz type : ",quizType);
 		if (quizType === 'MCQ') {
 			try {
-				const response = await axios.post('https://2114-34-126-68-193.ngrok-free.app/generate-questions/', {
+				const response = await axios.post('https://4ce8-34-171-102-16.ngrok-free.app/generate-questions/', {
 					input_text: inputs
 				});
 				return response.data.results;
@@ -228,7 +262,7 @@ const StylishTabs = () => {
 			}
 			else{
 				try {
-					const response = await axios.post('https://cfc1-34-125-125-169.ngrok-free.app/generate-questions/', {
+					const response = await axios.post('https://8035-34-125-201-170.ngrok-free.app/generate-questions/', {
 						input_text: inputs
 					});
 					return response.data.results;
@@ -335,8 +369,9 @@ const StylishTabs = () => {
         <div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
             <DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
         </div>
+		<h1 style={{textAlign: "center"}} >Create Quizes According to you topic here 💡</h1>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-            <Container style={{ backgroundColor: "white" }}>
+            <Container style={{ padding:'50px',backgroundColor: "white",borderRadius:'15px' }}>
                 <Form>
                     <label htmlFor="flavors">Select topics</label>
                     <Select
@@ -366,9 +401,10 @@ const StylishTabs = () => {
                         </Form.Control>
                     </Form.Group>
 					
-                    <Button variant="primary" onClick={GenerateQuiz} >
+                    <Button variant="primary" onClick={GenerateQuiz} style={{marginTop:'20px',marginLeft:'40%'}} >
                         Generate Quiz
                     </Button>
+					
                 </Form>
             </Container>
         </div>

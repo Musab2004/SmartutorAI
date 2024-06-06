@@ -5,7 +5,7 @@ const Footer = () => {
 	return (
 		<footer
 			className="text-center text-lg-start bg-body-tertiary text-muted"
-			style={{ backgroundColor: "#e1efff" }}
+			style={{ backgroundColor: "#e1efff" ,bottom:"0"}}
 		>
 			<Grid container spacing={2}>
 				<Grid

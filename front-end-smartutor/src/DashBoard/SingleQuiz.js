@@ -18,6 +18,11 @@ const App = () => {
   const [questions, setQuestions] = useState([]);
   const { quizes, numQuestions, quizType, is_mcq, studyPlan } = location.state;
   const navigate = useNavigate();
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  }
 
   const handleOptionSelect = (questionId, option) => {
     if (!quizSubmitted) {
@@ -91,6 +96,17 @@ const App = () => {
       }
     `}
       </style>
+      <div style={{ 
+        position: 'fixed', 
+        right: '50px', 
+        top: '50px', 
+        padding: '10px', 
+        backgroundColor: '#f0f0f0', 
+        borderRadius: '5px',
+        fontSize: '20px' 
+      }}>
+        Time remaining: {formatTime(timer)}
+      </div>
       <Container style={{ width: '50%', margin: 'auto' }}>
         <Card style={{ width: '100%', margin: 'auto' }}>
           <Card.Body>
@@ -145,13 +161,13 @@ const App = () => {
                         ) : null}
                       </p>
                       <p>
-                        <Button onClick={() => setShowExplanation(prevState => ({ ...prevState, [question.Id]: !prevState[question.Id] }))}>
-                          Click here {showExplanation[question.Id] ? '▲' : '▼'}
+                        <Button onClick={() => setShowExplanation((prevState) => ({ ...prevState, [question.id]: !prevState[question.id] }))}>
+                          See Explanation {showExplanation[question.id] ? '▲' : '▼'}
                         </Button>
                       </p>
-                      {showExplanation[question.Id] && (
-                        <div>
-                          <p>Explanation goes here: {question.explanation}</p>
+                      {showExplanation[question.id] && (
+                        <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', marginTop: '10px' }}>
+                          <p><span role="img" aria-label="info">ℹ️</span> {question.feedback}</p>
                         </div>
                       )}
                     </div>

@@ -147,7 +147,7 @@ const alpaca_prompt = `Below is an instruction that describes a task, paired wit
 {}`;
 
 async function getExplanation(question, answer) {
-  const apiKey = "add your own";
+  const apiKey = "sk-proj-nLWaYWklGfzp8SEf1MR3T3BlbkFJC9i4esWlQVkZD6lJd2bI";
   console.log("APi key : ",apiKey) // Replace with your actual OpenAI API key
   const endpoint = 'https://api.openai.com/v1/chat/completions';
 
@@ -217,7 +217,7 @@ async function generateShortQA(id, title, content, Id) {
 					context: content,
 					title: title,
 					question: question.trim(),
-					correct_answer: answer.trim(),
+					correct_answer: answer.trim().replace(/^[a-zA-Z]\.\s*/, ''),
 					distractors: distractors.split('<d>').filter(d => d.trim()).map(d => d.replace('</d>', '').trim()),
           explanation:explanation
 				});
@@ -232,7 +232,7 @@ async function generateMCQsForPartition(partition, instruction = "Generate Biolo
   console.log(inputs);
 	if (quizType === 'MCQ') {
     try {
-      const response = await axios.post('https://3de8-34-124-222-86.ngrok-free.app/generate-questions/', {
+      const response = await axios.post('https://4ce8-34-171-102-16.ngrok-free.app/generate-questions/', {
         input_text: inputs
       });
       return response.data.results;
@@ -243,7 +243,7 @@ async function generateMCQsForPartition(partition, instruction = "Generate Biolo
     }
     else{
       try {
-        const response = await axios.post(' https://d9f6-34-16-138-45.ngrok-free.app/generate-questions/', {
+        const response = await axios.post('https://8035-34-125-201-170.ngrok-free.app/generate-questions/', {
           input_text: inputs
         });
         return response.data.results;

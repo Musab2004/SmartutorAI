@@ -19,6 +19,7 @@ import axios from "axios";
 import ChatbotApp from "./chatbot";
 import { Fab, Tooltip } from "@mui/material";
 import { Chat } from "@mui/icons-material";
+
 const StylishTabs = () => {
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
@@ -42,13 +43,6 @@ const StylishTabs = () => {
 	const toggleChatbot = () => {
 		setShowChatbot((prevShowChatbot) => !prevShowChatbot);
 	};
-
-	//   useEffect(() => {
-	// 	if (!studyPlan) {
-	// 		console.log("no studyplan here");
-	// 		navigate("/");
-	// 	}
-	// }, []);
 	console.log(studyPlan);
 	const plan = studyPlan;
 	useEffect(() => {
@@ -68,13 +62,15 @@ const StylishTabs = () => {
 			});
 
 			setData(response.data.response);
-			//   setIs_covered(response.data.all_complete);
 			console.log(response.data.response);
+
+			if (response.data.response.length === 0) {
+				navigate("/homepage");
+			}
 		} catch (error) {
 			console.error("Error:", error);
 		}
 	};
-	// fetchWeeklyGoals();
 	useEffect(() => {
 		fetchWeeklyGoals();
 	}, [plan, userData]);
@@ -185,54 +181,7 @@ const StylishTabs = () => {
 				<Sidebar studyPlan={studyPlan} data={Data} />
 			</div>
 
-			{/* <div className="App" style={{ minHeight: "400px" }}> */}
-			{/* {showChat && (
-					<div
-						style={{
-							position: "fixed",
-							bottom: "10px",
-							right: "10px",
-							width: "300px",
-							height: "400px",
-							backgroundColor: "white",
-							border: "1px solid black",
-							borderRadius: "10px",
-							padding: "10px",
-							boxSizing: "border-box",
-							overflow: "hidden",
-						}}
-					>
-						{/* <div style={{ marginBottom: "10px", textAlign: "right" }}>
-							<button onClick={() => setShowChat(false)}>Close</button>
-						</div> 
-						<div style={{ overflowY: "scroll", height: "300px" }}>
-							{messages.map((msg) => (
-								<div key={msg.id} style={{ textAlign: msg.sender === "user" ? "right" : "left" }}>
-									{msg.text}
-								</div>
-							))}
-						</div>
-						<input
-							type="text"
-							onKeyDown={(e) => {
-								if (e.key === "Enter" && e.target.value.trim()) {
-									sendMessage(e.target.value);
-									e.target.value = "";
-								}
-							}}
-							placeholder="Type your message..."
-							style={{ width: "100%", boxSizing: "border-box" }}
-						/>
-					</div>
-				)} */}
-			{/* </div> */}
 			<ChatbotApp open={showChatbot} setOpen={setShowChatbot} />
-			{/* <Button
-						style={{ width: "200px", position: "fixed", bottom: 100, right: 100 }}
-						onClick={toggleChatbot}
-					>
-						Assistant
-					</Button> */}
 			{!showChatbot ? (
 				<Fab
 					sx={{ position: "fixed", bottom: 20, right: 20 }}

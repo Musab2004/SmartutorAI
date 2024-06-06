@@ -160,7 +160,8 @@ const RedditPost = (props) => {
 			console.error("Error:", error);
 		}
 	};
-	const handleEdit = (postId) => {
+	const handleEdit = (postId,postContent) => {
+		setEditingPost(postContent);
 		setShowModaleditpost(true);
 		handleClose();
 		console.log(`Editing post ${postId}`);
@@ -305,38 +306,38 @@ const RedditPost = (props) => {
 							</div>
 						</div>
 						<div style={{ marginLeft: "60%" }}>
-							<IconButton
-								aria-label="more"
-								aria-controls="long-menu"
-								aria-haspopup="true"
-								onClick={handleClick}
-							>
-								<MoreVert />
-							</IconButton>
-							<Menu
-								id="long-menu"
-								anchorEl={anchorEl}
-								keepMounted
-								open={open}
-								onClose={handleClose}
-								PaperProps={{
-									style: {
-										maxHeight: 1 * 4.5,
-										width: "20ch",
-									},
-								}}
-							>
-								<MenuItem key="Edit" onClick={() => handleEdit(post.id)}>
-									Edit
-								</MenuItem>
-								<MenuItem key="Delete" onClick={() => handleDelete(post.id)}>
-									Delete
-								</MenuItem>
-								<MenuItem key="Report" onClick={handleShowModal}>
-									Report
-								</MenuItem>
-							</Menu>
-						</div>
+  <IconButton
+    aria-label="more"
+    aria-controls="long-menu"
+    aria-haspopup="true"
+    onClick={handleClick}
+  >
+    <MoreVert />
+  </IconButton>
+  <Menu
+    id="long-menu"
+    anchorEl={anchorEl}
+    keepMounted
+    open={open}
+    onClose={handleClose}
+    PaperProps={{
+      style: {
+        Height: "50px",  // Increase this value to make the height bigger
+        width: "20ch",
+      },
+    }}
+  >
+    <MenuItem key="Edit" onClick={() => handleEdit(post.id,post.content)}>
+      Edit
+    </MenuItem>
+    <MenuItem key="Delete" onClick={() => handleDelete(post.id)}>
+      Delete
+    </MenuItem>
+    <MenuItem key="Report" onClick={handleShowModal}>
+      Report
+    </MenuItem>
+  </Menu>
+</div>
 					</div>
 
 					<div dangerouslySetInnerHTML={{ __html: post.content }} />

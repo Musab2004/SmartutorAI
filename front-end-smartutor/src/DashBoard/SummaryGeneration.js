@@ -190,9 +190,14 @@ const StylishTabs = () => {
 			<div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
 			</div>
+			<h1 style={{textAlign: "center"}} >Summarize any topic here 💡</h1>
+
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
     <div>
+	
 			<Container style={{ backgroundColor: "white",height:'500px',width: '500px' }}>
+				
+	
 				<Form>
 				<div style={{ justifyContent: 'center', alignItems: 'center', }}>
 					<label htmlFor="flavors" style={{marginTop:'200px'}}>Select topics</label>
@@ -214,11 +219,11 @@ const StylishTabs = () => {
 			</Container>
 			</div>
 			<div>
-			<Container style={{ backgroundColor: "white", height: '500px', width: '500px', border: '2px solid gray' }}>
+			<Container style={{ backgroundColor: "white", height: '500px', width: '700px', border: '2px solid gray' ,borderRadius:'15px' }}>
 			<div style={{ overflow: 'auto', height: '400px' }}>
-		  <div dangerouslySetInnerHTML={{ __html: generatedSummary }} />
-    
-    </div>
+			
+  <div dangerouslySetInnerHTML={{ __html: generatedSummary }} />
+</div>
 			{/* <textarea class="form-control" id="exampleFormControlTextarea1" rows="20" readOnly style={{ width: '400px' }}></textarea> */}
 			</Container>
 
