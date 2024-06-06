@@ -1,32 +1,7 @@
-<<<<<<< Updated upstream
 import React, { useState } from "react";
 import axios from "axios";
 import { IconButton } from "@mui/material";
 import { Close, Send } from "@mui/icons-material";
-=======
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Container, TextField, Button, Typography, Paper, Box, CssBaseline } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#007bff',
-    },
-    secondary: {
-      main: '#e9ecef',
-    },
-  },
-  typography: {
-    h1: {
-      fontSize: '2rem',
-      marginBottom: '20px',
-      textAlign: 'center',
-    },
-  },
-});
->>>>>>> Stashed changes
 
 const ChatbotApp = ({ open, setOpen }) => {
 	const [messages, setMessages] = useState([]);
@@ -40,7 +15,6 @@ const ChatbotApp = ({ open, setOpen }) => {
 		setMessages(newMessages);
 		setInput("");
 
-<<<<<<< Updated upstream
 		try {
 			const response = await axios.post(
 				"https://api.openai.com/v1/chat/completions",
@@ -55,22 +29,6 @@ const ChatbotApp = ({ open, setOpen }) => {
 					},
 				}
 			);
-=======
-    try {
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          model: 'gpt-3.5-turbo',
-          messages: newMessages,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer sk-proj-yMmXVTao2NfRDFZI5lkfT3BlbkFJURfMCGS243IXEOKn9pCX`,
-          },
-        }
-      );
->>>>>>> Stashed changes
 
 			const botMessage = response.data.choices[0].message;
 			setMessages([...newMessages, botMessage]);
@@ -84,7 +42,6 @@ const ChatbotApp = ({ open, setOpen }) => {
 		}
 	};
 
-<<<<<<< Updated upstream
 	if (open) {
 		return (
 			<div
@@ -209,93 +166,6 @@ const styles = {
 		color: "#fff",
 		outline: "none",
 	},
-=======
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Container maxWidth="sm" style={styles.container}>
-        <Typography variant="h1" style={styles.header}>Chatbot with GPT-4</Typography>
-        <Paper style={styles.chatWindow}>
-          {messages.map((msg, index) => (
-            <Box
-              key={index}
-              style={msg.role === 'user' ? styles.userMessage : styles.botMessage}
-            >
-              {msg.content}
-            </Box>
-          ))}
-        </Paper>
-        <Box style={styles.inputContainer}>
-          <TextField
-            variant="outlined"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            fullWidth
-            style={styles.input}
-          />
-          <Button onClick={sendMessage} variant="contained" color="primary" style={styles.button}>Send</Button>
-        </Box>
-      </Container>
-    </ThemeProvider>
-  );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '60vh',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    margin: '20px 0',
-  },
-  chatWindow: {
-    border: '1px solid #ccc',
-    borderRadius: '10px',
-    padding: '10px',
-    height: '400px',
-    width: '100%',
-    overflowY: 'auto',
-    backgroundColor: '#fff',
-    marginBottom: '10px',
-  },
-  userMessage: {
-    textAlign: 'left',
-    color: '#fff',
-    backgroundColor: '#007bff',
-    padding: '10px',
-    borderRadius: '10px',
-    margin: '5px 0',
-    maxWidth: '70%',
-    alignSelf: 'flex-start',
-  },
-  botMessage: {
-    alignItems: 'right',
-    color: '#333',
-    backgroundColor: '#e9ecef',
-    borderRadius: '10px',
-    margin: '5px 0',
-    maxWidth: '70%',
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
-  inputContainer: {
-    display: 'flex',
-    width: '100%',
-    marginTop: '10px',
-  },
-  input: {
-    flex: 1,
-  },
-  button: {
-    marginLeft: '10px',
-  },
->>>>>>> Stashed changes
 };
 
 export default ChatbotApp;

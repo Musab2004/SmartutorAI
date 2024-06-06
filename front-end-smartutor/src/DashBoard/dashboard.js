@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Tabs, Tab, Button, Row, Col, Modal, Container, Alert, ButtonGroup } from "react-bootstrap";
-import {  TextField, Typography, Paper, Box, CssBaseline, IconButton } from '@mui/material';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
@@ -18,12 +17,8 @@ import Dashboard from "../DashBoard";
 import Weekicon from "./week-icon.png";
 import axios from "axios";
 import ChatbotApp from "./chatbot";
-<<<<<<< Updated upstream
 import { Fab, Tooltip } from "@mui/material";
 import { Chat } from "@mui/icons-material";
-=======
-import ChatIcon from '@mui/icons-material/Chat';
->>>>>>> Stashed changes
 const StylishTabs = () => {
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
@@ -229,7 +224,6 @@ const StylishTabs = () => {
 							style={{ width: "100%", boxSizing: "border-box" }}
 						/>
 					</div>
-<<<<<<< Updated upstream
 				)} */}
 			{/* </div> */}
 			<ChatbotApp open={showChatbot} setOpen={setShowChatbot} />
@@ -255,42 +249,6 @@ const StylishTabs = () => {
 			<footer className="bg-light text-lg-start" style={{ marginLeft: "4%", width: "auto" }}>
 				<Footer />
 			</footer>
-=======
-				)}
-			</div>
-			<Container>
-        {showChatbot && (
-          <div style={{
-            position: 'fixed',
-            bottom: 150,
-            right: 100,
-            width: '350px',
-            height: '600px',
-            overflow: 'auto',
-            zIndex: 1000,
-            backgroundColor: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '10px',
-          }}>
-            <ChatbotApp />
-          </div>
-        )}
-
-        <IconButton
-          color="primary"
-          style={{ width: '60px', height: '60px', position: 'fixed', bottom: 100, right: 100, backgroundColor: '#007bff' }}
-          onClick={toggleChatbot}
-        >
-          <ChatIcon style={{ color: '#fff', fontSize: '30px' }} />
-        </IconButton>
-      </Container>
-			
-		
-				<footer className="bg-light text-lg-start" style={{ marginLeft:'4%',width: 'auto' }}>
-  <Footer />
-</footer>
-
->>>>>>> Stashed changes
 		</>
 	);
 };
