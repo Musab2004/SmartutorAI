@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/questions/<int:pk>/', views.QuestionDetailsUpdate.as_view(), name='question-detail'),
     path('api/check-answer/', views.CheckAnswer.as_view(), name='check-answer'),
     path('api/custom-login/', views.custom_login, name='custom_login'),
+    path('api/update-password/', views.update_password, name='update-password'),
      path('api/checkusers/', views.CheckUser, name='check-user'),
     path('api/upvotecomment/', views.UpvoteComment, name='upvotecomment'),
     path('api/downvotecomment/', views.DownvoteComment, name='downvotecomment'),

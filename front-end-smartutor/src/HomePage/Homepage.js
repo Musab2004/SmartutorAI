@@ -32,20 +32,16 @@ function App() {
 
 	const handleTabChange = (tab) => {
 		navigate(tab);
-		// setActiveTab(tab);
 	};
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		localStorage.removeItem("userData");
 		console.log("token removed : ", localStorage);
-
-		// setActiveTab(tab);
 	};
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-			// Redirect to landing page if token doesn't exist
 			setTokenExists(false);
 			navigate("/");
 		} else {
@@ -61,14 +57,11 @@ function App() {
 				setPosts(response.data);
 			} catch (error) {
 				console.error("Failed to fetch users", error);
-				// navigate('/');
 			}
 		};
 
 		fetchUsers();
 	}, []);
-	// Empty dependency array means this effect runs once on component mount
-
 	useEffect(() => {
 		const fetchUsers = async () => {
 			try {
@@ -79,10 +72,8 @@ function App() {
 				setOngoingStudyPLans(response.data);
 			} catch (error) {
 				console.error("Failed to fetch users", error);
-				// navigate('/landingpage');
 			}
 		};
-		// useAuth();
 		fetchUsers();
 		Recommendations();
 	}, []);

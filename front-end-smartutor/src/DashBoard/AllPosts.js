@@ -10,8 +10,7 @@ import DisscusionForum from "./DisscusionForum";
 const AllPosts = (props) => {
 	var posts = props.posts;
     console.log(posts);
-	// var posts = props.comment;
-	// const [comments, setComments] = useState([]);
+
 	return (
 		<>
 				{posts.map((post) => (
@@ -22,11 +21,6 @@ const AllPosts = (props) => {
 								fetchPostfunc={props.fetchPosts}
 							/>
 						))}
-
-						{/* {visiblePosts < posts.length && (
-							<Button onClick={handleLoadMore} style={{ marginTop: "5px", marginLeft: "50%" }}>
-								Load More
-							</Button> */}
 						
 		</>
 	);

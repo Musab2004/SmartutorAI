@@ -10,8 +10,6 @@ import {
 	Dropdown,
 	Container,
 } from "react-bootstrap";
-// import { Button, Card, } from 'react-bootstrap';
-// import Navbar from './HomePageNavbar'
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { UserContext } from "../landing_page_component/UserContext";
 import Select from "react-select";
@@ -26,11 +24,6 @@ import logo from "../landing_page_component/logo_smarttutor.svg";
 import Navbar from "./HomePageNavbar";
 import Footer from "../landing_page_component/footer";
 import userService from "../landing_page_component/UserSerive";
-const countries = [
-	{ label: "USA", value: "USA", cities: ["New York", "Los Angeles", "Chicago"] },
-	{ label: "Canada", value: "Canada", cities: ["Toronto", "Montreal", "Vancouver"] },
-	// Add more countries and their cities here...
-];
 const UserProfile = () => {
 	const [show, setShow] = useState(false);
 
@@ -54,15 +47,10 @@ const UserProfile = () => {
 		setPassword("");
 		setConfirmPassword("");
 		setCurrentAcademicLevel("");
-		setCity("");
-		setLocation("");
 		setErrors({});
 		setFormValid(false);
-		setSelectedCountry("");
 		setIsSubmitting(false);
 		setVerificationToken("");
-		setSelectedCity("");
-		setCitiesOptions([]);
 		setReportAlert({ show: false, variant: "", message: "" });
 	};
 	// const handleShow = () => setShow(true);
@@ -71,15 +59,10 @@ const UserProfile = () => {
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [current_academic_level, setCurrentAcademicLevel] = useState("");
-	const [city, setCity] = useState("");
-	const [location, setLocation] = useState("");
 	const [errors, setErrors] = useState({});
 	const [formValid, setFormValid] = useState(false);
-	const [selectedCountry, setSelectedCountry] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [verificationToken, setVerificationToken] = useState("");
-	const [selectedCity, setSelectedCity] = useState("");
-	const [citiesOptions, setCitiesOptions] = useState([]);
 	const [reportalert, setReportAlert] = useState({ show: false, variant: "", message: "" });
 
 	const UserUpdate = async () => {
@@ -118,7 +101,6 @@ const UserProfile = () => {
 			errors.current_academic_level = "Academic level is required";
 			isValid = false;
 		}
-		console.log(selectedCountry["value"]);
 
 		if (password.trim() === "") {
 			errors.password = "Password is required";
@@ -150,7 +132,6 @@ const UserProfile = () => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-			// Redirect to landing page if token doesn't exist
 			setTokenExists(false);
 			navigate("/");
 		} else {
@@ -161,7 +142,6 @@ const UserProfile = () => {
 	const [oldPassword, setOldPassword] = useState("");
 	const [isVerified, setIsVerified] = useState(false);
 	const [useractivityData, setuseractivityData] = useState();
-	// const [markedDates, setMarkedDates] = useState();
 	const handleClose = () => {
 		setShow(false);
 		setIsVerified(false);
@@ -172,8 +152,6 @@ const UserProfile = () => {
 	};
 
 	const verifyOldPassword = () => {
-		// This is a placeholder for your actual password verification logic.
-		// Replace it with a call to your backend or other appropriate logic.
 		console.log(oldPassword, userData.password);
 		if (oldPassword === userData.password) {
 			setIsVerified(true);
@@ -181,13 +159,6 @@ const UserProfile = () => {
 			alert("Incorrect password");
 		}
 	};
-	const handleInputChange = (event) => {
-		// setUserData({ ...userData, [event.target.name]: event.target.value });
-	};
-
-	var markedDates1 = [new Date(2024, 0, 25).getTime()];
-	// This is just sample data. Replace this with your actual data.
-	const timeSpentLastWeek = [120, 200, 150, 220, 300, 250, 400]; // in minutes
 	const chartRef = useRef(null);
 
 	useEffect(() => {
@@ -227,26 +198,16 @@ const UserProfile = () => {
 			},
 		],
 	};
-    // var [user,setUser]=useState();
 	const { userData } = useContext(UserContext);
-	// var user=userData;
 	const { setUser } = useContext(UserContext);
-   //    setUser(userData);
 	const fetchUserActivity = async () => {
 		try {
 			if (userData) {
 				const response = await userService.get(`/api/useractivity/?user_id=${userData.id}`);
 
 				setuseractivityData(response.data);
-				// const userActivityDates = useractivityData.map(item => new Date(item.date).getTime());
-
-				// markedDates=userActivityDates;
-				// setuseractivityData(userActivityData);
-
-				// console.log(markedDates);
 			}
 
-			// setbookData(response.data);
 		} catch (error) {
 			console.error("Failed to fetch posts", error);
 			// navigate('/landingpage');
@@ -262,36 +223,20 @@ const UserProfile = () => {
 		try {
 			if (userData) {
 				const response = await userService.get(`/api/users/${userData.id}/`);
-
-			    // var user=response.data;
 				setUser(response.data);
-				// console.log()
-				console.log("got here : ",userData)
-				// const userActivityDates = useractivityData.map(item => new Date(item.date).getTime());
-
-				// markedDates=userActivityDates;
-				// setuseractivityData(userActivityData);
-
-				// console.log(markedDates);
 			}
-
-			// setbookData(response.data);
 		} catch (error) {
 			console.error("Failed to fetch posts", error);
-			// navigate('/landingpage');
 		}
 	};
 	useEffect(() => {
-		fetchUser(); // This will run only once, when the component mounts
+		fetchUser();
 	  }, [userData]);
-  
-	// fetchUserActivity();
 	var markedDates = [];
 	var Dates = [];
 
 	if (useractivityData) {
 		Dates = useractivityData.map((item) => item.date);
-		// console.log("Dates : ", Dates);
 	}
 
 	if (Dates) {
@@ -308,6 +253,33 @@ const UserProfile = () => {
 	const markedDates4 = dateStrings.map(
 		(dateString) => new Date(dateString).toISOString().split("T")[0]
 	);
+
+	const calculateStreak = (dates) => {
+		const sortedDates = dates.sort((a, b) => new Date(a) - new Date(b));
+		let streak = 1;
+		let maxStreak = 1;
+
+		for (let i = 1; i < sortedDates.length; i++) {
+			const diffInTime = new Date(sortedDates[i]) - new Date(sortedDates[i - 1]);
+			const diffInDays = diffInTime / (1000 * 3600 * 24);
+			if (diffInDays === 1) {
+				streak += 1;
+				maxStreak = Math.max(maxStreak, streak);
+			} else {
+				streak = 1;
+			}
+		}
+		return maxStreak;
+	};
+
+	const currentStreak = calculateStreak(markedDates);
+
+	const streakComment = (streak) => {
+		if (streak > 12) return "Amazing! Keep up the great work!";
+		if (streak > 7) return "Excellent! You're on a roll!";
+		if (streak > 3) return "Great job! Keep going!";
+		return "Let's get started on a streak!";
+	};
 
 	var baseURL = "";
 	if (userData) {
@@ -382,8 +354,9 @@ const UserProfile = () => {
 												</Col>
 												<Col>
 													<div style={{ textAlign: "center", marginTop: "15%" }}>
-														<h2 style={{ color: "#f66b1d" }}>Current Streak</h2>
-														<h>no progress yet</h>
+														<h2 style={{ color: "#f66b1d" }}>Longest Streak</h2>
+														<h3>{currentStreak} days</h3>
+														<p>{streakComment(currentStreak)}</p>
 													</div>
 												</Col>
 											</Row>
@@ -495,22 +468,7 @@ const UserProfile = () => {
 							<Modal.Title>Edit Profile</Modal.Title>
 						</Modal.Header>
 						<Modal.Body>
-							{/* <Form> */}
-							{/* {!isVerified && (
-								<Form.Group>
-									<Form.Label>Old Password</Form.Label>
-									<Form.Control
-										type="password"
-										name="oldPassword"
-										onChange={handleOldPasswordChange}
-									/>
-									<Button variant="primary" onClick={verifyOldPassword}>
-										Verify
-									</Button>
-								</Form.Group>
-							)}
-							{isVerified && 
-							( */}
+				
 								<>
 									<Form.Group controlId="name" className="mb-3">
 										<Form.Label>Name</Form.Label>
@@ -538,45 +496,17 @@ const UserProfile = () => {
 											<p style={{ color: "red" }}>{errors.current_academic_level}</p>
 										)}
 									</Form.Group>
-									{/* <Form.Group controlId="password" className="mb-3">
-										<Form.Label>Password</Form.Label>
-										<Form.Control
-											type="password"
-											placeholder="Password"
-											value={password}
-											onChange={(e) => setPassword(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										/>
-										{errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-									</Form.Group>
-
-									<Form.Group controlId="confirmPassword" className="mb-3">
-										<Form.Label>Confirm Password</Form.Label>
-										<Form.Control
-											type="password"
-											placeholder="Confirm password"
-											value={confirmPassword}
-											onChange={(e) => setConfirmPassword(e.target.value)}
-											disabled={isSubmitting || !!verificationToken}
-										/>
-										{errors.confirmPassword && (
-											<p style={{ color: "red" }}>{errors.confirmPassword}</p>
-										)}
-									</Form.Group> */}
+				
 								</>
-							{/* )} */}
 
-							{/* </Form> */}
 						</Modal.Body>
 						<Modal.Footer>
 							<Button variant="secondary" onClick={handleClose}>
 								Close
 							</Button>
-							{/* {isVerified && ( */}
 								<Button variant="primary" onClick={UserUpdate}>
 									Save Changes
 								</Button>
-							{/* )} */}
 						</Modal.Footer>
 					</Modal>
 				)}

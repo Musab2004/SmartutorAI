@@ -94,6 +94,61 @@ def custom_login(request):
     # print(access_token)
     return Response({'access_token': access_token,'user':user_dict})
 @api_view(['POST'])
+def custom_login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    
+    if not email or not password:
+        return Response({'error': 'Please provide both username and password'}, status=400)
+    try:
+        user = User.objects.get(email_address=email)
+    except User.DoesNotExist:
+        return Response({'error': 'Invalid username or password'}, status=400)
+
+    if not check_password(password, user.password):
+        return Response({'error': 'Invalid username or password'}, status=400)
+    user = User.objects.get(email_address=email)
+    user.is_active = True
+    user.save()
+    existing_record = UserActivity.objects.filter(user=user, date=date.today()).first()
+    if not existing_record:
+        new_activity = UserActivity.objects.create(user=user, date=date.today())
+        print("New user activity created.")
+    else:
+        # The record already exists, do something else or simply skip
+        print("User activity already exists for today.")
+    print("User's 'is_active' status updated successfully.")
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+    user_data = serialize('json', [user]) 
+     # Serialize the user object to JSON
+    # print("profile pi is here : ",user.profile_pic.url)
+    user_dict = json.loads(user_data)[0]['fields']  # Convert serialized data to dictionary
+    # print(user_dict)
+    user_dict['id'] = user.pk
+    # print(refresh)
+    # print(access_token)
+    return Response({'access_token': access_token,'user':user_dict})
+@api_view(['POST'])
+def update_password(request):
+    email = request.data.get('email')
+    new_password = request.data.get('new_password')
+
+    if not email or not new_password:
+        return Response({'error': 'Please provide email, old password, and new password'}, status=400)
+
+    try:
+        user = User.objects.get(email_address=email)
+    except User.DoesNotExist:
+        return Response({'error': 'User does not exist'}, status=400)
+
+    # Update the user's password
+    user.password = make_password(new_password)
+    user.save()
+
+    print("User's password updated successfully.")
+    return Response({'status': 'success', 'message': 'Password updated successfully'})
+@api_view(['POST'])
 def CheckUser(request):
     user_id = request.data.get('email_address')
     try:
