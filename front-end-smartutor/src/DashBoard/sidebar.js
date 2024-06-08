@@ -234,7 +234,7 @@ async function generateMCQsForPartition(partition, instruction = "Generate Biolo
   console.log(inputs);
 	if (quizType === 'MCQ') {
     try {
-      const response = await axios.post('https://2e8a-35-232-122-116.ngrok-free.app/generate-questions/', {
+      const response = await axios.post('https://a806-35-230-108-162.ngrok-free.app/generate-questions/', {
         input_text: inputs
       });
       return response.data.results;
@@ -329,7 +329,8 @@ return (
     <LoaderScreen />
   </div>
 )}
-<div style={blurStyle}>
+
+{!quiz.topics.topics_to_revisit &&<div style={blurStyle}>
   <h2>You have a quiz on {quiz.topics.title}</h2>
   <p>Click on the start button when you are ready.</p>
   <p>Topics these are based on.</p>
@@ -373,7 +374,25 @@ return (
       )}
     </>
   )}
-</div>
+</div>}
+
+{quiz.topics.topics_to_revisit &&
+<>
+  <h2>Weekly Quiz</h2>
+  <p>Click on the start button when you are ready.</p>
+  <p>Topics these are based on.</p>
+  <select>
+    {all_topics.map((topic, index) => (
+      <option key={index} value={topic.title}>
+        {topic.title}
+      </option>
+    ))}
+  </select>
+  <h1>Performance : </h1>
+  <p>Correct questions: {quiz.topics.correct_questions.length}</p>
+  <p>Wrong questions: {quiz.topics.wrong_questions.length}</p>
+</>
+}
 </>
 );
 }
@@ -420,7 +439,11 @@ const Sidebar = ({ studyPlan,data }) => {
       console.error('Error:', error);
     }
   };
-// fetchWeeklyGoals();
+  useEffect(() => {
+    if (is_covered) {
+      setShowModal(true);
+    }
+  }, [is_covered]);
   useEffect(() => {
     fetchWeeklyGoals();
   }, [studyPlan,userData]);

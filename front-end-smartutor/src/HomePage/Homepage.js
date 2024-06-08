@@ -24,7 +24,7 @@ import { Box, Typography } from '@mui/material'; // Ensure you import the CardSl
 
 const FutureUpdatesSection = ({ posts }) => {
   return (
-    <Box sx={{ backgroundColor: '#f5f5f5', py: 8, width: '99vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
+    <Box sx={{ backgroundColor: '#f5f5f5',backgroundImage:{FutureUpdate}, py: 8, width: '99vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
       <Container>
         <Typography
           variant="h4"
@@ -116,24 +116,14 @@ function App() {
 	};
 
 	useEffect(() => {
+		if (userData) {
+		  fetchUsers();
+		}
+	  }, [userData]); // Add userData as a dependency
 
-		fetchUsers();
-	}, []);
 
 
 
-	const postsPerPage = 4;
-	const [currentPage, setCurrentPage] = useState(1);
-
-	// Calculate the start and end indices for the current page
-	const startIndex = (currentPage - 1) * postsPerPage;
-	const endIndex = startIndex + postsPerPage;
-	const currentPosts = posts.slice(startIndex, endIndex);
-
-	// Function to handle page change
-	const handlePageChange = (newPage) => {
-		setCurrentPage(newPage);
-	};
 	const [activeTab2, setActiveTab2] = useState(1);
 
 	const handleTabClick = (tabNumber) => {
