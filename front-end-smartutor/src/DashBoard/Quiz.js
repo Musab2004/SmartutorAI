@@ -4,11 +4,15 @@ import { Container, Button, Card, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import userService from '../landing_page_component/UserSerive';
 import { UserContext } from '../landing_page_component/UserContext';
-
+import LoaderScreen from '../HomePage/LoaderScreen';
+import { FaArrowLeft } from 'react-icons/fa';
+import moment from 'moment';
 const App = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [results, setResults] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showtimer, setShowTimer] = useState(true);
   const [timer, setTimer] = useState(15 * 60);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [showExplanation, setShowExplanation] = useState({});
@@ -24,9 +28,7 @@ const App = () => {
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   }
 
-  useEffect(() => {
-    localStorage.setItem('timer', timer);
-  }, [timer]);
+
 
   const handleOptionSelect = (questionId, option) => {
     if (!quizSubmitted) {
@@ -42,7 +44,7 @@ const App = () => {
       console.error('Error fetching questions:', error);
     }
   };
-
+  fetchQuestions();
   useEffect(() => {
     fetchQuestions();
     startTimer();
@@ -50,12 +52,14 @@ const App = () => {
 
   const handleFinishQuiz = async () => {
     setQuizSubmitted(true);
+    // setTimer(0);
+    setShowTimer(false);
     let correct = [];
     let wrong = [];
     const resultTemp = {};
 
-    const answerCheckPromises = quizes.map(async (question) => {
-      const isCorrect = await checkAnswer(question.correct_answer, selectedAnswers[question.id]);
+    const answerCheckPromises = questions.map(async (question) => {
+      const isCorrect = await checkAnswer(question.answer, selectedAnswers[question.id]);
       resultTemp[question.id] = isCorrect;
       if (isCorrect) {
         correct.push(question.id);
@@ -63,12 +67,15 @@ const App = () => {
         wrong.push(question.id);
       }
     });
-
+    if (!is_mcq){
+      setLoading(true);
+    }
+    console.log("waiting for responses");
     await Promise.all(answerCheckPromises);
-
+    console.log("got all the response ")
     setResults(resultTemp);
     setCorrectAnswers(correct.length);
-
+    setLoading(false);
     console.log("correct ones: ", correct);
     console.log("wrong ones: ", wrong);
 
@@ -84,10 +91,10 @@ const App = () => {
       return correct_answer === selectedAnswer;
     }
     try {
-      console.log(correct_answer,selectedAnswer)
+      
       const response = await userService.post('api/check-answer/', { correct_answer, selected_answer: selectedAnswer });
       console.log(response.data);
-      return response.data.similarity_score > 0.6;
+      return response.data.similarity_score > 0.9;
     } catch (error) {
       console.error('Error:', error);
       return false;
@@ -115,39 +122,54 @@ const App = () => {
       <style>
         {`
           body {
-            background-color: #e1efff; /* Set the background color to blue */
+            background-color: grey; /* Set the background color to blue */
             margin: 0; /* Reset margin for the body */
             padding: 0; /* Reset padding for the body */
           }
         `}
       </style>
-      <div style={{ 
-        position: 'fixed', 
-        right: '50px', 
-        top: '50px', 
-        padding: '10px', 
-        backgroundColor: '#f0f0f0', 
-        borderRadius: '5px',
-        fontSize: '20px' 
-      }}>
+      {loading && (<LoaderScreen />)}
+      {!questions && (<LoaderScreen />) }
+      {!loading && questions && <div>
+     
+     
+      <div style={{alignItems:'center'}}>
+        <Card style={{ width: '100%' }}>
+        <Card.Header className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center" style={{ color: 'blue', cursor: 'pointer' }}>
+            <FaArrowLeft style={{ fontSize: '20px' }} /> 
+            <span className="ml-2" style={{marginLeft:'8px',fontSize: '20px'}}>Go Back</span>
+            <div style={{marginLeft:'20px' ,color:'grey'}}>
+                <Card.Title style={{color:'black'}}>Weekly Quiz</Card.Title>
+                <div>Number of Questions: 10</div>
+                
+            </div>
+            </div>
+            <div style={{marginRight:'20%'}}>
+            {showtimer &&  <div>
         Time remaining: {formatTime(timer)}
-      </div>
-      <Container style={{ width: '50%', margin: 'auto' }}>
-        <Card style={{ width: '100%', margin: 'auto' }}>
-          <Card.Body>
-            <Card.Title>Multiple Choice Quiz</Card.Title>
+      </div>}
+      <div>Date: {moment().format('MMMM Do, YYYY')}</div>
+               
+          
+            </div>
+        </Card.Header>
+          <Card.Body style={{marginLeft:'20%'}}>
+            
 
             {quizSubmitted && (
               <div style={{ marginLeft: '50%' }}>
-                <p style={{ fontSize: '20px', color: 'orange', fontWeight: 'bold' }}>
+                <p style={{ fontSize: '20px', color: 'black', fontWeight: 'bold' }}>
                   You have <span style={{ color: correctAnswers > 0 ? 'green' : 'red' }}>{correctAnswers}</span> out of {questions.length} MCQs correct!
                 </p>
               </div>
             )}
-
+            <ol>
             {questions.map((question) => (
-              <div key={question.id}>
+              <div key={question.id} style={{fontSize:'20px',marginBottom:'3%',marginTop:'3%'}}>
+                <li>
                 <Card.Text>{question.question}</Card.Text>
+                </li>
                 <div>
                   {is_mcq ? (
                     <Form>
@@ -176,12 +198,14 @@ const App = () => {
 
                   {quizSubmitted && (
                     <div>
-                      <p>
-                        {selectedAnswers[question.id] === question.answer ? (
-                          <span style={{ color: 'green' }}>Correct!</span>
-                        ) : (
-                          <span style={{ color: 'red' }}>Wrong! Correct Answer: {question.answer}</span>
-                        )}
+                        <p>
+                        {results[question.id] !== undefined ? (
+                          results[question.id] ? (
+                            <span style={{ color: 'green' }}>Correct!</span>
+                          ) : (
+                            <span style={{ color: 'red' }}>Wrong! Correct Answer: {question.answer}</span>
+                          )
+                        ) : null}
                       </p>
                       <p>
                         <Button onClick={() => setShowExplanation((prevState) => ({ ...prevState, [question.id]: !prevState[question.id] }))}>
@@ -198,7 +222,7 @@ const App = () => {
                 </div>
               </div>
             ))}
-
+</ol>
             {!quizSubmitted && (
               <>
                 <Button variant="success" onClick={handleFinishQuiz}>
@@ -215,8 +239,10 @@ const App = () => {
             )}
           </Card.Body>
         </Card>
-      </Container>
+      </div>
+      </div>}
     </div>
+    
   );
 };
 

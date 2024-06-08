@@ -186,7 +186,8 @@ async function generateShortQA(id, title, content, Id) {
 			const question = match[1].trim();
 			const correctAnswer = match[2].trim();
       
-      const explanation=await getExplanation(question,correctAnswer);
+      // const explanation=await getExplanation(question,correctAnswer);
+      const explanation="explanattion here"
 			mcqOutput.push({
 				id: id,
 				Id: Id,
@@ -210,7 +211,8 @@ async function generateShortQA(id, title, content, Id) {
 		
 			for (const match of matches) {
 				const [_, question, answer, distractors] = match;
-        const explanation=await getExplanation(question,answer.trim());
+        // const explanation=await getExplanation(question,answer.trim());
+        const explanation="hell here i ama";
 				allQuestions.push({
 					id: id,
 					Id: Id,
@@ -232,7 +234,7 @@ async function generateMCQsForPartition(partition, instruction = "Generate Biolo
   console.log(inputs);
 	if (quizType === 'MCQ') {
     try {
-      const response = await axios.post('https://4ce8-34-171-102-16.ngrok-free.app/generate-questions/', {
+      const response = await axios.post('https://2e8a-35-232-122-116.ngrok-free.app/generate-questions/', {
         input_text: inputs
       });
       return response.data.results;
@@ -243,7 +245,7 @@ async function generateMCQsForPartition(partition, instruction = "Generate Biolo
     }
     else{
       try {
-        const response = await axios.post('https://8035-34-125-201-170.ngrok-free.app/generate-questions/', {
+        const response = await axios.post('https://4da5-34-125-164-164.ngrok-free.app/generate-questions/', {
           input_text: inputs
         });
         return response.data.results;
@@ -307,51 +309,73 @@ const GenerateQuiz = async () => {
   
 
 };
+const blurStyle = loading ? { filter: 'blur(5px)', pointerEvents: 'none' } : {};
+const overlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 9999
+};
+return (
+<>
+{loading && (
+  <div style={overlayStyle}>
+    <LoaderScreen />
+  </div>
+)}
+<div style={blurStyle}>
+  <h2>You have a quiz on {quiz.topics.title}</h2>
+  <p>Click on the start button when you are ready.</p>
+  <p>Topics these are based on.</p>
+  <select>
+    {all_topics.map((topic, index) => (
+      <option key={index} value={topic.title}>
+        {topic.title}
+      </option>
+    ))}
+  </select>
 
+  <p>Select MCQ type:</p>
+  <select value={quizType} onChange={(e) => setQuizType(e.target.value)}>
+    <option value="ShortQA">ShortQA</option>
+    <option value="MCQ">MCQ</option>
+  </select>
 
-  return (
+  {!quiz.topics.followup_quiz && (
+    <Button onClick={() => startQuiz(all_topics)}>Start Quiz</Button>
+  )}
+
+  {quiz.topics.followup_quiz && (
+    <Button onClick={() => startQuiz(quiz.topics.topics_to_revisit)}>Follow up Quiz</Button>
+  )}
+  {quiz.topics.is_completed && (
     <>
-   {!loading && <div>
-      <h2>You have a quiz on {quiz.topics.title}</h2>
-      <p>Click on the start button when you are ready.</p>
-      <p>Topics these are based on.</p>
-      <select>
-  {all_topics.map((topic, index) => (
-    <option key={index} value={topic.title}>
-      {topic.title}
-    </option>
-  ))}
-</select>
-<p>Select Mcq type : </p>
-<select value={quizType} onChange={(e) => setQuizType(e.target.value)}>
-  <option value="ShortQA">ShortQA</option>
-  <option value="MCQ">MCQ</option>
-</select>
+      <p>Correct questions: {quiz.topics.correct_questions.length}</p>
+      <p>Wrong questions: {quiz.topics.wrong_questions.length}</p>
 
-{!quiz.topics.followup_quiz && <Button onClick={() => startQuiz(all_topics)}>Start Quiz</Button>}
-
-{quiz.topics.followup_quiz && <Button onClick={() => startQuiz(quiz.topics.topics_to_revisit)}>Follow up Quiz</Button>}
-{quiz.topics.is_completed && <>
-<p>correct questions : {quiz.topics.correct_questions.length}</p>
-<p>wrong questions : {quiz.topics.wrong_questions.length}</p>
-
-<p>Topics to revisit</p>
-      <select>
-  {quiz.topics.topics_to_revisit && quiz.topics.topics_to_revisit.map((topic, index) => (
-    <option key={index} value={topic.title}>
-      {topic.title}
-    </option>
-  ))}
-</select>
-{/* <Button>Follow up Quiz</Button> */}
-
-</>}
-    </div>
-  }
-
-{loading  &&  <LoaderScreen />}
+      {quiz.topics.topics_to_revisit.length > 0 && (
+        <>
+          <p>Topics to revisit</p>
+          <select>
+            {quiz.topics.topics_to_revisit.map((topic, index) => (
+              <option key={index} value={topic.title}>
+                {topic.title}
+              </option>
+            ))}
+          </select>
+        </>
+      )}
+    </>
+  )}
+</div>
 </>
-  );
+);
 }
 const Sidebar = ({ studyPlan,data }) => {
   const navigate = useNavigate();
@@ -456,7 +480,7 @@ const Sidebar = ({ studyPlan,data }) => {
         
         {data ? (<div className="container" style={{marginLeft:'20%',width:'70%'}}>
       <div className="row no-gutters">
-        <nav className="col-md-5 bg-light sidebar"  style={{width:'250px'}}>
+        <nav className="col-md-5 bg-light sidebar"  style={{width:'350px'}}>
           <div className="sidebar-sticky" >
             {data ? (
               data.map((week, index) => (
@@ -482,24 +506,73 @@ const Sidebar = ({ studyPlan,data }) => {
                     <ul style={{maxHeight: '500px',backgroundColor:'white', overflowY: 'auto'}}>
                       {week.chapters.map((topic) => (
                    <>
-             {topic.topics.is_quiz &&     <div
-                   className="nav-link"
-                   onClick={() => handleQuizClick(topic, week.weekly_goals.id)}
-                   style={{ cursor: 'pointer',color:'red' }}
-               >
-                   {topic.is_covered && <i class="fa fa-check" style={{color:'blue'}} aria-hidden="true"></i>
-}
-                   {topic.topics.title}
-               </div>}
-               {!topic.topics.is_quiz &&     <div
-                className="nav-link"
-                onClick={() => handleTopicClick(topic, week.weekly_goals.id)}
-                style={{ cursor: 'pointer' }}
-            >
-                {topic.is_covered && <i class="fa fa-check" style={{color:'blue'}} aria-hidden="true"></i>
-}
-                {topic.topics.title}
-            </div>}  
+       {topic.topics.is_quiz ? (
+    <div
+        className="nav-link"
+        onClick={() => handleQuizClick(topic, week.weekly_goals.id)}
+        style={{
+            cursor: 'pointer',
+            color: topic.is_covered ? 'blue' : 'red',
+            backgroundColor: topic.is_covered ? '#e6f7ff' : '#ffebe6',
+           
+            borderColor: topic.is_covered ? '#91d5ff' : '#ff4d4f',
+            padding: '10px',
+            borderRadius: '5px',
+            marginBottom: '10px'
+        }}
+    >
+       <div style={{ display: 'flex', alignItems: 'center' }}>
+        {topic.is_covered ? (
+            <i className="fa fa-check" style={{ 
+              color: 'white', 
+              backgroundColor: 'green', 
+              borderRadius: '50%', 
+              padding: '5px', 
+              fontSize: '15px' 
+            }} aria-hidden="true"></i>
+        ) : (
+            <i className="fa fa-question-circle" style={{ color: 'red', marginRight: '8px', fontSize:'20px' }} aria-hidden="true"></i>
+        )}
+        <span>{topic.topics.title}</span>
+        </div>
+    </div>
+) : (
+    <div
+        className="nav-link"
+        onClick={() => handleTopicClick(topic, week.weekly_goals.id)}
+        style={{
+            cursor: 'pointer',
+            padding: '10px',
+            borderRadius: '5px',
+            marginBottom: '10px'
+        }}
+    >
+ <div style={{ display: 'flex', alignItems: 'center' }}>
+    {topic.is_covered ? (
+              <i className="fa fa-check" style={{ 
+                color: 'white', 
+                backgroundColor: 'green', 
+                borderRadius: '50%', 
+                padding: '5px', 
+                fontSize: '15px' 
+              }} aria-hidden="true"></i>
+    ) : (
+      <i className="fa fa-book" style={{ 
+        color: 'black', 
+        marginRight: '8px', 
+        fontSize: '20px', 
+        backgroundColor: 'white', 
+        borderRadius: '50%', 
+        padding: '10px',
+        border: '2px solid black'
+      }} aria-hidden="true"></i>
+
+    )}
+    <span style={{marginLeft:'8px'}}>{topic.topics.title}</span>
+</div>
+    </div>
+)}
+ 
             </>
                       
                       ))}

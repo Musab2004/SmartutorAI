@@ -16,7 +16,7 @@ const TaskList = ({ tasks }) => {
                     <tr>
                       <th scope="col">Week No.</th>
                       <th scope="col">Topics Completed </th>
-                      <th scope="col">Feedback</th>
+               
                       <th scope="col">Status</th>
                     </tr>
                   </thead>
@@ -28,9 +28,6 @@ const TaskList = ({ tasks }) => {
                           <span className="ms-2">Week {task.weekly_goals.order}</span>
                         </th>
                         <td className="align-middle">{task.weekly_goals.topics_covered.length}</td>
-                        <td className="align-middle">
-                          <h6 className="mb-0"><span className={`badge ${task.priorityClass}`}>{task.priority}</span></h6>
-                        </td>
                         <td className="align-middle">
                         <a href="#!" data-mdb-toggle="tooltip" title={task.is_completed ? "Done" : "Pending"}>
   <i className={`fas fa-lg me-3 ${task.weekly_goals.is_completed ? "fa-check text-success" : "fas fa-clock text-primary"}`}></i>

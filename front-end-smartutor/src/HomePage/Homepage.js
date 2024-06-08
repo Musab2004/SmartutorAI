@@ -16,9 +16,66 @@ import background_image from "./background_image.jpg";
 import logo from "../landing_page_component/logo_smarttutor.svg";
 import useAuth from "../landing_page_component/useAuth";
 import userService from "../landing_page_component/UserSerive";
+import FutureUpdate from "./future_update.jpg"
 import styled from "styled-components";
 import CreateStudyPlan from "./CreateStudyPlans";
 import ProfilePage from "./ProfilePage";
+import { Box, Typography } from '@mui/material'; // Ensure you import the CardSlider component correctly
+
+const FutureUpdatesSection = ({ posts }) => {
+  return (
+    <Box sx={{ backgroundColor: '#f5f5f5', py: 8, width: '99vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
+      <Container>
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{ textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', mb: 4 ,marginTop:'10%'}}
+        >
+          Future Updates: Handwritten Solutions
+        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            textAlign: 'center',
+            color: '#555',
+          }}
+        >
+          <Typography variant="h6" component="p" sx={{ maxWidth: '800px', mb: 4 }}>
+            We are excited to announce a groundbreaking feature coming soon! You will
+            be able to upload images of handwritten questions, and our advanced
+            system will provide detailed solutions instantly. Stay tuned for this
+            revolutionary update that will make studying even more effortless and
+            efficient!
+          </Typography>
+          <Box
+            sx={{
+              width: '80%',
+              height: '50px',
+              backgroundImage: {FutureUpdate},
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              borderRadius: 2,
+              mb: 4,
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ fontWeight: 'bold' }}
+            onClick={() => alert('Stay tuned for updates!')}
+          >
+            Stay Updated
+          </Button>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
 function App() {
 	const { userData } = useContext(UserContext);
 	const navigate = useNavigate();
@@ -48,50 +105,22 @@ function App() {
 			setTokenExists(true);
 		}
 	}, []);
-
-	useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				const response = await userService.get("/api/studyplans/", { params: { user_id: userData.id } });// Your Django endpoint to fetch users
-				console.log(response.data);
-				setPosts(response.data);
-			} catch (error) {
-				console.error("Failed to fetch users", error);
-			}
-		};
-
-		fetchUsers();
-	}, []);
-	useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				const response = await userService.get(`/api/ongoingstudyplans/?user_id=${userData.id}`, {
-					user_id: userData.id,
-				}); // Your Django endpoint to fetch users
-				console.log(response.data);
-				setOngoingStudyPLans(response.data);
-			} catch (error) {
-				console.error("Failed to fetch users", error);
-			}
-		};
-		fetchUsers();
-		Recommendations();
-	}, []);
-
-	const Recommendations = async () => {
+	const fetchUsers = async () => {
 		try {
-			console.log(userData.id);
-			const response = await userService.get(`/api/recommendedstudyplans/`, {
-				params: { user_id: userData.id },
-			});
-
+			const response = await userService.get("/api/studyplans/", { params: { user_id: userData.id } });// Your Django endpoint to fetch users
 			console.log(response.data);
-			// setOngoingStudyPLans(response.data);
+			setPosts(response.data);
 		} catch (error) {
 			console.error("Failed to fetch users", error);
-			// navigate('/landingpage');
 		}
 	};
+
+	useEffect(() => {
+
+		fetchUsers();
+	}, []);
+
+
 
 	const postsPerPage = 4;
 	const [currentPage, setCurrentPage] = useState(1);
@@ -141,6 +170,7 @@ function App() {
 									</div>
 								) : (
 									<>
+									<FutureUpdatesSection/>
 										<section
 											style={{
 												backgroundColor: "#e1efff",
@@ -153,58 +183,16 @@ function App() {
 													fontSize: "24px",
 													marginTop: "100px",
 													color: "#1f5692",
-													fontStyle: "italic",
+											
 													marginBottom: "1rem",
 												}}
 											>
-												Recommended Study Plans
+												Featured Study Plans
 											</div>
 											<CardSlider cards={posts} />
 										</section>
-										<section
-											style={{
-												marginTop: "0px",
-												marginTop: "50px",
-												marginBottom: "50px",
-												backgroundColor: "#e1efff",
-											}}
-										>
-											<div
-												style={{
-													textAlign: "left",
-													fontWeight: "bold",
-													fontSize: "24px",
-													color: "#1f5692",
-													fontStyle: "italic",
-													marginBottom: "1rem",
-												}}
-											>
-												Popular Study Plans
-											</div>
-											<CardSlider cards={posts} />
-										</section>
-										<section
-											style={{
-												marginTop: "0px",
-												marginTop: "50px",
-												marginBottom: "50px",
-												backgroundColor: "#e1efff",
-											}}
-										>
-											<div
-												style={{
-													textAlign: "left",
-													fontWeight: "bold",
-													fontSize: "24px",
-													color: "#1f5692",
-													fontStyle: "italic",
-													marginBottom: "1rem",
-												}}
-											>
-												Latest Study Plans
-											</div>
-											<CardSlider cards={posts} />
-										</section>
+									
+									
 									</>
 								)}
 							</>

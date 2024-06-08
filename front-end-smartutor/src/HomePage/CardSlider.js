@@ -70,9 +70,7 @@ const CardSlider = ({ cards }) => {
 
 	return (
 		<Container style={{ display: "flex", alignItems: "center" }}>
-			<IconButton onClick={slideLeft} sx={{ mr: 1 }}>
-				<ArrowBackIosNew />
-			</IconButton>
+		
 			<Grid container spacing={3}>
 				{cards.slice(currentIndex, currentIndex + cardsToShow).map((studyPlan, index) => (
 					<Grid item xs={12} sm={6} md={3}>
@@ -108,9 +106,7 @@ const CardSlider = ({ cards }) => {
 					</Grid>
 				))}
 			</Grid>
-			<IconButton sx={{ ml: 1 }} onClick={slideRight}>
-				<ArrowForwardIos />
-			</IconButton>
+		
 
 			<Modal show={showModal} onHide={handleCloseModal}>
 				{selectedCard && (

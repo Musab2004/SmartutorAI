@@ -37,7 +37,7 @@ const StylishTabs = () => {
 	const { userData } = useContext(UserContext);
 	const [activeButton, setActiveButton] = useState("tab2");
 	const [loading, setLoading] = useState(false);
-	const [results, setResults] = useState({});
+	
 	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
 	const location = useLocation();
 	const studyPlan = location.state?.studyPlan;
@@ -251,7 +251,7 @@ const StylishTabs = () => {
 		console.log("Quiz type : ",quizType);
 		if (quizType === 'MCQ') {
 			try {
-				const response = await axios.post('https://4ce8-34-171-102-16.ngrok-free.app/generate-questions/', {
+				const response = await axios.post('https://2e8a-35-232-122-116.ngrok-free.app/generate-questions/', {
 					input_text: inputs
 				});
 				return response.data.results;

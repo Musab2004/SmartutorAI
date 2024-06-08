@@ -34,6 +34,7 @@ const App = () => {
     let correct = [];
     let wrong = [];
     setQuizSubmitted(true);
+    setTimer(0);
     const resultTemp = {};
 
     for (let question of quizes) {
