@@ -407,10 +407,7 @@ const RedditPost = (props) => {
 								<i className="fas fa-comment-dots"></i>
 							)}
 						</Button>
-						{/* <Button onClick={handleShowModal} className="report-button" style={{marginLeft:'3%', backgroundColor:'white', borderColor:'white', color:'black', height: '40px', width: '40px' }} title="Report Post">
-    <i className="fas fa-flag"></i>
-  </Button> */}
-
+				
 						<Modal show={showModaleditpost} onHide={handleCloseModaleditpost} style={{marginTop:'100px'}}>
 							<Modal.Header closeButton>
 								<Modal.Title>Edit Post</Modal.Title>

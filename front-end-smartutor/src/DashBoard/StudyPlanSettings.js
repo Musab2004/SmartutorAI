@@ -25,7 +25,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
 import DisscusionForum from "./DisscusionForum";
-import ResourcePreview from "./ResourcePreview";
 import userService from "../landing_page_component/UserSerive";
 import { MDBProgress, MDBProgressBar } from "mdb-react-ui-kit";
 import TaskList from "./TasKlist";

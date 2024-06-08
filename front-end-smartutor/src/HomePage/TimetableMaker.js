@@ -8,7 +8,6 @@ import background_image from "./background_image.jpg";
 import styled from "styled-components";
 import LoadingScreen from "./LoaderScreen";
 import { Link, useNavigate } from "react-router-dom";
-import ResourcePreview from "../DashBoard/ResourcePreview";
 import { useLocation } from "react-router-dom";
 import TimeTableFinal from "./TimeTableFinal";
 import DatePicker from "react-datepicker";

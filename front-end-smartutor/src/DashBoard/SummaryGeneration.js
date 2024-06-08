@@ -16,8 +16,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
 import DisscusionForum from "./DisscusionForum";
-import ResourcePreview from "./ResourcePreview";
-import QuizRoomList from "./QuizRoomList";
 import { UserContext } from "../landing_page_component/UserContext";
 import userService from "../landing_page_component/UserSerive";
 import StudyPlanSettings from "./StudyPlanSettings";

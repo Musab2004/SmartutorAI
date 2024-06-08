@@ -38,7 +38,6 @@ function App() {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-			// Redirect to landing page if token doesn't exist
 			setTokenExists(false);
 			navigate("/");
 		} else {
@@ -50,12 +49,10 @@ function App() {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-			// Redirect to landing page if token doesn't exist
 			setTokenExists(false);
 			navigate("/");
 		} else {
 			setTokenExists(true);
-			// useAuth();
 			fetchUsers();
 		}
 	}, []);
@@ -64,12 +61,11 @@ function App() {
 		try {
 			const response = await userService.get(`/api/ongoingstudyplans/?user_id=${userData.id}`, {
 				user_id: userData.id,
-			}); // Your Django endpoint to fetch users
+			});
 			console.log(response.data);
 			setOngoingStudyPLans(response.data);
 		} catch (error) {
 			console.error("Failed to fetch users", error);
-			// navigate('/landingpage');
 		}
 	};
 
@@ -162,9 +158,9 @@ function App() {
 					</div>
 				</section>
 
-				<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
+				<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
 					<Footer />
-				</footer>
+				</div>
 			</div>
 		</>
 	);

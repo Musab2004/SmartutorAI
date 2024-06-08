@@ -23,7 +23,6 @@ import DisscusionForumDashBoard from "./DashBoard/QueryPlatform";
 import SummaryGenerationDashBoard from "./DashBoard/SummaryGeneration";
 import QuizGenerationDashBoard from "./DashBoard/QuizGeneration";
 import SettingsDashBoard from "./DashBoard/StudyPlanSettings";
-import DashBoardQuizRoom from "./DashBoard/QuizRoom";
 import UserProvider from "./landing_page_component/UserContext";
 
 
@@ -52,7 +51,6 @@ function App() {
 						<Route exact path="/joinedmaketimetable" element={<Joined_TimeTableMaker />} />
 <Route exact path="/finalstep" element={<TimeTableFinal />} />
 						<Route exact path="/dashboard-quiz-generation" element={<QuizGenerationDashBoard />} />
-						<Route exact path="/dashboard-quiz-room" element={<DashBoardQuizRoom />} />
 						<Route
 							exact
 							path="/dashboard-discussion-forum"

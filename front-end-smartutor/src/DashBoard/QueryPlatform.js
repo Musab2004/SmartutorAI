@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
 import DisscusionForum from "./DisscusionForum";
-import ResourcePreview from "./ResourcePreview";
+
 import { UserContext } from "../landing_page_component/UserContext";
 import userService from "../landing_page_component/UserSerive";
 import LoadingScreen from "../HomePage/LoaderScreen";
@@ -220,11 +220,11 @@ const StylishTabs = () => {
 					</Modal>
 				</Container>
 			
-			{posts.length === 0 ? (	<div style={{ textAlign: "center", marginTop: "50px" }}>	<h3>No posts available</h3>	</div>	) : (	<>	
-					<AllPosts  posts={posts} studyPlan={studyPlan} fetchPosts={fetchPosts} />
+			{posts.length === 0 ? (	<div style={{ textAlign: "center", marginTop: "100px"  }}>	<h3>No posts available</h3>	</div>	) : (	<>	
+				<AllPosts  posts={posts} studyPlan={studyPlan} fetchPosts={fetchPosts} />
+				
 					</>)}
-					{/* studyPlan={props.studyPlan}
-								fetchPostfunc={props.fetchPosts} */}
+				
 					
 				
 			</div>

@@ -24,12 +24,12 @@ import { Box, Typography } from '@mui/material'; // Ensure you import the CardSl
 
 const FutureUpdatesSection = ({ posts }) => {
   return (
-    <Box sx={{ backgroundColor: '#f5f5f5',backgroundImage:{FutureUpdate}, py: 8, width: '99vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
+    <Box sx={{ backgroundColor: '#f5f5f5',backgroundImage:{FutureUpdate}, py: 8, height:'400px', width: '99vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
       <Container>
         <Typography
           variant="h4"
           component="div"
-          sx={{ textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', mb: 4 ,marginTop:'10%'}}
+          sx={{ textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', mb: 4 ,marginTop:'3%'}}
         >
           Future Updates: Handwritten Solutions
         </Typography>
@@ -149,7 +149,7 @@ function App() {
 			<div style={{ backgroundColor: "#e1efff" }}>
 				<Navbar activeTab={activeTab} />
 
-				<div style={{ backgroundColor: "#e1efff" }}>
+				<div style={{ backgroundColor: "#e1efff",marginBottom:'5%' }}>
 					<Container style={{ backgroundColor: "#e1efff" }}>
 						{activeTab === "home" && (
 							<>
@@ -191,9 +191,9 @@ function App() {
 				</div>
 
 				{/* Footer */}
-				<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
+				<div style={{ bottom: 0, width: '100%' }}>
 					<Footer />
-				</footer>
+				</div>
 			</div>
 		</>
 	);

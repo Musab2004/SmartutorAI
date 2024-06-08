@@ -2,18 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, FormControl, Button } from 'react-bootstrap';
 // import './App.css';
-import Navbar from "./HomePageNavbar"
+import Navbar from "./HomePageNavbar";
 import AllStudyPlans from './AllStudyPlans';
 import userService from '../landing_page_component/UserSerive';
-import Footer from "../landing_page_component/footer"
+import Footer from "../landing_page_component/footer";
 import { UserContext } from "../landing_page_component/UserContext";
+import LoaderScreen from './LoaderScreen';
+
 const CardList = ({ filteredCards }) => {
   return (
     <Col md={8}>
       {filteredCards.map((card) => (
         <div key={card.id} className="card mb-3">
           <div className="card-body">
-         
             <h5 className="card-title">{card.title}</h5>
             {/* Add other card details as needed */}
           </div>
@@ -23,32 +24,31 @@ const CardList = ({ filteredCards }) => {
   );
 };
 
-
-
-
 const App = () => {
   const { userData } = useContext(UserContext);
   console.log("userdata is here : ",userData);
   const [activeTab, setActiveTab] = useState("explore-courses");
   const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUsers = async () => {
     try {
-    
-     
       const response = await userService.get("/api/studyplans/", { params: { user_id: userData.id } }); // Your Django endpoint to fetch users
-      
-      console.log(response.data)
+      console.log(response.data);
       setPosts(response.data);
     } catch (error) {
       console.error('Failed to fetch users', error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  useEffect(() => {
-    fetchUsers();
 
-  }, [posts]);
- 
+  useEffect(() => {
+    if (userData) {
+      fetchUsers();
+    }
+  }, [userData]);
+
   const [cards, setCards] = useState([]); // Your card data
   const [filteredCards, setFilteredCards] = useState(cards);
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,7 +60,7 @@ const App = () => {
 
   useEffect(() => {
     const filtered = cards.filter((card) => {
-      console.log(card)
+      console.log(card);
       return (
         card.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (filters.location === '' || card.academic_level === filters.location) &&
@@ -83,37 +83,38 @@ const App = () => {
   return (
     // <Container>
     <>
-        <style>
-    {`
-      body {
-        background-color: #e1efff; /* Set the background color to blue */
-        margin: 0; /* Reset margin for the body */
-        padding: 0; /* Reset padding for the body */
-      }
-    `}
-  </style>
-  <></>
-    {posts.length === 0 ? (
-      <>
-      <Navbar activeTab={activeTab} />
-      <div style={{ textAlign: 'center', marginTop: '20%' }}>
-        <h3>No study plans available</h3>
-        {/* You can add additional text or a message here */}
-      </div>
-      </>
-    ) : (
-      <>
-            <Navbar activeTab={activeTab} />
-
-      
-        <AllStudyPlans studyPlans={posts} itemsPerPage={12} /> 
+      <style>
+        {`
+          body {
+            background-color: #e1efff; /* Set the background color to blue */
+            margin: 0; /* Reset margin for the body */
+            padding: 0; /* Reset padding for the body */
+          }
+        `}
+      </style>
+      <></>
+      {isLoading ? (
+        <div style={{ textAlign: 'center', marginTop: '20%' }}>
+          <LoaderScreen/>
+        </div>
+      ) : posts.length === 0 ? (
+        <>
+          <Navbar activeTab={activeTab} />
+          <div style={{ textAlign: 'center', marginTop: '20%' }}>
+            <h3>No study plans available</h3>
+            {/* You can add additional text or a message here */}
+          </div>
         </>
-    )}
+      ) : (
+        <>
+          <Navbar activeTab={activeTab} />
+          <AllStudyPlans studyPlans={posts} itemsPerPage={12} /> 
+        </>
+      )}
       <footer className="bg-light text-lg-start" style={{marginTop:'100px'}}>
-       <Footer/>
+        <Footer/>
       </footer>
     </>
-    // </Container>
   );
 };
 

@@ -48,7 +48,7 @@ const App = () => {
   useEffect(() => {
     fetchQuestions();
     startTimer();
-  }, []);
+  }, [questions]);
 
   const handleFinishQuiz = async () => {
     setQuizSubmitted(true);

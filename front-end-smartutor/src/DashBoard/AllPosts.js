@@ -9,7 +9,7 @@ import DisscusionForum from "./DisscusionForum";
 
 const AllPosts = (props) => {
 	var posts = props.posts;
-    console.log(posts);
+
 
 	return (
 		<>
@@ -20,8 +20,7 @@ const AllPosts = (props) => {
 								studyPlan={props.studyPlan}
 								fetchPostfunc={props.fetchPosts}
 							/>
-						))}
-						
+						))}				
 		</>
 	);
 };

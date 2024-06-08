@@ -8,7 +8,7 @@ import background_image from "./background_image.jpg";
 import styled from "styled-components";
 import LoadingScreen from "./LoaderScreen";
 import { Link, useNavigate } from "react-router-dom";
-import ResourcePreview from "../DashBoard/ResourcePreview";
+
 import Footer from "../landing_page_component/footer";
 import Grid from '@mui/material/Grid';
 const StyledForm = styled(Form)`

@@ -5,7 +5,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./sidebar";
 import DashBoardNavbar from "./DashBoardNavbar";
 import DisscusionForum from "./DisscusionForum";
-import ResourcePreview from "./ResourcePreview";
 import { UserContext } from "../landing_page_component/UserContext";
 import userService from "../landing_page_component/UserSerive";
 import StudyPlanSettings from "./StudyPlanSettings";
@@ -195,9 +194,9 @@ const StylishTabs = () => {
 			) : (
 				<></>
 			)}
-			<footer className="bg-light text-lg-start" style={{ marginLeft: "4%", width: "auto" }}>
-				<Footer />
-			</footer>
+		<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+  <Footer />
+</div>
 		</>
 	);
 };

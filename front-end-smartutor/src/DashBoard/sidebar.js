@@ -234,7 +234,7 @@ async function generateMCQsForPartition(partition, instruction = "Generate Biolo
   console.log(inputs);
 	if (quizType === 'MCQ') {
     try {
-      const response = await axios.post('https://a806-35-230-108-162.ngrok-free.app/generate-questions/', {
+      const response = await axios.post('https://5694-34-23-77-49.ngrok-free.app/generate-questions/', {
         input_text: inputs
       });
       return response.data.results;
