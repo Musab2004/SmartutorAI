@@ -36,7 +36,7 @@ const SignupForm = ({ show, setShow }) => {
 	const [email_address, setEmailAddress] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
-	const [current_academic_level, setCurrentAcademicLevel] = useState("High School");
+	const [current_academic_level, setCurrentAcademicLevel] = useState("Middle School");
 	const [city, setCity] = useState("");
 	const [location, setLocation] = useState("");
 
@@ -262,8 +262,8 @@ const SignupForm = ({ show, setShow }) => {
 									onChange={(e) => setCurrentAcademicLevel(e.target.value)}
 									disabled={isSubmitting || !!verificationToken}
 								>
-									<option value="highschool">High School</option>
-									<option value="middleschool">Middle School</option>
+									<option value="High School">High School</option>
+									<option value="Middle School">Middle School</option>
 								</Form.Control>
 								{errors.current_academic_level && (
 									<p style={{ color: "red" }}>{errors.current_academic_level}</p>

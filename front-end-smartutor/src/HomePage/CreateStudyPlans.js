@@ -46,7 +46,7 @@ const StudyPlanForm = () => {
 		duration: "3",
 		description: "",
 		subject: "Physics",
-		academic_level: "",
+		academic_level: "Middle School",
 		is_public: true,
 		quizzesPerWeek: "2",
 		image: null, // Assuming you'll store the file here
@@ -98,7 +98,6 @@ const StudyPlanForm = () => {
 		postData.append("is_completed", false);
 		try {
 			const study_plan = await userService.post("/api/studyplans/", postData);
-			// Handle success - maybe show a success message or redirect
 			console.log("Response:", study_plan.data);
 			if (study_plan.data) {
 				console.log("Response:", study_plan.data);
@@ -109,21 +108,14 @@ const StudyPlanForm = () => {
 			} else {
 				setIsLoading(false);
 				navigate("/createstudyplan");
-
-				// setShowAlert(true);
 				alert("PDF not structured, can't process it");
 			}
 		} catch (error) {
-			// This will run only once, when the component mounts
-
-			// Handle error - show error message or perform necessary actions
 			console.error("Error:", error);
 		} finally {
 			console.log("fetch book called here ");
 
 			setIsLoading(false);
-			// fetchBook();
-			// setNextStep(true);
 		}
 	};
 	const weeksOptions = [];
@@ -154,7 +146,7 @@ const StudyPlanForm = () => {
 			{isLoading ? (
 				<>
 					
-					<Navbar activeTab={activeTab} /> <LoadingScreen />
+					<Navbar activeTab={activeTab} /> <LoadingScreen mesg="Processing book please wait" />
 				</>
 			) : (
 				<>
@@ -210,9 +202,9 @@ const StudyPlanForm = () => {
 											>
 												<option value="Physics">Physics</option>
 												<option value="Chemistry">Chemistry</option>
-												<option value="Geography">Geography</option>
-												<option value="History">History</option>
-												<option value="English">English</option>
+												<option value="Biology">Biology</option>
+												<option value="Non Science">Non Science</option>
+											
 											</Form.Control>
 										</Form.Group>
 									</Grid>
@@ -249,27 +241,7 @@ const StudyPlanForm = () => {
 										</Form.Group>
 									</Grid>
 									<Grid item xs={12} md={6}>
-										<Form.Group controlId="publicPrivate">
-											<Form.Label>Choose Visibility of Study Plan</Form.Label>
-											<Form.Check
-												type="radio"
-												label="Public"
-												name="publicPrivate"
-												id="public"
-												value="public"
-												checked={formData.publicPrivate === "public"}
-												onChange={handleChange}
-											/>
-											<Form.Check
-												type="radio"
-												label="Private"
-												name="publicPrivate"
-												id="private"
-												value="private"
-												checked={formData.publicPrivate === "private"}
-												onChange={handleChange}
-											/>
-										</Form.Group>
+										
 									</Grid>
 									<Grid item xs={12} md={6}>
 										<Form.Group controlId="image">

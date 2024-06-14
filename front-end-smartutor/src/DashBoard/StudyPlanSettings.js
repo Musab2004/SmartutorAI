@@ -54,6 +54,7 @@ const StudyPlanSettings = () => {
 	const [data, setData] = useState([]);
 	const studyPlan = location.state?.studyPlan;
 	const plan = studyPlan;
+	console.log("study plan : ", plan)
 	const baseURL = "http://127.0.0.1:8000";
 	let total = 0;
 	let topics_covered = 0;
@@ -112,26 +113,22 @@ const StudyPlanSettings = () => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			console.log("token does'nt exit : ", localStorage);
-
 			navigate("/");
 		} else {
 		}
 	}, []);
-
+	const fetchPosts = async () => {
+		try {
+			const response = await userService.get(`/api/queryposts/?study_plan_id=${studyPlan.id}`);
+			setPosts(response.data);
+		} catch (error) {
+			console.error("Failed to fetch posts", error);
+			navigate("/homepage");
+		}
+	};
 	useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				const response = await userService.get(`/api/queryposts/?study_plan_id=${studyPlan.id}`);
-				// console.log(response.data);
-				setPosts(response.data);
-			} catch (error) {
-				console.error("Failed to fetch posts", error);
-				navigate("/homepage");
-			}
-		};
 
-		const interval = setInterval(fetchPosts, 3000);
-		return () => clearInterval(interval);
+		fetchPosts();
 	}, []);
 
 	const handleClick = (tab, path) => {
@@ -242,8 +239,8 @@ const StudyPlanSettings = () => {
 			</div>
 
 			<div>
-				<div style={{ marginLeft: "18%" }}>
-					<h2 style={{ fontSize: "24px", fontStyle: "italic", color: "#1f5692" }}>
+				<div style={{ marginLeft: "18%"  }}>
+					<h2 style={{ fontSize: "24px", color: "#1f5692" }}>
 						Current Progress
 					</h2>
 					<Card className="user-card-full" style={{ width: "80%",marginLeft:'5%' }}>
@@ -265,43 +262,31 @@ const StudyPlanSettings = () => {
 							<br />
 
 							<div>
-								<h2 style={{ fontSize: "24px", fontStyle: "italic" }}>Weekly feedback</h2>
+								<h2 style={{ fontSize: "24px" }}>Weekly feedback</h2>
 								<TaskList tasks={data} />
 							</div>
-							<div className="d-flex justify-content-end" style={{ marginTop: "5%" }}>
-								<p>Wanna Change the pace of your studyplan? Click here to </p>
-								<a variant="primary" style={{ color: "#f66b1d", textDecoration: "underline" }}>
-									{" "}
-									Reset Study Plan
-								</a>
-							</div>
+						
 						</Card.Body>
 					</Card>
 				</div>
 				<div style={{ marginTop: "10%", marginLeft: "18%" }}>
-					<h2 style={{ fontSize: "24px", fontStyle: "italic", color: "#1f5692" }}>
+					<h2 style={{ fontSize: "24px", color: "#1f5692" }}>
 						StudyPlan Details
 					</h2>
 					<Card className="user-card-full" style={{ width: "80%", marginBottom: "5%",marginLeft:'5%' }}>
 						<Card.Body>
 							<Row>
-								<Col md={4}>
-									<Card.Img
-										variant="top"
-										src={plan.image}
-										style={{ width: "300px", height: "300px" }}
-									/>
-								</Col>
+					
 
-								<Col style={{ marginTop: "3%" }}>
+								<Col style={{ marginTop: "0.5%" }}>
 									<p></p>
 									<div style={{ textAlign: "left", marginRight: "0%" }}>
-										<h2 style={{ fontSize: "24px", fontStyle: "italic", color: "#f66b1d" }}>
+										<h2 style={{ fontSize: "24px", color: "#f66b1d" }}>
 											Study Plans Details
 										</h2>
 									</div>
-									<Row>
-										<Col>
+									<Row style={{marginTop:'3%'}}>
+										<Col style={{marginleft:'100px'}}>
 											<div style={{ display: "flex" }}>
 												<Card.Img
 													variant="top"
@@ -315,10 +300,10 @@ const StudyPlanSettings = () => {
 											<div style={{ display: "flex" }}>
 												<Card.Img
 													variant="top"
-													src={calender}
+													src={book}
 													style={{ width: "30px", height: "30px" }}
 												/>
-												<p style={{ marginLeft: "5px" }}> Number of weeks : 4</p>
+												<p style={{ marginLeft: "5px" }}> Academic Level : {plan.academic_level}</p>
 											</div>
 										</Col>
 									</Row>
@@ -330,25 +315,16 @@ const StudyPlanSettings = () => {
 													src={degre}
 													style={{ width: "30px", height: "30px" }}
 												/>
-												<p style={{ marginLeft: "5px" }}> Subject</p>
+												<p style={{ marginLeft: "5px" }}> Subject : {plan.subject}</p>
 											</div>
 										</Col>
-										<Col>
-											<div style={{ display: "flex" }}>
-												<Card.Img
-													variant="top"
-													src={book}
-													style={{ width: "30px", height: "30px" }}
-												/>
-												<p style={{ marginLeft: "5px" }}> Academic Level</p>
-											</div>
-										</Col>
+									
 									</Row>
 
 									{members && members == 1 && (
 										<Button
 											variant="primary"
-											style={{ backgroundColor: "#f66b1d", borderColor: "#f66b1d" }}
+											style={{ backgroundColor: "#f66b1d", borderColor: "#f66b1d" ,marginTop:'5%'}}
 											onClick={handleDelete}
 										>
 											Delete Study Plan
@@ -364,7 +340,7 @@ const StudyPlanSettings = () => {
 											Leave Study Plan
 										</Button>
 									)}
-									<Modal show={showModal} onHide={handleClose}>
+									<Modal show={showModal} onHide={handleClose} style={{marginTop:'3%'}}>
 										<Modal.Header closeButton>
 											<Modal.Title>Confirm Delete</Modal.Title>
 										</Modal.Header>
@@ -392,13 +368,7 @@ const StudyPlanSettings = () => {
 											</Button>
 										</Modal.Footer>
 									</Modal>
-									<Button
-										variant="primary"
-										style={{ backgroundColor: "#f66b1d", borderColor: "#f66b1d" }}
-										onClick={completeStudyPlan}
-									>
-										Completed StudyPlan
-									</Button>
+							
 								</Col>
 							</Row>
 						</Card.Body>

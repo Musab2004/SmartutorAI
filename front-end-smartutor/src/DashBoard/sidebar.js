@@ -1,40 +1,19 @@
 import React, { useState, useContext, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Modal,Button, Container, Collapse } from 'react-bootstrap';
+import { Modal,Button, Container, Collapse,Form } from 'react-bootstrap';
 import userService from '../landing_page_component/UserSerive';
 import { UserContext } from '../landing_page_component/UserContext';
 import { useLocation,useNavigate } from 'react-router-dom';
 import { colors } from '@material-ui/core';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 // import Loader
 import { Weekend, ExpandMore } from '@mui/icons-material';
 
 import LoaderScreen from '../HomePage/LoaderScreen';
 import StudyPlans from '../HomePage/AllStudyPlans';
 
-// require('dotenv').config()
-// import CircularProgress from '@mui/material/CircularProgress';
-// const TopicContent = ({ topic,weekly_goal_id,fetchWeeklyGoals }) => {
-//   const [isCovered, setIsCovered] = useState(false);
-//   const markAsCompleted = async () => {
-    
-//     const response = await userService.get('api/weeklygoaltopiccovered/',{
-//       params: {
-//         weeklygoal_id: weekly_goal_id,
-//         topic_id: topic.topics.id,
-   
-//       }
-//     });
-//     setIsCovered(true);
-//     await fetchWeeklyGoals();
-//     }
-  
- 
-
-//   return (
-  
-//   );
-// };
 const fetchTopic = async (pk) => {
   try {
     const response = await userService.get(`api/topics/${pk}/`);
@@ -46,15 +25,13 @@ const fetchTopic = async (pk) => {
   };
   
   const QuizForm = ({ quiz, weeklyGoalId ,studyPlan}) => {
-    // console.log("Study plan is here in Quiz Now : ",studyPlan)
     const [all_topics, setAllTopics] = useState([]);
     const [quizType, setQuizType] = useState('MCQ');
     const numQuestions=10
     const [selectedOption, setSelectedOption] = useState([]);
-    console.log("weekly goal id : ",weeklyGoalId)
-    console.log("quiz : ",quiz)
     const [Quiz, setQuiz] = useState([]);
     const navigate = useNavigate();
+    console.log("quiz is here : ",quiz);
     useEffect(() => {
       const fetchTopics = async () => {
         const topics = await Promise.all(
@@ -75,11 +52,7 @@ const fetchTopic = async (pk) => {
 
       userService.get(`api/quizzes/${quiz.topics.id}/`).then((response) => { 
         setQuiz(response.data);
-       
-  
-        // setQuestions(response.data.questions)
         return response.data.questions;
-        // console.log(questions)
       })
   
     };
@@ -90,21 +63,36 @@ useEffect(() => {
   fetchQuestions();
     }, [quiz]);
 const startQuiz = async (topics) => {
+  try {
+    setLoading(true);
 
-setLoading(true);
-
-const generatedQuestions = await createQuestions({ topics: topics });
-setLoading(true);
-userService.post('api/questions/', { questions: generatedQuestions, weekly_goal_id: weeklyGoalId ,quiz_id:quiz.topics.id,is_mcq:quizType==="MCQ" ? true : false})
-navigate("/quiz", {state:{ quizId:quiz.topics.id,quizes:generatedQuestions, numQuestions,timer:10, quizType, weekid:weeklyGoalId ,studyPlan:studyPlan,is_mcq:quizType==="MCQ" ? true : false}});	
+    const generatedQuestions = await createQuestions({ topics: topics });
+    // It seems setLoading(true) is called twice without a setLoading(false). 
+    // Assuming the second call should actually be setLoading(false) to indicate loading is complete.
+    setLoading(false); 
+    await userService.post('api/questions/', { 
+      questions: generatedQuestions, 
+      weekly_goal_id: weeklyGoalId,
+      quiz_id: quiz.topics.id,
+      is_mcq: quizType === "MCQ"
+    });
+    navigate("/quiz", {
+      state: {
+        quizId: quiz.topics.id,
+        quizes: generatedQuestions,
+        numQuestions,
+        timer: 10,
+        quizType,
+        weekid: weeklyGoalId,
+        studyPlan: studyPlan,
+        is_mcq: quizType === "MCQ"
+      }
+    });
+  } catch (error) {
+    setLoading(false); // Ensure loading is set to false in case of an error
+    alert(`An error occurred: ${error.message}`);
+  }
 }
-
-
-
-
-
-
-
 function partition(id, title, text) {
   const words = text.split(' ');
   const totalWords = words.length;
@@ -147,8 +135,7 @@ const alpaca_prompt = `Below is an instruction that describes a task, paired wit
 {}`;
 
 async function getExplanation(question, answer) {
-  const apiKey = "sk-proj-nLWaYWklGfzp8SEf1MR3T3BlbkFJC9i4esWlQVkZD6lJd2bI";
-  console.log("APi key : ",apiKey) // Replace with your actual OpenAI API key
+  const apiKey = "sk-proj-H9604idDPtL8XzensAebT3BlbkFJkPTrLzW1LgpMkpPCqmLp";
   const endpoint = 'https://api.openai.com/v1/chat/completions';
 
   const headers = {
@@ -181,13 +168,10 @@ async function generateShortQA(id, title, content, Id) {
 	if (quizType === 'ShortQA') {
 		const pattern = /<question>(.*?)<\/question>.*?<answer>(.*?)<\/answer>/gs;
 		const matches = [...outputText.matchAll(pattern)];
-	    console.log(matches)
 		for (const match of matches) {
 			const question = match[1].trim();
-			const correctAnswer = match[2].trim();
-      
-      // const explanation=await getExplanation(question,correctAnswer);
-      const explanation="explanattion here"
+			const correctAnswer = match[2].trim();  
+      const explanation=await getExplanation(question,correctAnswer);
 			mcqOutput.push({
 				id: id,
 				Id: Id,
@@ -205,14 +189,16 @@ async function generateShortQA(id, title, content, Id) {
 	else{
 
 		const allQuestions = [];
-        console.log("output text : ",outputText);
 		const mcqPattern = /<question>(.*?)<\/question>.*?<answer>(.*?)<\/answer>.*?<distractor>(.*?)<\/distractor>/gs;
 		const matches = [...outputText.matchAll(mcqPattern)];
 		
 			for (const match of matches) {
 				const [_, question, answer, distractors] = match;
-        // const explanation=await getExplanation(question,answer.trim());
-        const explanation="hell here i ama";
+        const distractors1=distractors.split("<d>").filter((d) => d.trim()).map((d) => d.replace("</d>", "").trim())
+        const uniqueDistractors = [...new Set(distractors1)];
+        const correctAnswer=answer.trim().replace(/^[a-zA-Z]\.\s*/, '');
+        const explanation=await getExplanation(question,correctAnswer);
+        if (uniqueDistractors.length > 1) {
 				allQuestions.push({
 					id: id,
 					Id: Id,
@@ -220,38 +206,38 @@ async function generateShortQA(id, title, content, Id) {
 					title: title,
 					question: question.trim(),
 					correct_answer: answer.trim().replace(/^[a-zA-Z]\.\s*/, ''),
-					distractors: distractors.split('<d>').filter(d => d.trim()).map(d => d.replace('</d>', '').trim()),
+					distractors: uniqueDistractors,
           explanation:explanation
 				});
+      }
 			}
 		
 			return allQuestions;
 		}
 }
 
-async function generateMCQsForPartition(partition, instruction = "Generate Biology based Short qa from it") {
+async function generateMCQsForPartition(partition, instruction = `Generate ${studyPlan.subject} based questions from it`) {
+  
   const inputs = alpaca_prompt.replace('{}', instruction).replace('{}', partition).replace('{}', '')
-  console.log(inputs);
 	if (quizType === 'MCQ') {
     try {
-      const response = await axios.post('https://5694-34-23-77-49.ngrok-free.app/generate-questions/', {
+      const response = await axios.post('https://6e66-34-87-159-172.ngrok-free.app/generate-questions/', {
         input_text: inputs
       });
       return response.data.results;
     } catch (error) {
       console.error('Error:', error);
-      throw error;
+
     }
     }
     else{
       try {
-        const response = await axios.post('https://4da5-34-125-164-164.ngrok-free.app/generate-questions/', {
+        const response = await axios.post('https://4233-35-204-226-215.ngrok-free.app/generate-questions/', {
           input_text: inputs
         });
         return response.data.results;
       } catch (error) {
         console.error('Error:', error);
-        throw error;
       }
     
     
@@ -263,13 +249,11 @@ async function createQuestions(topics) {
   try {
     const results = [];
     const allPartitions = [];
-
-    console.log("started");
-        console.log(topics);
     topics.topics.forEach(topic => {
       const parts = partition(topic.id, topic.title, topic.content);
       allPartitions.push(...parts);
     });
+    
 
     const numSamples = Math.min(numQuestions, allPartitions.length);
     const selectedPartitions = allPartitions.sort(() => 0.5 - Math.random()).slice(0, numSamples);
@@ -278,7 +262,6 @@ async function createQuestions(topics) {
 
     for (const topic of selectedPartitions) {
       const questions = await generateShortQA(topic.id, topic.title, topic.content, topic.id); // Await the API call
-      console.log("questions : ",questions);
       results.push(...questions);
     }
 
@@ -292,9 +275,6 @@ async function createQuestions(topics) {
   
 
 const GenerateQuiz = async () => {
-  console.log("selectedOption", selectedOption);
-  console.log("numQuestions", numQuestions);
-  console.log("quizType", quizType);
   const summaries = await Promise.all(
     selectedOption.map(option =>
       fetchTopic(option.value).then(response => ({
@@ -326,73 +306,122 @@ return (
 <>
 {loading && (
   <div style={overlayStyle}>
-    <LoaderScreen />
+    <LoaderScreen mesg="It may take 5-10 min to Generate Quiz" />
   </div>
 )}
 
-{!quiz.topics.topics_to_revisit &&<div style={blurStyle}>
+<div style={blurStyle}>
+{!quiz.topics.topics_to_revisit && <>
+  <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
   <h2>You have a quiz on {quiz.topics.title}</h2>
   <p>Click on the start button when you are ready.</p>
-  <p>Topics these are based on.</p>
-  <select>
+  
+  <hr />
+  <h3 style={{ marginTop: '30px', marginBottom: '10px', color:'#1f5692' }}>Topics these are based on.</h3>
+  <Form.Select style={{ marginBottom: '20px' }}>
     {all_topics.map((topic, index) => (
       <option key={index} value={topic.title}>
         {topic.title}
       </option>
     ))}
-  </select>
+  </Form.Select>
 
-  <p>Select MCQ type:</p>
-  <select value={quizType} onChange={(e) => setQuizType(e.target.value)}>
+  <h3 style={{ marginTop: '30px', marginBottom: '10px', color:'#1f5692' }}>Select MCQ type:</h3>
+  <Form.Select value={quizType} onChange={(e) => setQuizType(e.target.value)} style={{ marginBottom: '20px' }}>
     <option value="ShortQA">ShortQA</option>
     <option value="MCQ">MCQ</option>
-  </select>
+  </Form.Select>
 
   {!quiz.topics.followup_quiz && (
-    <Button onClick={() => startQuiz(all_topics)}>Start Quiz</Button>
+    <Button onClick={() => startQuiz(all_topics)} style={{ marginTop: '20px' }}>Start Quiz</Button>
   )}
+</div>
+</>}
 
-  {quiz.topics.followup_quiz && (
-    <Button onClick={() => startQuiz(quiz.topics.topics_to_revisit)}>Follow up Quiz</Button>
-  )}
-  {quiz.topics.is_completed && (
-    <>
-      <p>Correct questions: {quiz.topics.correct_questions.length}</p>
-      <p>Wrong questions: {quiz.topics.wrong_questions.length}</p>
+  {quiz.topics.topics_to_revisit && <>
 
-      {quiz.topics.topics_to_revisit.length > 0 && (
-        <>
-          <p>Topics to revisit</p>
-          <select>
-            {quiz.topics.topics_to_revisit.map((topic, index) => (
-              <option key={index} value={topic.title}>
-                {topic.title}
-              </option>
-            ))}
-          </select>
-        </>
-      )}
-    </>
-  )}
-</div>}
+    {quiz.topics.topics_to_revisit.length > 0 &&  <>
+     <div style={{textAlign:'center'}}>
+    <h2>Follow up Quiz</h2>
+    <p>Based on your weakness you can give follow up quiz for better prepration</p>
+    <div >
+    <br/>
+    <h2>Quiz Result</h2>
+<div style={{display:'flex'}}>
+         <div className="p-3 mb-2 bg-success text-white rounded" sty>
+             <FontAwesomeIcon icon={faCheckCircle} size="3x" />
+                  <h4>Correct Questions</h4>
+                      <p className="display-4">{quiz.topics.correct_questions.length}</p>
+        </div>
+        <div className="p-3 mb-2 bg-danger text-white rounded" style={{marginLeft:'10%'}}>
+              <FontAwesomeIcon icon={faTimesCircle} size="3x" />
+                                        <h4>Wrong Questions</h4>
+                                        <p className="display-4">{quiz.topics.wrong_questions.length}</p>
+       </div>
+       </div>
+    </div>
+    <br/>
+    <div style={{marginBottom:'20px'}}>
+        <h3>Topics to revisit</h3>
+        <Form.Select>
+          {quiz.topics.topics_to_revisit.map((topic, index) => (
+            <option key={index} value={topic.title}>
+              {topic.title}
+            </option>
+          ))}
+        </Form.Select>
+        <Button style={{marginTop:'20px',marginBottom:'4%'}} onClick={() => startQuiz(quiz.topics.topics_to_revisit)}>Follow up Quiz</Button>
+        </div>
+        </div>
+  
+  
+  </>}
+
+
+
+  </>
+  }
 
 {quiz.topics.topics_to_revisit &&
+
 <>
+{ quiz.topics.topics_to_revisit.length <= 0 && 
+  <>
+  <div style={{textAlign:'center'}}>
   <h2>Weekly Quiz</h2>
-  <p>Click on the start button when you are ready.</p>
   <p>Topics these are based on.</p>
-  <select>
+  <hr/>
+
+  <Form.Select>
     {all_topics.map((topic, index) => (
       <option key={index} value={topic.title}>
         {topic.title}
       </option>
     ))}
-  </select>
-  <h1>Performance : </h1>
-  <p>Correct questions: {quiz.topics.correct_questions.length}</p>
-  <p>Wrong questions: {quiz.topics.wrong_questions.length}</p>
+  </Form.Select>
+  <div >
+    <br/>
+    <h2>Quiz Result</h2>
+<div style={{display:'flex'}}>
+         <div className="p-3 mb-2 bg-success text-white rounded" sty>
+             <FontAwesomeIcon icon={faCheckCircle} size="3x" />
+                  <h4>Correct Questions</h4>
+                      <p className="display-4">{quiz.topics.correct_questions.length}</p>
+        </div>
+        <div className="p-3 mb-2 bg-danger text-white rounded" style={{marginLeft:'10%'}}>
+              <FontAwesomeIcon icon={faTimesCircle} size="3x" />
+                                        <h4>Wrong Questions</h4>
+                                        <p className="display-4">{quiz.topics.wrong_questions.length}</p>
+       </div>
+       </div>
+    </div>
+    </div>
+  </>
+  }
 </>
+  
 }
+</div>
 </>
 );
 }
@@ -400,6 +429,7 @@ const Sidebar = ({ studyPlan,data }) => {
   const navigate = useNavigate();
   var [data, setData] = useState(null);
   const { userData } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -407,8 +437,7 @@ const Sidebar = ({ studyPlan,data }) => {
   const [is_covered, setIs_covered] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isCovered, setIsCovered] = useState(false);
-  // data=data
-  console.log("Study plan is here : ",studyPlan)
+  const [generatedSummary, setGeneratedSummary] = useState([]);
   const markAsCompleted = async (topic_id,weekly_goal_id) => {
   
     const response = await userService.get('api/weeklygoaltopiccovered/',{
@@ -419,7 +448,7 @@ const Sidebar = ({ studyPlan,data }) => {
       }
     });
     setIsCovered(true);
-    console.log("after marking as completed");
+    
     fetchWeeklyGoals();
     handleTopicClick(response.data,weekly_goal_id);
     }
@@ -434,7 +463,6 @@ const Sidebar = ({ studyPlan,data }) => {
 
       setData(response.data.response);
       setIs_covered(response.data.all_complete);
-      console.log(response.data.response)
     } catch (error) {
       console.error('Error:', error);
     }
@@ -445,7 +473,9 @@ const Sidebar = ({ studyPlan,data }) => {
     }
   }, [is_covered]);
   useEffect(() => {
+    if (userData && studyPlan){
     fetchWeeklyGoals();
+    }
   }, [studyPlan,userData]);
   
   const [content, setContent] = useState('');
@@ -471,10 +501,49 @@ const Sidebar = ({ studyPlan,data }) => {
     setOpenDropdown(openDropdown === index ? null : index);
   };
   const handleCloseCourse = () => {
-    console.log('Course closed');
     setShowModal(false);
     navigate('/my-courses')
 };
+const GenerateSummary = async () => {
+    setLoading(true)
+
+    
+    const input = [
+    {
+      role: 'system',
+      content: 'You are a helpful assistant.'
+    },
+    {
+      role: 'user',
+      content: `
+      Please summarize the following content in simple words using heading and bullet points like explaining to a kid.Ypu can add content on your own to get full picture of topic. The response must be in HTML format with:
+      - A main title in an <h3> tag.
+      - Section titles in <h4> tags.
+      - Each point in <li> tags within <ul> tags.
+    
+      Content: ${content}}
+      `
+    }
+    ];
+    
+    const response = await axios.post(
+    'https://api.openai.com/v1/chat/completions',
+    {
+      model: 'gpt-4-turbo',
+      messages: input,
+      temperature: 0.7,  // Optional: Adjust the temperature for more or less creative summaries
+    },
+    {
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer sk-proj-H9604idDPtL8XzensAebT3BlbkFJkPTrLzW1LgpMkpPCqmLp`,
+      },
+    }
+    );
+  let cleanedHtmlString = response.data.choices[0].message.content.replace(/```html\n/, '').replace(/```$/, '');
+  setContent(cleanedHtmlString);
+  setLoading(false)
+  };
 
   return (
     <>
@@ -501,7 +570,7 @@ const Sidebar = ({ studyPlan,data }) => {
 
 
         
-        {data ? (<div className="container" style={{marginLeft:'20%',width:'70%'}}>
+        {data ? (<div className="container" style={{marginLeft:'20%',width:'70%',marginBottom:'20%',marginTop:'5%'}}>
       <div className="row no-gutters">
         <nav className="col-md-5 bg-light sidebar"  style={{width:'350px'}}>
           <div className="sidebar-sticky" >
@@ -612,15 +681,22 @@ const Sidebar = ({ studyPlan,data }) => {
           {selectedTopic && 
           
           <>
-          <Container style={{ width: '600px',backgroundColor:'white' }}>
+          <Container style={{ width: '800px',backgroundColor:'white' }}>
+            {loading && <LoaderScreen />}
+         {!loading && <> <Button style={{marginLeft:'70%',marginTop:'3%',backgroundColor:'white',color:'blue',borderColor:'blue'}} variant="primary" onClick={GenerateSummary} >
+						Generate Summary
+					</Button>
             <div style={{ maxHeight: '500px',backgroundColor:'white', overflowY: 'auto',padding:'40px' }}>
             <h style={{ fontSize: '2em', fontWeight: 'bold' }}>{selectedTopic.topics.title}</h>
-          <p style={{}} >{content}</p>
+          {/* <p style={{}} >{content}</p> */}
+          <div dangerouslySetInnerHTML={{ __html: content }} />
           </div>
             <Button style={{marginLeft:'200px',marginTop:'20px'}} disabled={selectedTopic.is_covered} onClick={() => markAsCompleted(selectedTopic.topics.id, selectedWeeklyGoalId)}>
       {selectedTopic.is_covered ? 'Already Completed' : 'Mark as Completed'}
     </Button>
+    </>}
           </Container>
+         
         </>
           // <TopicContent topic={selectedTopic} weekly_goal_id={selectedWeeklyGoalId} fetchWeeklyGoals={fetchWeeklyGoals}/>}
 }

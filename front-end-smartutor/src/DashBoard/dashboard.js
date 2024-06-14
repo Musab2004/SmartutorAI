@@ -71,7 +71,9 @@ const StylishTabs = () => {
 		}
 	};
 	useEffect(() => {
+		if (userData && plan){
 		fetchWeeklyGoals();
+		}
 	}, [plan, userData]);
 
 	const fetchBook = async () => {
@@ -194,7 +196,7 @@ const StylishTabs = () => {
 			) : (
 				<></>
 			)}
-		<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+		<div style={{ bottom: -10, width: '100%' }}>
   <Footer />
 </div>
 		</>

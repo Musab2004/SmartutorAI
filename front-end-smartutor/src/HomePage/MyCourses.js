@@ -105,7 +105,7 @@ function App() {
 			</style>
 			<div style={{ backgroundColor: "#e1efff" }}>
 				<Navbar activeTab={activeTab} />
-				<section>
+				<section style={{marginBottom:'30%'}}>
 					<div>
 						<div
 							style={{
@@ -158,7 +158,7 @@ function App() {
 					</div>
 				</section>
 
-				<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+				<div style={{ bottom: 0, width: '100%' }}>
 					<Footer />
 				</div>
 			</div>

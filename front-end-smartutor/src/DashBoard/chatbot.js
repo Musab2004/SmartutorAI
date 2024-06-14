@@ -21,11 +21,13 @@ const ChatbotApp = ({ open, setOpen }) => {
 				{
 					model: "gpt-3.5-turbo",
 					messages: newMessages,
+					max_tokens: 100, // Adjust this value as needed to control response length
+					temperature: 0.5, // Lower values make responses more deterministic
 				},
 				{
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: `Bearer add your own`,
+						Authorization: `Bearer sk-proj-H9604idDPtL8XzensAebT3BlbkFJkPTrLzW1LgpMkpPCqmLp`,
 					},
 				}
 			);
@@ -49,15 +51,15 @@ const ChatbotApp = ({ open, setOpen }) => {
 					position: "fixed",
 					bottom: 100,
 					right: 20,
-					width: "320px",
-					height: "400px",
+					width: "520px",
+					height: "600px",
 					overflow: "auto",
 					zIndex: 1000,
 				}}
 			>
 				<div style={styles.container}>
 					<div style={{ display: "flex", alignItems: "center" }}>
-						<h1 style={styles.header}>Chatbot with GPT-4</h1>
+					<h1 style={styles.header}>StudyBuddy 🤖</h1>
 						<IconButton
 							sx={{ position: "absolute", right: 5 }}
 							size="small"
@@ -110,14 +112,14 @@ const styles = {
 	},
 	header: {
 		margin: "15px 0",
-		fontSize: "20px",
+		fontSize: "30px",
 		color: "#333",
 	},
 	chatWindow: {
 		border: "1px solid rgb(180, 180, 180)",
 		borderRadius: "10px",
-		height: "380px",
 		width: "90%",
+		height:'400px',
 		overflowY: "auto",
 		display: "flex",
 		flexDirection: "column",
@@ -127,7 +129,7 @@ const styles = {
 		textAlign: "left",
 		color: "#fff",
 		backgroundColor: "#007bff",
-		height: "100%",
+		height: "60px",
 		padding: "7px",
 		borderRadius: "10px",
 		margin: "5px",

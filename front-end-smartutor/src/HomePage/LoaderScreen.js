@@ -1,10 +1,11 @@
 import CircularProgress from '@mui/material/CircularProgress';
-const LoaderScreen = () => {
+const LoaderScreen = ({mesg}) => {
   return (
     <>
-     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-     {/* <h1>Loading...</h1> */}
-       <CircularProgress />
+     <div style={{display:'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+     <p >{mesg}</p>
+       <CircularProgress style={{marginLeft:'5%'}} />
+    
      </div>
     </>
   );

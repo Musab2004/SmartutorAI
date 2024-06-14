@@ -1,6 +1,7 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
+import requests
 from datetime import timedelta
 from .models import User
 from django.contrib.auth.hashers import check_password
@@ -213,9 +214,7 @@ def UpvotePost(request):
     user=User.objects.get(id=user_id)
     # print(user)
     post.is_upvoted.add(user)
-    # post.save()
-    # print(post.author)
-    # print("likes people : ",post.is_upvoted.all())
+
     return Response({'response': 'all good baby'})          
 @api_view(['POST'])
 def DownvotePost(request):
@@ -333,12 +332,8 @@ class WeeklyGoalsListCreate(generics.ListCreateAPIView):
         order = request.data.get('order')
         user = request.data.get('user')
         is_owner = request.data.get('owner')
-
-
         date_string = re.sub(r'\(.*\)', '', start_date)
         start_date = datetime.strptime(date_string.strip(), "%a %b %d %Y %H:%M:%S %Z%z").date()
-        # start_date = datetime.strptime(start_date, "%a %b %d %Y %H:%M:%S %Z%z").date()
-    # Get the StudyPlan object from the studyplan_id
         studyplan = get_object_or_404(StudyPlan, id=int(studyplan_id))
         if not is_owner:
             studyplan.members.add(user)
@@ -535,8 +530,6 @@ class QuizSubmission(generics.ListCreateAPIView):
         quiz_id = data.get('quiz_id')
         topic_to_revisit=[]
         topic_to_revisit_ids=[]
-        # Assuming you have models for Question, WeeklyGoal, and Quiz
-        # weekly_goal = WeeklyGoals.objects.get(id=weekly_goal_id)
         quiz = Quiz.objects.get(id=quiz_id)
         quiz.is_completed=True
         if len(wrong)!=0:
@@ -546,6 +539,7 @@ class QuizSubmission(generics.ListCreateAPIView):
             quiz.correct_questions.add(q)
         for question in wrong: 
             q=Question.objects.get(id=question)
+            print("wrong question here : ",q)
             if q.topic.id not in topic_to_revisit_ids:
                 my_dict=TopicSerializer(q.topic).data     
                 topic_to_revisit.append(my_dict)
@@ -562,16 +556,11 @@ class QuestionsView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         data = json.loads(request.body)
         questions = data.get('questions')
-        # weekly_goal_id = data.get('weekly_goal_id')
         quiz_id = data.get('quiz_id')
-
-        # Assuming you have models for Question, WeeklyGoal, and Quiz
-        # weekly_goal = WeeklyGoals.objects.get(id=weekly_goal_id)
         quiz = Quiz.objects.get(id=quiz_id)
         quiz.total_versions=quiz.total_versions+1
         quiz.save()
         version_number=quiz.total_versions
-        print(questions)
         for question_data in questions:
             print(question_data)
             topic=Topic.objects.get(id=question_data['id'])
@@ -591,13 +580,12 @@ class CheckAnswer(generics.ListCreateAPIView):
         selected_answer = data.get('selected_answer')
         if selected_answer is None:
             return JsonResponse({'status': 'success','similarity_score':0}, status=201)
-
-        print("answer we getting : ",selected_answer)
         if selected_answer=="":
             return JsonResponse({'status': 'success','similarity_score':0}, status=201) 
         model = SentenceTransformer('all-MiniLM-L6-v2')
         def encode(text):
             return model.encode(text)
+        
         def cosine_similarity(vec1, vec2):
             return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
         def check_similarity(reference_answer, student_answer):
@@ -605,10 +593,34 @@ class CheckAnswer(generics.ListCreateAPIView):
             student_vec = encode(student_answer)
             similarity = cosine_similarity(ref_vec, student_vec)
             return similarity
-        similarity_score = check_similarity(correct_answer, selected_answer)
-        similarity_score=float(similarity_score)
-        print(f"Similarity score: {similarity_score:.2f}")
-        return JsonResponse({'status': 'success','similarity_score':similarity_score}, status=201)    
+        def send_request_to_chatgpt(correct_answer, selected_answer):
+            api_url = "https://api.openai.com/v1/chat/completions"  # Replace with the correct API endpoint
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer sk-proj-H9604idDPtL8XzensAebT3BlbkFJkPTrLzW1LgpMkpPCqmLp"  # Replace with your actual API key
+            }
+            data = {
+                "model": "gpt-4-turbo",
+                "messages": [
+                    {"role": "system", "content": "You are an AI that helps to check student answers."},
+                    {"role": "user", "content": f"Check if the following student answer is correct compared to the reference answer even if it is close to the answer return true. Return only true or false as output.\n\nReference Answer: {correct_answer}\nStudent Answer: {selected_answer}"}
+                ]
+            }
+
+            response = requests.post(api_url, headers=headers, json=data)
+            response_data = response.json()
+            print(response_data)
+            if response.status_code == 200:
+                chatgpt_response = response_data['choices'][0]['message']['content'].strip().lower()
+                print(chatgpt_response)
+                return chatgpt_response == 'true'
+            else:
+                return False
+        response = send_request_to_chatgpt(correct_answer, selected_answer)
+        if response==True:
+                        return JsonResponse({'status': 'success', 'similarity_score': 1, 'check': response}, status=201)
+        return JsonResponse({'status': 'success', 'similarity_score': 0, 'check': response}, status=201)
+ 
 class AnswersPostListCreate(generics.ListCreateAPIView):
     queryset = AnswersPost.objects.all()
     serializer_class = AnswersPostSerializer

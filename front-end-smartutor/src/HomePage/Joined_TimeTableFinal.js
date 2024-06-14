@@ -113,7 +113,7 @@ function App() {
 </>
   )
   : (
-       <LoaderScreen />
+       <LoaderScreen mesg="Loading Study Plan" />
      )}
 
 </>

@@ -16,62 +16,69 @@ import background_image from "./background_image.jpg";
 import logo from "../landing_page_component/logo_smarttutor.svg";
 import useAuth from "../landing_page_component/useAuth";
 import userService from "../landing_page_component/UserSerive";
-import FutureUpdate from "./future_update.jpg"
+import FutureUpdate from "./Future_updates.jpg"
+import FutureUpdate2 from "./Future_updates2.jpg"
 import styled from "styled-components";
 import CreateStudyPlan from "./CreateStudyPlans";
 import ProfilePage from "./ProfilePage";
 import { Box, Typography } from '@mui/material'; // Ensure you import the CardSlider component correctly
-
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 const FutureUpdatesSection = ({ posts }) => {
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+  };
+
+  const updates = [
+    {
+      title: "Handwritten Solutions",
+      description: "Upload images of handwritten questions, and our advanced system will provide detailed solutions instantly.",
+      backgroundImage: `url(${FutureUpdate2})`,
+    },
+    {
+      title: "Voice Recognition",
+      description: "Introducing voice recognition for inputting questions, making studying even more accessible and convenient.",
+      backgroundImage: `url(${FutureUpdate})`,
+    },
+    {
+      title: "Multilingual Support",
+      description: "Our platform will soon support multiple languages, breaking down barriers in education.",
+      backgroundImage: `url(${FutureUpdate2})`,
+    },
+  ];
+
   return (
-    <Box sx={{ backgroundColor: '#f5f5f5',backgroundImage:{FutureUpdate}, py: 8, height:'400px', width: '99vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
-      <Container>
-        <Typography
-          variant="h4"
-          component="div"
-          sx={{ textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', mb: 4 ,marginTop:'3%'}}
-        >
-          Future Updates: Handwritten Solutions
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            textAlign: 'center',
-            color: '#555',
-          }}
-        >
-          <Typography variant="h6" component="p" sx={{ maxWidth: '800px', mb: 4 }}>
-            We are excited to announce a groundbreaking feature coming soon! You will
-            be able to upload images of handwritten questions, and our advanced
-            system will provide detailed solutions instantly. Stay tuned for this
-            revolutionary update that will make studying even more effortless and
-            efficient!
-          </Typography>
+    <Box sx={{ py: 8, width: '97vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}>
+      <Slider {...settings}>
+        {updates.map((update, index) => (
           <Box
+            key={index}
             sx={{
-              width: '80%',
-              height: '50px',
-              backgroundImage: {FutureUpdate},
+              height: '600px',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              borderRadius: 2,
-              mb: 4,
+              backgroundImage: `${update.backgroundImage}`,
             }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            sx={{ fontWeight: 'bold' }}
-            onClick={() => alert('Stay tuned for updates!')}
           >
-            Stay Updated
-          </Button>
-        </Box>
-      </Container>
+            <Container style={{marginTop:'10%'}}>
+              <Typography variant="h4" component="div" sx={{ textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', mb: 4, fontSize:'50px',color: 'black', marginTop: '3%' }}>
+                Future Updates: {update.title}
+              </Typography>
+              <Typography variant="h6" component="p" sx={{ maxWidth: '700px', mb: 4,marginLeft:'20%', textAlign: 'center',fontSize:'30px', color: 'black' }}>
+                {update.description}
+              </Typography>
+           
+            </Container>
+          </Box>
+        ))}
+      </Slider>
     </Box>
   );
 };

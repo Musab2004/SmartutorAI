@@ -47,7 +47,7 @@ const StudyPlans = ({ studyPlans1, itemsPerPage }) => {
 
 
 	return (
-		<div className="container" style={{minHeight:'350px'}}>
+		<div className="container" style={{minHeight:'150px'}}>
 			{studyPlans.length === 0 ? (
 				<div style={{ textAlign: "center", marginTop: "50px" }}>
 					<h3>No study plans available</h3>

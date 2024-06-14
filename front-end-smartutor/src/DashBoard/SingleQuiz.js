@@ -1,23 +1,30 @@
-// App.js
 import React, { useEffect, useState, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Button, Card, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import userService from '../landing_page_component/UserSerive';
 import { UserContext } from '../landing_page_component/UserContext';
+import LoaderScreen from '../HomePage/LoaderScreen';
+import { FaArrowLeft } from 'react-icons/fa';
+import moment from 'moment';
 
 const App = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(10 * 60);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [showExplanation, setShowExplanation] = useState({});
   const [results, setResults] = useState({});
+  const [showtimer, setShowTimer] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { userData } = useContext(UserContext);
   const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const { quizes, numQuestions, quizType, is_mcq, studyPlan } = location.state;
+
+  console.log(results);
   const navigate = useNavigate();
+  console.log(questions);
   function formatTime(seconds) {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
@@ -31,6 +38,7 @@ const App = () => {
   };
 
   const handleFinishQuiz = async () => {
+    setLoading(true);
     let correct = [];
     let wrong = [];
     setQuizSubmitted(true);
@@ -48,69 +56,106 @@ const App = () => {
       }
     }
     setResults(resultTemp);
-    console.log("correct ones: ", correct);
-    console.log("wrong ones: ", wrong);
+
+    setLoading(false);
   };
 
-  const startTimer = () => {
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev > 0) {
-          console.log('Timer:', prev - 1);
-          return prev - 1;
-        } else {
-          console.log('Timer finished!');
-          clearInterval(interval);
-          handleFinishQuiz();
-          return 0;
-        }
-      });
-    }, 1000);
-  };
+  useEffect(() => {
+    let interval;
+    const startTimer = () => {
+      interval = setInterval(() => {
+        setTimer((prev) => {
+          if (prev > 0) {
+
+            return prev - 1;
+          } else {
+            clearInterval(interval);
+            return 0;
+          }
+        });
+      }, 1000);
+    };
+
+    startTimer();
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []);
 
   async function checkAnswer(correct_answer, selectedAnswer) {
     if (is_mcq) {
       return correct_answer === selectedAnswer;
     }
     try {
+      console.log('not suppose to be here');
       const response = await userService.post('api/check-answer/', { correct_answer, selected_answer: selectedAnswer });
       console.log(response.data);
-      if (response.data.similarity_score > 0.6) {
-        return true;
-      } else {
-        return false;
-      }
+      return response.data.similarity_score > 0.9;
     } catch (error) {
       console.error('Error:', error);
       return false;
     }
   }
-
+  const blurStyle = loading ? { filter: 'blur(5px)', pointerEvents: 'none' } : {};
+  const overlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999
+  };
   return (
     <div>
       <style>
-        {`
+       {`
       body {
-        background-color: #e1efff; /* Set the background color to blue */
+        background-color: white; /* Set the background color to blue */
         margin: 0; /* Reset margin for the body */
         padding: 0; /* Reset padding for the body */
       }
     `}
       </style>
-      <div style={{ 
-        position: 'fixed', 
-        right: '50px', 
-        top: '50px', 
-        padding: '10px', 
-        backgroundColor: '#f0f0f0', 
-        borderRadius: '5px',
-        fontSize: '20px' 
-      }}>
-        Time remaining: {formatTime(timer)}
-      </div>
-      <Container style={{ width: '50%', margin: 'auto' }}>
-        <Card style={{ width: '100%', margin: 'auto' }}>
-          <Card.Body>
+      {loading &&   <div style={overlayStyle}>
+    <LoaderScreen mesg="It may take 1-2 min to evaluate quiz" />
+  </div>}
+      <div style={blurStyle}>
+        <div style={{ 
+          position: 'fixed', 
+          right: '50px', 
+          top: '50px', 
+          padding: '10px', 
+          backgroundColor: '#f0f0f0', 
+          borderRadius: '5px',
+          fontSize: '20px' 
+        }}>
+          Time remaining: {formatTime(timer)}
+        </div>
+    
+        <Card style={{ width: '100%' }}>
+          <Card.Header className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center" style={{ color: 'blue', cursor: 'pointer' }}>
+              <FaArrowLeft style={{ fontSize: '20px' }} onClick={() => navigate('/dashboard-quiz-generation', { state: { studyPlan } })} /> 
+              <span className="ml-2" style={{marginLeft:'8px',fontSize: '20px'}}>Go Back</span>
+              <div style={{marginLeft:'20px' ,color:'grey'}}>
+                <Card.Title style={{color:'black'}}>Weekly Quiz</Card.Title>
+                <div>Number of Questions: {numQuestions}</div>
+              </div>
+            </div>
+            <div style={{marginRight:'20%'}}>
+              {showtimer && (
+                <div>
+                  Time remaining: {formatTime(timer)}
+                </div>
+              )}
+              <div>Date: {moment().format('MMMM Do, YYYY')}</div>
+            </div>
+          </Card.Header>
+          <Card.Body style={{marginLeft:'20%'}}>
             <Card.Title>Multiple Choice Quiz</Card.Title>
 
             {quizSubmitted && (
@@ -122,13 +167,13 @@ const App = () => {
             )}
 
             {quizes && quizes.map((question) => (
-              <div key={question.Id}>
+              <div key={question.Id} style={{fontSize:'20px',marginBottom:'3%',marginTop:'3%'}}>
                 <Card.Text>{question.question}</Card.Text>
                 <div>
                   {is_mcq ? (
                     <Form>
                       {question.distractors.map((option, index) => (
-                        <div key={index}>
+                        <div key={index} >
                           <Form.Check
                             type="radio"
                             id={`option-${index}`}
@@ -162,13 +207,13 @@ const App = () => {
                         ) : null}
                       </p>
                       <p>
-                        <Button onClick={() => setShowExplanation((prevState) => ({ ...prevState, [question.id]: !prevState[question.id] }))}>
-                          See Explanation {showExplanation[question.id] ? '▲' : '▼'}
+                        <Button onClick={() => setShowExplanation((prevState) => ({ ...prevState, [question.Id]: !prevState[question.Id] }))}>
+                          See Explanation {showExplanation[question.Id] ? '▲' : '▼'}
                         </Button>
                       </p>
-                      {showExplanation[question.id] && (
+                      {showExplanation[question.Id] && (
                         <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', marginTop: '10px' }}>
-                          <p><span role="img" aria-label="info">ℹ️</span> {question.feedback}</p>
+                          <p><span role="img" aria-label="info">ℹ️</span> {question.explanation}</p>
                         </div>
                       )}
                     </div>
@@ -177,27 +222,23 @@ const App = () => {
               </div>
             ))}
 
-            <p>Time remaining: {timer} seconds</p>
             {!quizSubmitted && (
               <>
-                <Button variant="primary" onClick={startTimer}>
-                  Start Timer
-                </Button>
-                <Button variant="success" onClick={handleFinishQuiz}>
+                <Button variant="success" style={{marginBottom:'15%'}} onClick={handleFinishQuiz}>
                   Finish Quiz
                 </Button>
               </>
             )}
             {quizSubmitted && (
               <>
-                <Button variant="primary" onClick={() => navigate('/dashboard', { state: { studyPlan } })}>
+                <Button variant="primary" style={{marginBottom:'15%'}}  onClick={() => navigate('/dashboard-quiz-generation', { state: { studyPlan } })}>
                   Go back to Dashboard
                 </Button>
               </>
             )}
           </Card.Body>
         </Card>
-      </Container>
+      </div>
     </div>
   );
 };

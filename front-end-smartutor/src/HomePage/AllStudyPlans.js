@@ -128,9 +128,8 @@ const StudyPlans = ({ studyPlans, itemsPerPage }) => {
             <option value="">All Subjects</option>
             <option value="Physics">Physics</option>
             <option value="Chemistry">Chemistry</option>
-            <option value="Geography">Geography</option>
-            <option value="History">History</option>
-            <option value="English">English</option>
+            <option value="Biology">Biology</option>
+            <option value="Non Science">Non Science</option>
             {/* Add other subject options */}
           </Form.Control>
         </Form.Group>

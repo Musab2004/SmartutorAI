@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = PersonManager()
 
     USERNAME_FIELD = 'email_address'
-    REQUIRED_FIELDS = ['name','age']  # Add other required fields for user creation
+    REQUIRED_FIELDS = ['name']  # Add other required fields for user creation
 
     def get_full_name(self):
         return self.name

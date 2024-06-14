@@ -284,7 +284,7 @@ const RedditPost = (props) => {
 					{deletealert.message}
 				</Alert>
 			)}
-			<Card style={{ marginTop: "20px", width: "75%" }}>
+			<Card style={{ marginTop: "20px", width: "60%" }}>
 				<Card.Body>
 					<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 						<div style={{ display: "flex" }}>
@@ -327,12 +327,12 @@ const RedditPost = (props) => {
       },
     }}
   >
-    <MenuItem key="Edit" onClick={() => handleEdit(post.id,post.content)}>
+  {author.email_address==userData.email_address  && <><MenuItem key="Edit" onClick={() => handleEdit(post.id,post.content)}>
       Edit
     </MenuItem>
     <MenuItem key="Delete" onClick={() => handleDelete(post.id)}>
       Delete
-    </MenuItem>
+    </MenuItem></>}
     <MenuItem key="Report" onClick={handleShowModal}>
       Report
     </MenuItem>

@@ -124,7 +124,7 @@ function App() {
 </>
   )
  : (
-      <LoaderScreen />
+      <LoaderScreen mesg="Loading StudyPLan please wait"/>
     )}
 </>
   );

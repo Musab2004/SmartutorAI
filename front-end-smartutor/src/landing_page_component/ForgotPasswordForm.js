@@ -40,14 +40,22 @@ const ForgotPasswordForm = ({ show, setShow }) => {
             });
     };
 
-    const handleSubmitEmail = (e) => {
+    const handleSubmitEmail = async (e) => {
         e.preventDefault();
 
         if (!emailAddress) {
             setErrorMessage("Please enter your email address");
             return;
         }
-
+        const response = await axios.post("http://127.0.0.1:8000/api/checkusers/", { email_address:emailAddress });
+        // console.log(response)
+        if (response.data.message === "User already exists") {
+            
+        }
+        else{
+            setErrorMessage("Email Address does not exist in database");
+            return;
+        }
         const code = Math.floor(1000 + Math.random() * 9000).toString();
         setGeneratedCode(code);
         sendVerificationCode(code);

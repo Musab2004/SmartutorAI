@@ -183,12 +183,15 @@ const Comments = (props) => {
 									},
 								}}
 							>
-								<MenuItem key="Edit" onClick={() => handleEdit(comment.id)}>
+								{author.email_address==userData.email_address  && <>
+								{/* <MenuItem key="Edit" onClick={() => handleEdit(comment.id)}>
 									Edit
-								</MenuItem>
+								</MenuItem> */}
 								<MenuItem key="Delete" onClick={() => handleDeleteComment(comment)}>
 									Delete
 								</MenuItem>
+								</>
+}
 								<MenuItem key="Report" onClick={handleModalOpen}>
 									Report
 								</MenuItem>

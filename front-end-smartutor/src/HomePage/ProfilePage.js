@@ -215,7 +215,7 @@ const UserProfile = () => {
 	};
 	useEffect(() => {
 		fetchUserActivity(); // This will run only once, when the component mounts
-	  }, [userData]);
+	  }, []);
 
 
 
@@ -231,7 +231,7 @@ const UserProfile = () => {
 	};
 	useEffect(() => {
 		fetchUser();
-	  }, [userData]);
+	  }, []);
 	var markedDates = [];
 	var Dates = [];
 
@@ -366,99 +366,7 @@ const UserProfile = () => {
 							</div>
 						</>
 					)}
-					{userData && (
-						<div style={{ marginLeft: "15%", marginTop: "10%" }}>
-							<h1 style={{ color: "#1f5692", fontSize: "24px", fontStyle: "italic" }}>
-								Account Managment
-							</h1>
-							<Card className="user-card-full" style={{ width: "900px", marginBottom: "5%" }}>
-								<Card.Body>
-									{/* <Card.Title>Connect Your Accounts</Card.Title> */}
-									<div style={{ marginLeft: "20%" }}>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													width: "70%",
-													height: "60px",
-													marginTop: "30px",
-													color: "grey",
-												}}
-											>
-												<i
-													className="fab fa-facebook-f"
-													style={{ color: "#3b5998", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Facebook
-											</Button>
-										</div>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													width: "70%",
-													height: "60px",
-													marginTop: "10px",
-													color: "grey",
-												}}
-											>
-												<i
-													className="fab fa-twitter"
-													style={{ color: "#1da1f2", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Twitter
-											</Button>
-										</div>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													width: "70%",
-													height: "60px",
-													marginTop: "10px",
-													color: "grey",
-												}}
-											>
-												<i
-													className="fab fa-google"
-													style={{ color: "#dd4b39", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Google
-											</Button>
-										</div>
-										<div>
-											<Button
-												variant="primary"
-												style={{
-													backgroundColor: "white",
-													borderColor: "#1f5692",
-													color: "grey",
-													width: "70%",
-													height: "60px",
-													marginTop: "10px",
-												}}
-											>
-												<i
-													className="fab fa-instagram"
-													style={{ color: "#bc2a8d", fontSize: "1.2em", marginRight: "5%" }}
-												></i>{" "}
-												Connect to Instagram
-											</Button>
-										</div>
-									</div>
-									<div>{/* <Bar data={data} style={{height:'300px',color:'#f66b1d'}} /> */}</div>
-
-									{/* Rest of your content */}
-								</Card.Body>
-							</Card>
-						</div>
-					)}
+				
 				</div>
 			</div>
 			{userData && 
@@ -510,7 +418,7 @@ const UserProfile = () => {
 						</Modal.Footer>
 					</Modal>
 				)}
-			<footer className="bg-light text-lg-start" style={{ marginTop: "100px" }}>
+			<footer className="bg-light text-lg-start" style={{ marginTop: "200px" }}>
 				<Footer />
 			</footer>
 		</>

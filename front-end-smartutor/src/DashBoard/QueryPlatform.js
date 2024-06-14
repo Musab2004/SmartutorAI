@@ -220,7 +220,7 @@ const StylishTabs = () => {
 					</Modal>
 				</Container>
 			
-			{posts.length === 0 ? (	<div style={{ textAlign: "center", marginTop: "100px"  }}>	<h3>No posts available</h3>	</div>	) : (	<>	
+			{posts.length === 0 ? (	<div style={{ textAlign: "center", marginTop: "100px" ,color: "#1f5692"  }}>	<h3>No posts available</h3>	</div>	) : (	<>	
 				<AllPosts  posts={posts} studyPlan={studyPlan} fetchPosts={fetchPosts} />
 				
 					</>)}
@@ -228,7 +228,7 @@ const StylishTabs = () => {
 					
 				
 			</div>
-			<footer className="bg-light text-lg-start" style={{marginTop:'10%', width: '100%' }}>
+			<footer className="bg-light text-lg-start" style={{marginTop:'18%', width: '100%' }}>
   <Footer />
 </footer>
 		</>

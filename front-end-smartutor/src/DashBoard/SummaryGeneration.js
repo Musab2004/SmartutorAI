@@ -29,10 +29,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import { TimePicker } from "react-ios-time-picker";
 import axios from 'axios';
+import LoaderScreen from "../HomePage/LoaderScreen";
 const StylishTabs = () => {
 	const navigate = useNavigate();
 	const { userData } = useContext(UserContext);
 	const [activeButton, setActiveButton] = useState("tab2");
+	const [loading, setLoading] = useState(false);
 	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
 	const location = useLocation();
 	const studyPlan = location.state?.studyPlan;
@@ -116,7 +118,7 @@ const StylishTabs = () => {
 	}
 	const GenerateSummary = async () => {
 		console.log("Topics", selectedOption);
-	  
+	    setLoading(true)
 		const summaries = await Promise.all(
 			selectedOption.map(option =>
 			  fetchTopic(option.value).then(response => ({
@@ -133,7 +135,14 @@ const StylishTabs = () => {
 			},
 			...summaries.map(summary => ({
 			  role: 'user',
-			  content: `Please summarize the following content in simple words using heading and bulltet points like explaining to kid (give response in html): ${summary.title} - ${summary.summary}`
+			  content: `
+			  Please summarize the following content in simple words using heading and bullet points like explaining to a kid. The response must be in HTML format with:
+			  - A main title in an <h3> tag.
+			  - Section titles in <h4> tags.
+			  - Each point in <li> tags within <ul> tags.
+		  
+			  Content: ${summary.title} - ${summary.summary}
+			  `
 			}))
 		  ];
 		  
@@ -147,13 +156,15 @@ const StylishTabs = () => {
 			{
 			  headers: {
 				'Content-Type': 'application/json',
-				'Authorization': `Bearer sk-proj-pkbGUWeUuBRgLDoIrVvzT3BlbkFJ7SgsqhvSbuhJkIxjQZf8`,
+				'Authorization': `Bearer sk-proj-H9604idDPtL8XzensAebT3BlbkFJkPTrLzW1LgpMkpPCqmLp`,
 			  },
 			}
 		  );
 		// console.log(response.data.choices[0].message.content);  
-		setGeneratedSummary(response.data.choices[0].message.content);
-		// console.log(summaries);
+		console.log(response.data.choices[0].message.content);
+		let cleanedHtmlString = response.data.choices[0].message.content.replace(/```html\n/, '').replace(/```$/, '');
+		setGeneratedSummary(cleanedHtmlString);
+		setLoading(false)
 	  };
 
 	return (
@@ -188,7 +199,7 @@ const StylishTabs = () => {
 			<div style={{ marginTop: "100px", backgroundColor: "#e1efff" }}>
 				<DashboardTabs studyPlan={studyPlan} activeButton={activeButton} />
 			</div>
-			<h1 style={{textAlign: "center"}} >Summarize any topic here 💡</h1>
+			<h1 style={{textAlign: "center",color: "#1f5692"}} >Summarize any topic here</h1>
 
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
     <div>
@@ -217,13 +228,17 @@ const StylishTabs = () => {
 			</Container>
 			</div>
 			<div>
-			<Container style={{ backgroundColor: "white", height: '500px', width: '700px', border: '2px solid gray' ,borderRadius:'15px' }}>
-			<div style={{ overflow: 'auto', height: '400px' }}>
-			
-  <div dangerouslySetInnerHTML={{ __html: generatedSummary }} />
+			 <Container style={{ backgroundColor: "white", height: '500px', width: '700px', border: '2px solid gray' ,borderRadius:'15px' }}>
+			<div style={{ overflow: 'auto', height: '450px' }}>
+			{!loading && <>
+			{generatedSummary=="" && <h4 style={{ color: "lightgray", textAlign: "center",marginTop:'30%' }}>Summarized content will appear here</h4>}</>}
+			{!loading && <div dangerouslySetInnerHTML={{ __html: generatedSummary }} />}
+			{loading && 
+			<LoaderScreen mesg="It may take 10-20 sec to Generate Summary "/>
+			}
 </div>
-			{/* <textarea class="form-control" id="exampleFormControlTextarea1" rows="20" readOnly style={{ width: '400px' }}></textarea> */}
 			</Container>
+		
 
 			</div>
 			</div>

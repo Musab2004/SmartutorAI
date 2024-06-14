@@ -39,15 +39,7 @@ function App() {
 								Welcome to SmartTutor AI, your personalized learning companion designed to make
 								education engaging, effective, and tailored just for you
 							</h1>
-							<Button
-								sx={{
-									color: "white",
-									bgcolor: "#f66b1d",
-									mt: 2,
-								}}
-							>
-								Start Here
-							</Button>
+					
 						</div>
 					</Grid>
 					<Grid
